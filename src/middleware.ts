@@ -126,7 +126,6 @@ export default async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL('/', req.nextUrl));
   }
 
-  // Allow request to continue if all checks are passed
   return NextResponse.next();
 }
 
