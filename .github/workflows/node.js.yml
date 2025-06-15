@@ -1,0 +1,36 @@
+
+name: Node.js CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: self-hosted
+
+    strategy:
+      matrix:
+        node-version: [18.20.4]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+    env:
+      SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
+      NEXT_PUBLIC_API_BASE_URL: ${{ secrets.NEXT_PUBLIC_API_BASE_URL }}
+      PORT: 3004
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    - run: npm ci
+    - run: npm run build --if-present
+    - name: Change Directory
+      run: cd /home/frontend/frontend/prcement/actions-runner/_work/prcement_frontend/prcement_frontend
+    - run: pm2 restart 4
+
