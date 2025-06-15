@@ -20,7 +20,7 @@ const AddEmployee = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ email: 'employee@gmail.com', username: employeeName, password: 'charu2024', roles: 'ROLE_SALES' }),
+                body: JSON.stringify({ email: 'employee@gmail.com', username: employeeName, password: 'prcement', roles: 'ROLE_SALES' }),
             });
 
             if (response.ok) {
