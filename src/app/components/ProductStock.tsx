@@ -31,11 +31,13 @@ const ProductStock = () => {
 
     const [stockDate, setStockDate] = useState("");
     const [supplier, setSupplier] = useState("");
+    const [productId, setProductId] = useState("");
     const [productName, setProductName] = useState("");
     const [costPrice, setCostPrice] = useState("");
     const [productQty, setProductQty] = useState("");
 
 
+    const [supplierId, setSupplierId] = useState("");
     const [supplierName, setSupplierName] = useState("");
     const handleSupplierItemSubmit = async (e: any) => {
         e.preventDefault();
@@ -66,7 +68,29 @@ const ProductStock = () => {
             setSupplierName("");
         }
     };
+    const handleSupplierNameDelete = async (e: any) => {
+        e.preventDefault();
+        try {
+            const response = await fetch(`${apiBaseUrl}/api/deleteSupplierName?supplierName=${encodeURIComponent(supplierId)}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
 
+            });
+
+            if (!response.ok) {
+                // const error = await response.json();
+                toast.error("Sorry, name is not deleted!");
+            } else {
+                toast.success("Name deleted successfully.");
+
+            }
+
+        } catch (error: any) {
+            toast.error(error.message)
+        }
+    }
     const [productItemName, setProductItemName] = useState("");
     const handleProductNameSubmit = async (e: any) => {
         e.preventDefault();
@@ -97,7 +121,30 @@ const ProductStock = () => {
             setProductItemName("");
         }
     };
+    const handleProductNameDelete = async (e: any) => {
+        e.preventDefault();
+        try {
+            const response = await fetch(`${apiBaseUrl}/api/deleteProductName?productName=${encodeURIComponent(productId)}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
 
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                toast.error(error.message);
+                // toast.error("Sorry, name is not deleted!");
+            } else {
+                toast.success("Name deleted successfully.");
+
+            }
+
+        } catch (error: any) {
+            toast.error(error.message)
+        }
+    }
     const handleProductStock = (e: any) => {
         e.preventDefault();
         if (!stockDate || !productName) {
@@ -178,7 +225,7 @@ const ProductStock = () => {
             })
             .catch(error => console.error('Error fetching products:', error));
 
-    }, [supplierName, apiBaseUrl, username]);
+    }, [supplierId, supplierName, apiBaseUrl, username]);
     return (
         <div className="container w-full">
             <div className="flex flex-col md:flex-row gap-5 w-full items-center">
@@ -280,6 +327,17 @@ const ProductStock = () => {
                                 </div>
                             </label>
                         </div>
+                        <div className="flex w-full justify-center pt-5">
+                            <label className="form-control w-full max-w-xs">
+                                <div className="label">
+                                    <span className="label-text-alt">DELETE SUPPLIER NAME</span>
+                                </div>
+                                <div className="flex items-center justify-center gap-3">
+                                    <Select className="text-black w-full" name="payment" onChange={(selectedOption: any) => setSupplierId(selectedOption.value)} options={supplierOption} />
+                                    <button onClick={handleSupplierNameDelete} className="btn btn-sm btn-square btn-error">X</button>
+                                </div>
+                            </label>
+                        </div>
                         <div className="modal-action">
                             <a href="#" className="btn btn-square btn-ghost">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-10 h-10">
@@ -299,6 +357,17 @@ const ProductStock = () => {
                                 <div className="flex items-center justify-between">
                                     <input type="text" value={productItemName} name="productItem" onChange={(e: any) => setProductItemName(e.target.value)} placeholder="Type here" className="input input-bordered w-3/4 max-w-xs" required />
                                     <button onClick={handleProductNameSubmit} disabled={pending} className="btn btn-square btn-success">{pending ? "Adding..." : "ADD"}</button>
+                                </div>
+                            </label>
+                        </div>
+                        <div className="flex w-full justify-center pt-5">
+                            <label className="form-control w-full max-w-xs">
+                                <div className="label">
+                                    <span className="label-text-alt">DELETE PRODUCT NAME</span>
+                                </div>
+                                <div className="flex items-center justify-center gap-3">
+                                    <Select className="text-black w-full" name="payment" onChange={(selectedOption: any) => setProductId(selectedOption.value)} options={itemOption} />
+                                    <button onClick={handleProductNameDelete} className="btn btn-sm btn-square btn-error">X</button>
                                 </div>
                             </label>
                         </div>

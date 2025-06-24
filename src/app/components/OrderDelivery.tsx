@@ -38,6 +38,7 @@ const OrderDelivery = () => {
     const [orderNote, setOrderNote] = useState("");
     const [orderedQty, setOrderedQty] = useState("");
     const [orderId, setOrderId] = useState("");
+    const [transportId, setTransportId] = useState("");
     const [transportName, setTransportName] = useState("");
     const [truckno, setTruckNo] = useState("");
     const [rentAmount, setRentAmount] = useState("");
@@ -296,6 +297,30 @@ const OrderDelivery = () => {
 
     }, [apiBaseUrl, username]);
 
+    const handleTransportNameDelete = async (e: any) => {
+        e.preventDefault();
+        try {
+          const response = await fetch(`${apiBaseUrl}/api/deleteTransportName?transport=${encodeURIComponent(transportId)}`, {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+    
+          });
+    
+          if (!response.ok) {
+            // const error = await response.json();
+            toast.error("Sorry, name is not deleted!");
+          } else {
+            toast.success("Name deleted successfully.");
+    
+          }
+    
+        } catch (error: any) {
+          toast.error(error.message)
+        }
+      }
+
     return (
         <div className="container w-full">
             <div className="flex items-center justify-center w-full p-3">
@@ -504,6 +529,17 @@ const OrderDelivery = () => {
                                 <div className="flex items-center justify-between">
                                     <input type="text" value={transport} name="transport" onChange={(e: any) => setTransport(e.target.value)} placeholder="Type here" className="input input-bordered w-3/4 max-w-xs" />
                                     <button onClick={handleTransport} disabled={pending} className="btn btn-square btn-success">{pending ? "Adding..." : "ADD"}</button>
+                                </div>
+                            </label>
+                        </div>
+                        <div className="flex w-full justify-center pt-5">
+                            <label className="form-control w-full max-w-xs">
+                                <div className="label">
+                                    <span className="label-text-alt">DELETE TRANSPORT NAME</span>
+                                </div>
+                                <div className="flex items-center justify-center gap-3">
+                                    <Select className="text-black w-full" name="payment" onChange={(selectedOption: any) => setTransportId(selectedOption.value)} options={transportOption} />
+                                    <button onClick={handleTransportNameDelete} className="btn btn-sm btn-square btn-error">X</button>
                                 </div>
                             </label>
                         </div>

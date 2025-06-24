@@ -100,7 +100,7 @@ const AddRetailer = () => {
             <div className="flex flex-col w-full items-center p-2">
                 <div className="overflow-x-auto">
                     <div className="flex w-full items-end justify-end">
-                        <a href="#my_modal_retailer_edit" className="btn btn-square btn-ghost"><FaRegEdit size={24} /></a>
+                        <a href="#retailer_edit" className="btn btn-square btn-ghost"><FaRegEdit size={24} /></a>
                     </div>
                     <label className="form-control w-full max-w-xs pt-2">
                         <div className="label">
@@ -150,7 +150,7 @@ const AddRetailer = () => {
                     </label>
                 </div>
             </div>
-            <div className="modal sm:modal-middle" role="dialog" id="my_modal_retailer_edit">
+            <div className="modal sm:modal-middle" role="dialog" id="retailer_edit">
                 <div className="modal-box">
                     <div className="flex w-full gap-5 p-2 h-72">
                         <label className="form-control w-full max-w-xs">

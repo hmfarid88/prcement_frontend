@@ -23,6 +23,7 @@ const OfficePayment = () => {
     setMaxDate(formattedDate);
     setDate(formattedDate);
   }, []);
+  const [paymentId, setPaymentId] = useState("");
   const [paymentName, setPaymentName] = useState("");
   const [paymentNote, setPaymentNote] = useState("");
   const [paymentAmount, setPaymentAmount] = useState("");
@@ -57,7 +58,29 @@ const OfficePayment = () => {
       setPaymentPerson("");
     }
   };
+  const handlePaymentNameDelete = async (e: any) => {
+    e.preventDefault();
+    try {
+      const response = await fetch(`${apiBaseUrl}/api/deletePaymentName?paymentPerson=${paymentId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
 
+      });
+
+      if (!response.ok) {
+        // const error = await response.json();
+        toast.error("Sorry, name is not deleted!");
+      } else {
+        toast.success("Name deleted successfully.");
+
+      }
+
+    } catch (error: any) {
+      toast.error(error.message)
+    }
+  }
   const handlePaymentSubmit = async (e: any) => {
     e.preventDefault();
     if (!paymentName || !paymentAmount) {
@@ -119,7 +142,6 @@ const OfficePayment = () => {
           <a href="#my_modal_addPaymentName" className="btn btn-xs btn-circle btn-ghost"><FcPlus size={20} /></a>
         </div>
         <Select className="text-black" name="payment" onChange={(selectedOption: any) => setPaymentName(selectedOption.value)} options={paymentPersonOption} />
-
       </label>
 
       <label className="form-control w-full max-w-xs">
@@ -142,7 +164,7 @@ const OfficePayment = () => {
 
       <div className="modal sm:modal-middle" role="dialog" id="my_modal_addPaymentName">
         <div className="modal-box">
-          <div className="flex w-full items-center justify-center p-2">
+          <div className="flex flex-col w-full items-center justify-center p-2">
             <label className="form-control w-full max-w-xs">
               <div className="label">
                 <span className="label-text-alt">ADD PAYMENT NAME</span>
@@ -152,7 +174,19 @@ const OfficePayment = () => {
                 <button onClick={handlePaymentNameAdd} disabled={pending} className="btn btn-square btn-success">{pending ? "Adding..." : "ADD"}</button>
               </div>
             </label>
+            <div className="flex w-full justify-center pt-5">
+              <label className="form-control w-full max-w-xs">
+                <div className="label">
+                  <span className="label-text-alt">DELETE PAYMENT NAME</span>
+                </div>
+                <div className="flex items-center justify-center gap-3">
+                  <Select className="text-black w-full" name="payment" onChange={(selectedOption: any) => setPaymentId(selectedOption.value)} options={paymentPersonOption} />
+                  <button onClick={handlePaymentNameDelete} className="btn btn-sm btn-square btn-error">X</button>
+                </div>
+              </label>
+            </div>
           </div>
+
           <div className="modal-action">
             <a href="#" className="btn btn-square btn-ghost">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-10 h-10">
