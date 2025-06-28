@@ -147,12 +147,14 @@ const ProductStock = () => {
     }
     const handleProductStock = (e: any) => {
         e.preventDefault();
-        if (!stockDate || !productName) {
+        if (!stockDate || !productName || !supplier || !productQty || ! costPrice) {
             toast.warning("Item is empty !");
             return;
         }
         const product = { id: uid(), date: stockDate, supplier, productName, costPrice, purchasePrice: costPrice, productQty, username, status: 'stored' }
         dispatch(addProducts(product));
+         setProductQty("");
+         setCostPrice("");
 
     }
     const handleDeleteProduct = (id: any) => {
@@ -256,15 +258,15 @@ const ProductStock = () => {
 
                         <label className="form-control w-full max-w-xs pt-2">
                             <div className="label">
-                                <span className="label-text-alt">PURCHASE QUANTITY</span>
+                                <span className="label-text-alt">PURCHASE QTY</span>
                             </div>
-                            <input type='number' className='input input-md h-[40px] bg-white text-black border rounded-md border-slate-300' onChange={(e) => setProductQty(e.target.value)} placeholder='00' />
+                            <input type='number' className='input input-md h-[40px] bg-white text-black border rounded-md border-slate-300' value={productQty} onChange={(e) => setProductQty(e.target.value)} placeholder='00' />
                         </label>
                         <label className="form-control w-full max-w-xs pt-2">
                             <div className="label">
                                 <span className="label-text-alt">PURCHASE RATE</span>
                             </div>
-                            <input type='number' className='input input-md h-[40px] bg-white text-black border rounded-md border-slate-300' onChange={(e) => setCostPrice(e.target.value)} placeholder='00' />
+                            <input type='number' className='input input-md h-[40px] bg-white text-black border rounded-md border-slate-300' value={costPrice} onChange={(e) => setCostPrice(e.target.value)} placeholder='00' />
                         </label>
 
 

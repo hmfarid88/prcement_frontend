@@ -73,7 +73,29 @@ const Page = () => {
 
         }
     };
+    const handleDeleteSubmit = async (e: any) => {
+        e.preventDefault();
+        try {
+            const response = await fetch(`${apiBaseUrl}/api/deleteRetailerPaymentById/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
 
+            });
+
+            if (!response.ok) {
+                // const error = await response.json();
+                toast.error("Sorry, item is not deleted!");
+            } else {
+                toast.success("Item deleted successfully.");
+
+            }
+
+        } catch (error: any) {
+            toast.error(error.message)
+        }
+    }
     const [retailerOption, setRetailerOption] = useState([]);
     useEffect(() => {
 
@@ -140,10 +162,23 @@ const Page = () => {
                     >
                         {pending ? "Updating..." : "UPDATE"}
                     </button>
+                </label>
+            </div>
+            <div className="flex items-center justify-center p-2">
+                <label className="form-control w-full max-w-xs pt-5">
+                    <button className="btn btn-error"
+                        onClick={(e) => {
+                            if (window.confirm("Are you sure you want to delete this item?")) {
+                                handleDeleteSubmit(e);
+                            }
+                        }}
+
+                    >
+                        DELETE THIS ITEM
+                    </button>
 
                 </label>
             </div>
-
         </div>
     )
 }

@@ -74,7 +74,7 @@ const Page = () => {
                         <div ref={contentToPrint} className="flex-1 p-5">
                             <div className="flex flex-col items-center pb-5"><h4 className="font-bold">EXPENSE REPORT</h4><CurrentMonthYear /></div>
                             <table className="table table-xs md:table-sm table-pin-rows">
-                                <thead>
+                                <thead className="sticky top-16 bg-base-100">
                                     <tr>
                                         <th>SN</th>
                                         <th>DATE</th>

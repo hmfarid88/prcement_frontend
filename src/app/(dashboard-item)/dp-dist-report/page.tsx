@@ -52,21 +52,24 @@ if (!productId) {
       })
       .catch(error => console.error('Error fetching products:', error));
   }, [apiBaseUrl, username]);
+useEffect(() => {
+                const searchWords = filterCriteria.toLowerCase().split(" ");
+                const filtered = allProducts.filter(product =>
+                  searchWords.every(word =>
+                    (product.customer?.toLowerCase().includes(word) || '') ||
+                    (product.note?.toLowerCase().includes(word) || '') ||
+                    (product.transport?.toLowerCase().includes(word) || '') ||
+                    (product.truckNo?.toLowerCase().includes(word) || '') ||
+                    (product.productName?.toLowerCase().includes(word) || '') ||
+                    (product.invoiceNo?.toLowerCase().includes(word) || '') ||
+                    (product.date?.toLowerCase().includes(word) || '')
+               )
+                );
+              
+                setFilteredProducts(filtered);
+              }, [filterCriteria, allProducts]);
 
-
-  useEffect(() => {
-    const filtered = allProducts.filter(product =>
-      (product.customer.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
-      (product.note?.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
-      (product.date.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
-      (product.transport.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
-      (product.truckNo.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
-      (product.productName.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
-      (product.invoiceNo.toLowerCase().includes(filterCriteria.toLowerCase()) || '')
-    );
-    setFilteredProducts(filtered);
-  }, [filterCriteria, allProducts]);
-
+ 
   const handleFilterChange = (e: any) => {
     setFilterCriteria(e.target.value);
   };
@@ -93,7 +96,7 @@ if (!productId) {
           <div ref={contentToPrint} className="flex-1 p-5">
             <div className="flex flex-col items-center pb-5"><h4 className="font-bold">DELIVERY REPORT</h4><CurrentMonthYear /></div>
             <table className="table table-xs md:table-sm table-pin-rows">
-              <thead>
+              <thead className="sticky top-16 bg-base-100">
                 <tr>
                   <th>SN</th>
                   <th>DATE</th>

@@ -44,16 +44,20 @@ const Page = () => {
             .catch(error => console.error('Error fetching products:', error));
     }, [apiBaseUrl, username, retailerName]);
 
-
-    useEffect(() => {
-        const filtered = allProducts.filter(product =>
-            (product.date.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
-            (product.note?.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
-            (product.productName.toLowerCase().includes(filterCriteria.toLowerCase()) || '')
-        );
-        setFilteredProducts(filtered);
-    }, [filterCriteria, allProducts]);
-
+useEffect(() => {
+                const searchWords = filterCriteria.toLowerCase().split(" ");
+                const filtered = allProducts.filter(product =>
+                  searchWords.every(word =>
+                    (product.date?.toLowerCase().includes(word) || '') ||
+                    (product.note?.toLowerCase().includes(word) || '') ||
+                    (product.productName?.toLowerCase().includes(word) || '')
+                   
+               )
+                );
+              
+                setFilteredProducts(filtered);
+              }, [filterCriteria, allProducts]);
+    
     const handleFilterChange = (e: any) => {
         setFilterCriteria(e.target.value);
     };
@@ -82,7 +86,7 @@ const Page = () => {
                                 <h4><CurrentDate /></h4>
                             </div>
                             <table className="table table-xs md:table-sm table-pin-rows">
-                                <thead>
+                               <thead className="sticky top-16 bg-base-100">
                                     <tr>
                                         <th>SN</th>
                                         <th>DATE</th>

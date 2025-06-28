@@ -40,18 +40,21 @@ const Page = () => {
             .catch(error => console.error('Error fetching products:', error));
     }, [apiBaseUrl, username, startDate, endDate]);
 
-
-    useEffect(() => {
+  useEffect(() => {
+        const searchWords = filterCriteria.toLowerCase().split(" ");
         const filtered = allProducts.filter(product =>
-            (product.customer.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
-            (product.note?.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
-            (product.date.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
-            (product.productName.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
-            (product.invoiceNo.toLowerCase().includes(filterCriteria.toLowerCase()) || '')
+            searchWords.every(word =>
+                (product.customer?.toLowerCase().includes(word) || '') ||
+                (product.note?.toLowerCase().includes(word) || '') ||
+                (product.date?.toLowerCase().includes(word) || '') ||
+                (product.productName?.toLowerCase().includes(word) || '') ||
+                (product.invoiceNo?.toLowerCase().includes(word) || '')
+            )
         );
+
         setFilteredProducts(filtered);
     }, [filterCriteria, allProducts]);
-
+   
     const handleFilterChange = (e: any) => {
         setFilterCriteria(e.target.value);
     };
@@ -80,7 +83,7 @@ const Page = () => {
                                 <h4>{startDate} TO {endDate}</h4>
                             </div>
                             <table className="table table-xs md:table-sm table-pin-rows">
-                                <thead>
+                                <thead className="sticky top-16 bg-base-100">
                                     <tr>
                                         <th>SN</th>
                                         <th>DATE</th>

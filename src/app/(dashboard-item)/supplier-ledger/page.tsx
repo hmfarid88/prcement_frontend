@@ -81,7 +81,7 @@ const Page = () => {
                 <h4><CurrentDate /></h4>
               </div>
               <table className="table table-xs md:table-sm table-pin-rows">
-                <thead>
+               <thead className="sticky top-16 bg-base-100">
                   <tr>
                     <th>SN</th>
                     <th>SUPPLIER NAME</th>

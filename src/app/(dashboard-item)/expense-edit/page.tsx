@@ -26,7 +26,7 @@ const Page = () => {
     const [expenseName, setExpenseName] = useState("");
     const [expenseNote, setExpenseNote] = useState("");
     const [amount, setAmount] = useState("");
-   
+
 
     useEffect(() => {
         if (!id) return;
@@ -37,7 +37,7 @@ const Page = () => {
                 setExpenseName(data.expenseName);
                 setExpenseNote(data.expenseNote);
                 setAmount(data.amount);
-           
+
             })
             .catch(error => console.error('Error fetching products:', error));
 
@@ -74,7 +74,29 @@ const Page = () => {
 
         }
     };
+    const handleDeleteSubmit = async (e: any) => {
+        e.preventDefault();
+        try {
+            const response = await fetch(`${apiBaseUrl}/api/deleteExpenseById/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
 
+            });
+
+            if (!response.ok) {
+                // const error = await response.json();
+                toast.error("Sorry, item is not deleted!");
+            } else {
+                toast.success("Item deleted successfully.");
+
+            }
+
+        } catch (error: any) {
+            toast.error(error.message)
+        }
+    }
     return (
         <div className='container-2xl min-h-screen pb-5'>
             <div className="flex flex-col w-full items-center justify-center p-2">
@@ -121,7 +143,21 @@ const Page = () => {
 
                 </label>
             </div>
+            <div className="flex items-center justify-center p-2">
+                <label className="form-control w-full max-w-xs pt-5">
+                    <button className="btn btn-error"
+                        onClick={(e) => {
+                            if (window.confirm("Are you sure you want to delete this item?")) {
+                                handleDeleteSubmit(e);
+                            }
+                        }}
 
+                    >
+                        DELETE THIS ITEM
+                    </button>
+
+                </label>
+            </div>
         </div>
     )
 }

@@ -35,7 +35,20 @@ const Page = () => {
             })
             .catch(error => console.error('Error fetching products:', error));
     }, [apiBaseUrl, username]);
+  useEffect(() => {
+        const searchWords = filterCriteria.toLowerCase().split(" ");
+        const filtered = allProducts.filter(product =>
+            searchWords.every(word =>
+                (product.retailer?.toLowerCase().includes(word) || '') ||
+                (product.productName?.toLowerCase().includes(word) || '') ||
+                (product.date?.toLowerCase().includes(word) || '') ||
+                (product.orderNote?.toLowerCase().includes(word) || '')
+              
+            )
+        );
 
+        setFilteredProducts(filtered);
+    }, [filterCriteria, allProducts]);
 
     useEffect(() => {
         const filtered = allProducts.filter(product =>
@@ -71,7 +84,7 @@ const Page = () => {
                         <div ref={contentToPrint} className="flex-1 p-5">
                             <div className="flex flex-col items-center pb-5"><h4 className="font-bold">ORDER REPORT</h4><CurrentDate /></div>
                             <table className="table table-xs md:table-sm table-pin-rows">
-                                <thead>
+                               <thead className="sticky top-16 bg-base-100">
                                     <tr>
                                         <th>SN</th>
                                         <th>ORDER DATE</th>

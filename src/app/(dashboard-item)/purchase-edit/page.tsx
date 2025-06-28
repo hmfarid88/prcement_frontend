@@ -11,9 +11,10 @@ const Page = () => {
     const uname = useAppSelector((state) => state.username.username);
     const username = uname ? uname.username : 'Guest';
     const searchParams = useSearchParams();
-    const id = searchParams.get('id');
+    const productId = searchParams.get('productId');
     const [pending, setPending] = useState(false);
     const [maxDate, setMaxDate] = useState('');
+
     useEffect(() => {
         const today = new Date();
         const year = today.getFullYear();
@@ -21,49 +22,51 @@ const Page = () => {
         const day = String(today.getDate()).padStart(2, '0');
         const formattedDate = `${year}-${month}-${day}`;
         setMaxDate(formattedDate);
-        setDate(formattedDate);
+       
     }, []);
-    const [date, setDate] = useState("");
-    const [transport, setTransport] = useState("");
-    const [note, setNote] = useState("");
-    const [amount, setAmount] = useState("");
-
+        const [date, setDate] = useState("");
+        const [supplier, setSupplier] = useState("");
+        const [productName, setProductName] = useState("");
+        const [purchasePrice, setPurchasePrice] = useState("");
+        const [productQty, setProductQty] = useState("");
+        
 
     useEffect(() => {
-        if (!id) return;
-        fetch(`${apiBaseUrl}/paymentApi/getTransportPayInfo/${id}`)
+        if (!productId) return;
+        fetch(`${apiBaseUrl}/api/getProductEntry/${productId}`)
             .then(response => response.json())
             .then(data => {
                 setDate(data.date);
-                setTransport(data.transport);
-                setNote(data.note);
-                setAmount(data.amount);
-
+                setSupplier(data.supplier);
+                setProductName(data.productName);
+                setPurchasePrice(data.purchasePrice);
+                setProductQty(data.productQty);
+             
             })
             .catch(error => console.error('Error fetching products:', error));
 
-    }, [apiBaseUrl, id]);
+    }, [apiBaseUrl, productId]);
 
     const handleUpdateSubmit = async (e: any) => {
         e.preventDefault();
-        if (!id || !date || !transport || !note || !amount) {
+        if (!date || !supplier || !productName || !purchasePrice || !productQty) {
             toast.warning("Item is empty !")
             return;
         }
         setPending(true);
         try {
-            const response = await fetch(`${apiBaseUrl}/paymentApi/updateTransportPayInfo/${id}`, {
+            const response = await fetch(`${apiBaseUrl}/api/updateEntryInfo/${productId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ id, date, transport, note, amount }),
+                body: JSON.stringify({ date, supplier, productName, purchasePrice, productQty }),
             });
 
             if (!response.ok) {
                 const error = await response.json();
                 toast.error(error.message);
-            } else {
+             } else {
                 toast.success("Information updated successfully.");
 
             }
@@ -75,11 +78,10 @@ const Page = () => {
 
         }
     };
-
     const handleDeleteSubmit = async (e: any) => {
         e.preventDefault();
         try {
-            const response = await fetch(`${apiBaseUrl}/api/deleteTransportPayById/${id}`, {
+            const response = await fetch(`${apiBaseUrl}/api/deleteEntryInfo/${productId}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -88,8 +90,8 @@ const Page = () => {
             });
 
             if (!response.ok) {
-                // const error = await response.json();
-                toast.error("Sorry, item is not deleted!");
+                const error = await response.json();
+                toast.error(error.message);
             } else {
                 toast.success("Item deleted successfully.");
 
@@ -99,22 +101,40 @@ const Page = () => {
             toast.error(error.message)
         }
     }
-    const [transportOption, setTransportOption] = useState([]);
+    const [supplierOption, setSupplierOption] = useState([]);
     useEffect(() => {
-
-        fetch(`${apiBaseUrl}/api/getTransport?username=${username}`)
+        fetch(`${apiBaseUrl}/api/getSuppliersName?username=${username}`)
             .then(response => response.json())
             .then(data => {
                 const transformedData = data.map((item: any) => ({
                     id: item.id,
-                    value: item.transport,
-                    label: item.transport
+                    value: item.supplierName,
+                    label: item.supplierName
                 }));
-                setTransportOption(transformedData);
+                setSupplierOption(transformedData);
             })
             .catch(error => console.error('Error fetching products:', error));
+    }, [apiBaseUrl, username]);
 
-    }, [apiBaseUrl, username, transport]);
+    const [itemOption, setItemOption] = useState([]);
+        useEffect(() => {
+    
+            const fetchMadeProducts = () => {
+                fetch(`${apiBaseUrl}/api/getProductName?username=${username}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const transformedData = data.map((product: any) => ({
+                            value: product.productName,
+                            label: product.productName
+                        }));
+                        setItemOption(transformedData);
+                    })
+                    .catch(error => console.error('Error fetching products:', error));
+            };
+    
+            // Fetch data initially
+            fetchMadeProducts();
+        }, [apiBaseUrl, username]);
     return (
         <div className='container-2xl min-h-screen pb-5'>
             <div className="flex flex-col w-full items-center justify-center p-2">
@@ -130,24 +150,34 @@ const Page = () => {
                 </label>
                 <label className="form-control w-full max-w-xs pt-2">
                     <div className="label">
-                        <span className="label-text-alt">TRANSPORT</span>
+                        <span className="label-text-alt">SUPPLIER</span>
                     </div>
                     <div className="flex justify-between gap-2">
-                        <p className='capitalize w-[50%] p-2 bg-white text-black rounded-md'>{transport}</p>
-                        <Select className="text-black w-[50%]" name="retailer" onChange={(selectedOption: any) => setTransport(selectedOption.value)} options={transportOption} />
+                        <p className='capitalize w-[50%] p-2 bg-white text-black rounded-md'>{supplier}</p>
+                        <Select className="text-black w-[50%]" name="retailer" onChange={(selectedOption: any) => setSupplier(selectedOption.value)} options={supplierOption} />
                     </div>
                 </label>
                 <label className="form-control w-full max-w-xs pt-2">
                     <div className="label">
-                        <span className="label-text-alt">NOTE</span>
+                        <span className="label-text-alt">PRODUCT NAME</span>
                     </div>
-                    <input type='text' className='input input-md h-[40px] bg-white text-black border rounded-md border-slate-300' value={note} onChange={(e: any) => setNote(e.target.value)} placeholder='Type Here' />
+                    <div className="flex justify-between gap-2">
+                        <p className='capitalize w-[50%] p-2 bg-white text-black rounded-md'>{productName}</p>
+                        <Select className="text-black w-[50%]" name="retailer" onChange={(selectedOption: any) => setProductName(selectedOption.value)} options={itemOption} />
+                    </div>
+                 
                 </label>
                 <label className="form-control w-full max-w-xs pt-2">
                     <div className="label">
-                        <span className="label-text-alt">AMOUNT</span>
+                        <span className="label-text-alt">PURCHASE PRICE</span>
                     </div>
-                    <input type='number' step="any" name='rate' className='input input-md h-[40px] bg-white text-black border rounded-md border-slate-300' value={amount} onChange={(e) => setAmount(e.target.value)} placeholder='Type Here' />
+                    <input type='number' step="any" name='rate' className='input input-md h-[40px] bg-white text-black border rounded-md border-slate-300' value={purchasePrice} onChange={(e) => setPurchasePrice(e.target.value)} placeholder='Type Here' />
+                </label>
+                <label className="form-control w-full max-w-xs pt-2">
+                    <div className="label">
+                        <span className="label-text-alt">PRODUCT QTY</span>
+                    </div>
+                    <input type='number' step="any" name='rate' className='input input-md h-[40px] bg-white text-black border rounded-md border-slate-300' value={productQty} onChange={(e) => setProductQty(e.target.value)} placeholder='Type Here' />
                 </label>
                 <label className="form-control w-full max-w-xs pt-5">
                     <button
@@ -161,7 +191,6 @@ const Page = () => {
                     >
                         {pending ? "Updating..." : "UPDATE"}
                     </button>
-
                 </label>
             </div>
             <div className="flex items-center justify-center p-2">

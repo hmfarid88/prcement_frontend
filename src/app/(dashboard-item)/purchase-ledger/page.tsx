@@ -6,6 +6,8 @@ import { MdOutlineEditNote } from "react-icons/md";
 import { useReactToPrint } from 'react-to-print';
 import CurrentMonthYear from "@/app/components/CurrentMonthYear";
 import DateToDate from "@/app/components/DateToDate";
+import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 type Product = {
     date: string;
@@ -26,6 +28,7 @@ const Page = () => {
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
     const uname = useAppSelector((state) => state.username.username);
     const username = uname ? uname.username : 'Guest';
+    const router = useRouter();
 
     const contentToPrint = useRef(null);
     const handlePrint = useReactToPrint({
@@ -36,6 +39,11 @@ const Page = () => {
     const [allProducts, setAllProducts] = useState<Product[]>([]);
 
     const handleEdit = (productId: number) => {
+        if (!productId) {
+            toast.warning("Product id is required !");
+            return;
+        }
+        router.push(`/purchase-edit?productId=${encodeURIComponent(productId)}`);
 
     };
 
@@ -49,13 +57,16 @@ const Page = () => {
             .catch(error => console.error('Error fetching products:', error));
     }, [apiBaseUrl, username]);
 
-
     useEffect(() => {
+        const searchWords = filterCriteria.toLowerCase().split(" ");
         const filtered = allProducts.filter(product =>
-            (product.date.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
-            (product.productName.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
-            (product.supplier.toLowerCase().includes(filterCriteria.toLowerCase()) || '')
+            searchWords.every(word =>
+                (product.date?.toLowerCase().includes(word) || '') ||
+                (product.productName?.toLowerCase().includes(word) || '') ||
+                (product.supplier?.toLowerCase().includes(word) || '')
+            )
         );
+
         setFilteredProducts(filtered);
     }, [filterCriteria, allProducts]);
 
@@ -85,7 +96,7 @@ const Page = () => {
                         <div ref={contentToPrint} className="flex-1 p-5">
                             <div className="flex flex-col items-center pb-5"><h4 className="font-bold">PURCHASE LEDGER</h4><CurrentMonthYear /></div>
                             <table className="table table-xs md:table-sm table-pin-rows">
-                                <thead>
+                                <thead className="sticky top-16 bg-base-100">
                                     <tr>
                                         <th>SN</th>
                                         <th>DATE</th>
@@ -96,7 +107,7 @@ const Page = () => {
                                         <th>STATUS</th>
                                         <th>ENTRY QTY</th>
                                         <th>TOTAL QTY</th>
-                                        {/* <th>EDIT</th> */}
+                                        <th>EDIT</th>
 
                                     </tr>
                                 </thead>
@@ -112,7 +123,7 @@ const Page = () => {
                                             <td>{product?.status}</td>
                                             <td>{Number(product?.productQty?.toFixed(2)).toLocaleString('en-IN')}</td>
                                             <td>{Number(product?.remainingQty?.toFixed(2)).toLocaleString('en-IN')}</td>
-                                            {/* <td><button onClick={()=>handleEdit(product.productId)} className="btn btn-primary btn-sm"><MdOutlineEditNote size={24} /></button></td> */}
+                                            <td><button onClick={() => handleEdit(product.productId)} className="btn btn-primary btn-sm"><MdOutlineEditNote size={24} /></button></td>
                                         </tr>
                                     ))}
                                 </tbody>

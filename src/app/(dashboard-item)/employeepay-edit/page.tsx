@@ -48,7 +48,7 @@ const Page = () => {
 
     const handleUpdateSubmit = async (e: any) => {
         e.preventDefault();
-        if (!date || !employeeName || !year ||!month || !note || !amount) {
+        if (!date || !employeeName || !year || !month || !note || !amount) {
             toast.warning("Item is empty !")
             return;
         }
@@ -77,21 +77,43 @@ const Page = () => {
 
         }
     };
+const handleDeleteSubmit = async (e: any) => {
+        e.preventDefault();
+        try {
+            const response = await fetch(`${apiBaseUrl}/api/deleteEmpayById/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
 
-     const [employeeOption, setEmployeeOption] = useState([]);
-        useEffect(() => {
-            fetch(`${apiBaseUrl}/api/getEmployeeInfo`)
-                .then(response => response.json())
-                .then(data => {
-                    const transformedData = data.map((item: any) => ({
-                        id: item.id,
-                        value: item.employeeName,
-                        label: item.employeeName
-                    }));
-                    setEmployeeOption(transformedData);
-                })
-                .catch(error => console.error('Error fetching products:', error));
-        }, [apiBaseUrl]);
+            });
+
+            if (!response.ok) {
+                // const error = await response.json();
+                toast.error("Sorry, employee is not deleted!");
+            } else {
+                toast.success("Employee deleted successfully.");
+
+            }
+
+        } catch (error: any) {
+            toast.error(error.message)
+        }
+    }
+    const [employeeOption, setEmployeeOption] = useState([]);
+    useEffect(() => {
+        fetch(`${apiBaseUrl}/api/getEmployeeInfo`)
+            .then(response => response.json())
+            .then(data => {
+                const transformedData = data.map((item: any) => ({
+                    id: item.id,
+                    value: item.employeeName,
+                    label: item.employeeName
+                }));
+                setEmployeeOption(transformedData);
+            })
+            .catch(error => console.error('Error fetching products:', error));
+    }, [apiBaseUrl]);
 
 
     return (
@@ -154,10 +176,23 @@ const Page = () => {
                     >
                         {pending ? "Updating..." : "UPDATE"}
                     </button>
+                </label>
+            </div>
+            <div className="flex items-center justify-center p-2">
+                <label className="form-control w-full max-w-xs pt-5">
+                    <button className="btn btn-error"
+                        onClick={(e) => {
+                            if (window.confirm("Are you sure you want to delete this item?")) {
+                                handleDeleteSubmit(e);
+                            }
+                        }}
+
+                    >
+                        DELETE THIS ITEM
+                    </button>
 
                 </label>
             </div>
-
         </div>
     )
 }
