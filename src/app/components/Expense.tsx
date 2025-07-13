@@ -76,6 +76,7 @@ const Expense = () => {
           <option value="MOTORCYCLE COST">MOTORCYCLE COST</option>
           <option value="MOBILE BILL">MOBILE BILL</option>
           <option value="INCENTIVE">INCENTIVE</option>
+          <option value="TRANSPORT COST">TRANSPORT COST</option>
           <option value="OTHERS">OTHERS</option>
         </select>
 
