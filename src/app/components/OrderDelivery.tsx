@@ -90,7 +90,7 @@ const OrderDelivery = () => {
             return;
         }
         try {
-            const response = await fetch(`${apiBaseUrl}/api/findLastQty?username=${username}&productName=${productName}`);
+            const response = await fetch(`${apiBaseUrl}/api/findLastQty?username=${encodeURIComponent(username)}&productName=${encodeURIComponent(productName)}`);
             if (!response.ok) {
                 toast.error("Failed to fetch remaining quantity!");
                 return;
@@ -135,7 +135,7 @@ const OrderDelivery = () => {
                 toast.warning("Sorry, not enough qty!");
                 return;
             }
-            const qtyresponse = await fetch(`${apiBaseUrl}/api/findLastQty?username=${username}&productName=${productData.productName}`);
+            const qtyresponse = await fetch(`${apiBaseUrl}/api/findLastQty?username=${encodeURIComponent(username)}&productName=${encodeURIComponent(productData.productName)}`);
             if (!qtyresponse.ok) {
                 toast.error("Failed to fetch remaining quantity!");
                 return;
