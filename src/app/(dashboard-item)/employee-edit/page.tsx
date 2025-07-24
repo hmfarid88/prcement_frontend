@@ -19,7 +19,7 @@ const Page = () => {
 
     useEffect(() => {
         if (!employee) return;
-        fetch(`${apiBaseUrl}/api/getEmployeeInfoByEmployee?employeeName=${employee}`)
+        fetch(`${apiBaseUrl}/api/getEmployeeInfoByEmployee?employeeName=${encodeURIComponent(employee)}`)
             .then(response => response.json())
             .then(data => {
                 setId(data.id);

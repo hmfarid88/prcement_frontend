@@ -23,7 +23,7 @@ const AddRetailer = () => {
             toast.warning("Retailer name  is required !");
             return;
         }
-        router.push(`/retailer-edit?retailerName=${retailer}`);
+        router.push(`/retailer-edit?retailerName=${encodeURIComponent(retailer)}`);
         setRetailer("");
     }
     const handleRetailerSubmit = async (e: any) => {

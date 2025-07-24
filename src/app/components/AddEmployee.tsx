@@ -23,7 +23,7 @@ const AddEmployee = () => {
             toast.warning("Employee name  is required !");
             return;
         }
-        router.push(`/employee-edit?employeeName=${employee}`);
+        router.push(`/employee-edit?employeeName=${encodeURIComponent(employee)}`);
         setEmployee("");
     }
     const handleUserAdd = async () => {

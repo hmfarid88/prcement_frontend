@@ -23,7 +23,7 @@ const Page = () => {
 
     useEffect(() => {
         if (!retailer) return;
-        fetch(`${apiBaseUrl}/api/getRetailerInfoByRetailer?retailerName=${retailer}`)
+        fetch(`${apiBaseUrl}/api/getRetailerInfoByRetailer?retailerName=${encodeURIComponent(retailer)}`)
             .then(response => response.json())
             .then(data => {
                 setId(data.id);
