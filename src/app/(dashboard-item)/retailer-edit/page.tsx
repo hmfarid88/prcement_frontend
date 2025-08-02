@@ -61,17 +61,39 @@ const Page = () => {
                 toast.error(error.message);
             } else {
                 toast.success("Information updated successfully.");
-               
+
             }
 
-        } catch (error:any) {
+        } catch (error: any) {
             toast.error(error.message)
         } finally {
             setPending(false);
-           
+
         }
     };
+    const handleDeleteSubmit = async (e: any) => {
+        e.preventDefault();
+        try {
+            const response = await fetch(`${apiBaseUrl}/api/deleteRetailerById/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
 
+            });
+
+            if (!response.ok) {
+                // const error = await response.json();
+                toast.error("Sorry, retailer is not deleted!");
+            } else {
+                toast.success("Retailer deleted successfully.");
+
+            }
+
+        } catch (error: any) {
+            toast.error(error.message)
+        }
+    }
     const [personOption, setPersonOption] = useState([]);
     useEffect(() => {
 
@@ -158,7 +180,7 @@ const Page = () => {
                     </div>
                 </label>
                 <label className="form-control w-full max-w-xs pt-5">
-                <button
+                    <button
                         className="btn btn-success w-full"
                         onClick={(e) => {
                             if (window.confirm("Are you sure you want to update this item?")) {
@@ -169,10 +191,25 @@ const Page = () => {
                     >
                         {pending ? "Updating..." : "UPDATE"}
                     </button>
-                
+
+                </label>
+
+            </div>
+            <div className="flex items-center justify-center p-2">
+                <label className="form-control w-full max-w-xs pt-5">
+                    <button className="btn btn-error"
+                        onClick={(e) => {
+                            if (window.confirm("Are you sure you want to delete this item?")) {
+                                handleDeleteSubmit(e);
+                            }
+                        }}
+
+                    >
+                        DELETE THIS ITEM
+                    </button>
+
                 </label>
             </div>
-
         </div>
     )
 }
