@@ -4,6 +4,7 @@ import { useAppSelector } from "@/app/store";
 import { FcPrint } from "react-icons/fc";
 import { useReactToPrint } from 'react-to-print';
 import CurrentDate from "@/app/components/CurrentDate";
+import ExcelExport from "@/app/components/ExcellGeneration";
 
 type Product = {
 
@@ -67,45 +68,48 @@ const Page = () => {
                 <path fillRule="evenodd" d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z" clipRule="evenodd" />
               </svg>
             </label>
-            <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
+            <div className="flex gap-2">
+              <ExcelExport tableRef={contentToPrint} fileName="stock_report" />
+              <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
+            </div>
           </div>
           <div className="flex w-full justify-center p-5">
-          <div className="overflow-x-auto">
-            <div ref={contentToPrint} className="flex-1 p-5">
-              <div className="flex flex-col items-center pb-5"><h4 className="font-bold">PRODUCT STOCK</h4>
-                <h4><CurrentDate /></h4>
-              </div>
-              <table className="table table-zebra table-xs md:table-sm table-pin-rows">
-                <thead className="sticky top-16 bg-base-100">
-                  <tr>
-                    <th>SN</th>
-                    <th>PRODUCT</th>
-                    <th>COST PRICE</th>
-                    <th>QUANTITY</th>
-                    <th>SUB TOTAL</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredProducts?.map((product, index) => (
-                    <tr key={index}>
-                      <td>{index + 1}</td>
-                      <td>{product.productName}</td>
-                      <td>{Number(product.costPrice.toFixed(2)).toLocaleString('en-IN')}</td>
-                      <td>{product.remainingQty.toLocaleString('en-IN')}</td>
-                      <td>{Number((product.costPrice * product.remainingQty).toFixed(2)).toLocaleString('en-IN')}</td>
+            <div className="overflow-x-auto">
+              <div ref={contentToPrint} className="flex-1 p-5">
+                <div className="flex flex-col items-center pb-5"><h4 className="font-bold">PRODUCT STOCK</h4>
+                  <h4><CurrentDate /></h4>
+                </div>
+                <table className="table table-zebra table-xs md:table-sm table-pin-rows">
+                  <thead className="sticky top-16 bg-base-100">
+                    <tr>
+                      <th>SN</th>
+                      <th>PRODUCT</th>
+                      <th>COST PRICE</th>
+                      <th>QUANTITY</th>
+                      <th>SUB TOTAL</th>
                     </tr>
-                  ))}
-                </tbody>
-                <tfoot>
-                  <tr className="font-semibold text-lg">
-                    <td colSpan={2}></td>
-                    <td>TOTAL</td>
-                    <td>{totalQty.toLocaleString('en-IN')}</td>
-                    <td>{Number(totalValue.toFixed(2)).toLocaleString('en-IN')}</td>
-                  </tr>
-                </tfoot>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {filteredProducts?.map((product, index) => (
+                      <tr key={index}>
+                        <td>{index + 1}</td>
+                        <td>{product.productName}</td>
+                        <td>{Number(product.costPrice.toFixed(2)).toLocaleString('en-IN')}</td>
+                        <td>{product.remainingQty.toLocaleString('en-IN')}</td>
+                        <td>{Number((product.costPrice * product.remainingQty).toFixed(2)).toLocaleString('en-IN')}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot>
+                    <tr className="font-semibold text-lg">
+                      <td colSpan={2}></td>
+                      <td>TOTAL</td>
+                      <td>{totalQty.toLocaleString('en-IN')}</td>
+                      <td>{Number(totalValue.toFixed(2)).toLocaleString('en-IN')}</td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
             </div>
           </div>
         </div>
