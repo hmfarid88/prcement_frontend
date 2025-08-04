@@ -72,7 +72,7 @@ const Page = () => {
                                 <div className="flex flex-col items-center pb-5"><h4 className="font-bold">EMPLOYEE LIST</h4>
                                     <h4><CurrentDate /></h4>
                                 </div>
-                                <table className="table table-xs md:table-sm table-pin-rows capitalize">
+                                <table className="table table-xs md:table-sm table-pin-rows capitalize table-zebra">
                                     <thead className="sticky top-16 bg-base-100">
                                         <tr>
                                             <th>SN</th>

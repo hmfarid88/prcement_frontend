@@ -13,6 +13,7 @@
     "@next/mdx": "^14.2.4",
     "@reduxjs/toolkit": "^2.2.2",
     "dotenv": "^16.4.5",
+    "file-saver": "^2.0.5",
     "jose": "^5.2.4",
     "next": "^14.2.13",
     "next-themes": "^0.3.0",
@@ -27,9 +28,11 @@
     "redux-persist": "^6.0.0",
     "sale_inventory": "file:",
     "sweetalert": "^2.1.2",
-    "uid": "^2.0.2"
+    "uid": "^2.0.2",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "@types/file-saver": "^2.0.7",
     "@types/node": "^20",
     "@types/react": "^18.2.79",
     "@types/react-dom": "^18.2.25",

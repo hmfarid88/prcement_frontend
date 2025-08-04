@@ -83,7 +83,7 @@ const Page = () => {
                                 <h4 className="font-bold capitalize">Retailer : {retailerName}</h4>
                                 <h4><CurrentDate /></h4>
                             </div>
-                            <table className="table table-xs md:table-sm table-pin-rows">
+                            <table className="table table-xs md:table-sm table-pin-rows table-zebra">
                                 <thead className="sticky top-16 bg-base-100">
                                     <tr>
                                         <th>SN</th>

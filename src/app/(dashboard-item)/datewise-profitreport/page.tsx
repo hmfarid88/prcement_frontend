@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useAppSelector } from "@/app/store";
 import Print from "@/app/components/Print";
 import { useSearchParams } from "next/navigation";
+import ExcelExport from "@/app/components/ExcellGeneration";
 
 type Product = {
     productName: string;
@@ -66,13 +67,17 @@ const Page = () => {
                             <path fillRule="evenodd" d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z" clipRule="evenodd" />
                         </svg>
                     </label>
+                    <div className="flex gap-2">
+                    <ExcelExport tableRef={contentToPrint} fileName="datewise_profit_report" />
                     <Print contentRef={contentToPrint} />
+                    </div>
+                 
                 </div>
                 <div className="flex w-full justify-center">
                     <div className="overflow-x-auto">
                         <div ref={contentToPrint} className="flex-1 p-5">
                             <div className="flex flex-col items-center pb-5"><h4 className="font-bold">PROFIT REPORT</h4>{startDate} TO {endDate}</div>
-                            <table className="table table-xs md:table-sm table-pin-rows">
+                            <table className="table table-xs md:table-sm table-pin-rows table-zebra">
                                 <thead className="sticky top-16 bg-base-100">
                                     <tr>
                                         <th>SN</th>
