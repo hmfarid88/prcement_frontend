@@ -59,11 +59,11 @@ const Page = () => {
 
     useEffect(() => {
         const filtered = allProducts.filter(product =>
-            (product.category.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
-            (product.areaName.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
-            (product.retailerName.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
-            (product.retailerCode.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
-            (product.salesPerson.toLowerCase().includes(filterCriteria.toLowerCase()) || '')
+            (product.category?.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
+            (product.areaName?.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
+            (product.retailerName?.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
+            (product.retailerCode?.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
+            (product.salesPerson?.toLowerCase().includes(filterCriteria.toLowerCase()) || '')
         );
         setFilteredProducts(filtered);
     }, [filterCriteria, allProducts]);

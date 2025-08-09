@@ -58,7 +58,7 @@ const Page = () => {
   const totalQty = filteredProducts.reduce((total, product) => {
     return total + product.remainingQty;
   }, 0);
-  
+
   const groupedByWarehouse = filteredProducts.reduce((acc, product) => {
     if (!acc[product.warehouse]) acc[product.warehouse] = [];
     acc[product.warehouse].push(product);
@@ -107,7 +107,7 @@ const Page = () => {
                       return products.map((product, idx) => (
                         <tr key={`${warehouse}-${idx}`}>
                           <td>{idx + 1}</td>
-                          <td className="capitalize">{product.warehouse}</td>
+                          <td className="capitalize">{product?.warehouse}</td>
                           <td className="capitalize">{product.productName}</td>
                           <td>{Number(product.costPrice.toFixed(2)).toLocaleString('en-IN')}</td>
                           <td>{product.remainingQty.toLocaleString('en-IN')}</td>
