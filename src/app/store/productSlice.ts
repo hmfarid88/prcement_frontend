@@ -9,6 +9,7 @@ interface Product {
     costPrice: string;
     purchasePrice: string;
     productQty: string;
+    warehouse: string;
     username: string;
     status: string
 }

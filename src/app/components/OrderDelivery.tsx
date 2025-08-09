@@ -112,6 +112,7 @@ const OrderDelivery = () => {
             setSaleRate("")
             setOrderQty("")
             setTruckNo("")
+            setRentAmount("")
         } catch (error) {
             console.error("Error submitting order:", error);
             toast.error("An error occurred while submitting the order.");
@@ -235,7 +236,7 @@ const OrderDelivery = () => {
                 .then(data => {
                     const transformedData = data.map((product: any) => ({
                         value: product.productName,
-                        label: `${product.productName} (${product.remainingQty}, ${product.costPrice.toFixed(2)})`
+                        label: `${product.warehouse}, ${product.productName} (${product.remainingQty}, ${product.costPrice.toFixed(2)})`
                     }));
                     setItemOption(transformedData);
                 })

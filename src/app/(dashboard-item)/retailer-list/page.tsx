@@ -6,6 +6,7 @@ import { useReactToPrint } from 'react-to-print';
 import CurrentDate from "@/app/components/CurrentDate";
 
 type Product = {
+    category: string;
     retailerName: string;
     retailerCode: string;
     thanaName: string;
@@ -43,6 +44,7 @@ const Page = () => {
 
   useEffect(() => {
     const filtered = allProducts.filter(product =>
+      (product.category?.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
       (product.retailerName.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
       (product.retailerCode.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
       (product.thanaName.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
@@ -82,6 +84,7 @@ const Page = () => {
                 <thead className="sticky top-16 bg-base-100">
                   <tr>
                     <th>SN</th>
+                    <th>CATEGORY</th>
                     <th>RETAILER NAME</th>
                     <th>RETAILER CODE</th>
                     <th>THANA NAME</th>
@@ -96,6 +99,7 @@ const Page = () => {
                   {filteredProducts?.map((product, index) => (
                     <tr key={index}>
                       <td>{index + 1}</td>
+                      <td>{product?.category}</td>
                       <td>{product.retailerName}</td>
                       <td>{product.retailerCode}</td>
                       <td>{product.thanaName}</td>

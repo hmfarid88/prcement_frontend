@@ -12,6 +12,7 @@ const Page = () => {
     const [pending, setPending] = useState(false);
 
     const [id, setId] = useState("");
+    const [category, setCategory] = useState("");
     const [retailerName, setRetailerName] = useState("");
     const [retailerCode, setRetailerCode] = useState("");
     const [thanaName, setThanaName] = useState("");
@@ -27,6 +28,7 @@ const Page = () => {
             .then(response => response.json())
             .then(data => {
                 setId(data.id);
+                setCategory(data.category);
                 setRetailerName(data.retailerName);
                 setRetailerCode(data.retailerCode);
                 setThanaName(data.thanaName);
@@ -42,7 +44,7 @@ const Page = () => {
 
     const handleUpdateSubmit = async (e: any) => {
         e.preventDefault();
-        if (!retailerName || !retailerCode || !thanaName || !zillaName || !areaName || !mobileNumber || !salesPerson || !status) {
+        if (!category ||!retailerName || !retailerCode || !thanaName || !zillaName || !areaName || !mobileNumber || !salesPerson || !status) {
             toast.warning("Item is empty !")
             return;
         }
@@ -53,7 +55,7 @@ const Page = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ retailerName, retailerCode, thanaName, zillaName, areaName, mobileNumber, salesPerson, status }),
+                body: JSON.stringify({category, retailerName, retailerCode, thanaName, zillaName, areaName, mobileNumber, salesPerson, status }),
             });
 
             if (!response.ok) {
@@ -115,7 +117,21 @@ const Page = () => {
     return (
         <div className='container-2xl min-h-screen pb-5'>
             <div className="flex flex-col w-full items-center justify-center p-2">
+                <label className="form-control w-full max-w-xs pt-2">
+                    <div className="label">
+                        <span className="label-text-alt">CATEGORY</span>
+                    </div>
+                    <div className="flex justify-between gap-2">
+                        <p className='capitalize w-[50%] p-2 bg-white text-black rounded-md'>{category}</p>
+                       <select className='select select-sm select-bordered bg-white text-black w-[50%]' onChange={(e: any) => { setCategory(e.target.value) }}>
+                                <option selected disabled>Select . . .</option>
+                                <option value="Pr Cement 1">Pr Cement 1</option>
+                                <option value="Pr Cement 2">Pr Cement 2</option>
+                                <option value="Pr Cement 3">Pr Cement 3</option>
 
+                            </select>
+                    </div>
+                </label>
                 <label className="form-control w-full max-w-xs pt-2">
                     <div className="label">
                         <span className="label-text-alt">RETAILER NAME</span>

@@ -8,6 +8,7 @@ import ExcelExport from "@/app/components/ExcellGeneration";
 
 type Product = {
 
+  warehouse: string;
   productName: string;
   costPrice: number;
   remainingQty: number;
@@ -40,6 +41,7 @@ const Page = () => {
 
   useEffect(() => {
     const filtered = allProducts.filter(product =>
+      (product.warehouse?.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
       (product.productName.toLowerCase().includes(filterCriteria.toLowerCase()) || '')
 
     );
@@ -56,6 +58,12 @@ const Page = () => {
   const totalQty = filteredProducts.reduce((total, product) => {
     return total + product.remainingQty;
   }, 0);
+  
+  const groupedByWarehouse = filteredProducts.reduce((acc, product) => {
+    if (!acc[product.warehouse]) acc[product.warehouse] = [];
+    acc[product.warehouse].push(product);
+    return acc;
+  }, {} as Record<string, Product[]>);
 
   return (
     <div className="container-2xl">
@@ -83,26 +91,47 @@ const Page = () => {
                   <thead className="sticky top-16 bg-base-100">
                     <tr>
                       <th>SN</th>
+                      <th>WAREHOUSE</th>
                       <th>PRODUCT</th>
                       <th>COST PRICE</th>
                       <th>QUANTITY</th>
                       <th>SUB TOTAL</th>
+                      <th>SUMMARY</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredProducts?.map((product, index) => (
-                      <tr key={index}>
-                        <td>{index + 1}</td>
-                        <td>{product.productName}</td>
-                        <td>{Number(product.costPrice.toFixed(2)).toLocaleString('en-IN')}</td>
-                        <td>{product.remainingQty.toLocaleString('en-IN')}</td>
-                        <td>{Number((product.costPrice * product.remainingQty).toFixed(2)).toLocaleString('en-IN')}</td>
-                      </tr>
-                    ))}
+                    {Object.entries(groupedByWarehouse).map(([warehouse, products]) => {
+                      const warehouseTotalValue = products.reduce((sum, p) => sum + (p.costPrice * p.remainingQty), 0);
+                      const warehouseTotalQty = products.reduce((sum, p) => sum + p.remainingQty, 0);
+
+                      return products.map((product, idx) => (
+                        <tr key={`${warehouse}-${idx}`}>
+                          <td>{idx + 1}</td>
+                          <td className="capitalize">{product.warehouse}</td>
+                          <td className="capitalize">{product.productName}</td>
+                          <td>{Number(product.costPrice.toFixed(2)).toLocaleString('en-IN')}</td>
+                          <td>{product.remainingQty.toLocaleString('en-IN')}</td>
+                          <td>{Number((product.costPrice * product.remainingQty).toFixed(2)).toLocaleString('en-IN')}</td>
+
+                          {/* Show total column only on the first row of this warehouse */}
+                          {idx === 0 && (
+                            <td rowSpan={products.length} className="bg-base-200 text-center">
+                              <div className="border border-slate-700 p-1">
+                                <div className="font-bold">{warehouse}</div>
+                                <div>Total Qty: {warehouseTotalQty.toLocaleString('en-IN')}</div>
+                                <div>Total Value: {Number(warehouseTotalValue.toFixed(2)).toLocaleString('en-IN')}</div>
+                              </div>
+                            </td>
+                          )}
+                        </tr>
+                      ));
+                    })}
                   </tbody>
+
+
                   <tfoot>
                     <tr className="font-semibold text-lg">
-                      <td colSpan={2}></td>
+                      <td colSpan={3}></td>
                       <td>TOTAL</td>
                       <td>{totalQty.toLocaleString('en-IN')}</td>
                       <td>{Number(totalValue.toFixed(2)).toLocaleString('en-IN')}</td>

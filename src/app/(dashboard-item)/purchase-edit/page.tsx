@@ -26,6 +26,7 @@ const Page = () => {
     }, []);
         const [date, setDate] = useState("");
         const [supplier, setSupplier] = useState("");
+        const [warehouse, setWarehouse] = useState("");
         const [productName, setProductName] = useState("");
         const [purchasePrice, setPurchasePrice] = useState("");
         const [productQty, setProductQty] = useState("");
@@ -38,6 +39,7 @@ const Page = () => {
             .then(data => {
                 setDate(data.date);
                 setSupplier(data.supplier);
+                setWarehouse(data.warehouse);
                 setProductName(data.productName);
                 setPurchasePrice(data.purchasePrice);
                 setProductQty(data.productQty);
@@ -49,7 +51,7 @@ const Page = () => {
 
     const handleUpdateSubmit = async (e: any) => {
         e.preventDefault();
-        if (!date || !supplier || !productName || !purchasePrice || !productQty) {
+        if (!date || !supplier || !productName || !purchasePrice || !productQty ||!warehouse) {
             toast.warning("Item is empty !")
             return;
         }
@@ -60,7 +62,7 @@ const Page = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ date, supplier, productName, purchasePrice, productQty }),
+                body: JSON.stringify({ date, supplier, productName, purchasePrice, productQty, warehouse }),
             });
 
             if (!response.ok) {
@@ -156,6 +158,21 @@ const Page = () => {
                         <p className='capitalize w-[50%] p-2 bg-white text-black rounded-md'>{supplier}</p>
                         <Select className="text-black w-[50%]" name="retailer" onChange={(selectedOption: any) => setSupplier(selectedOption.value)} options={supplierOption} />
                     </div>
+                </label>
+                <label className="form-control w-full max-w-xs pt-2">
+                    <div className="label">
+                        <span className="label-text-alt">WAREHOUSE</span>
+                    </div>
+                    <div className="flex justify-between gap-2">
+                        <p className='capitalize w-[50%] p-2 bg-white text-black rounded-md'>{warehouse}</p>
+                        <select className='select select-md select-bordered bg-white text-black w-[50%]' onChange={(e: any) => { setWarehouse(e.target.value) }}>
+                                <option selected disabled>Select . . .</option>
+                                <option value="Vabnatola Ghat">Vabnatola Ghat</option>
+                                <option value="Takerhat Ghat">Takerhat Ghat</option>
+                                <option value="Nariya Godawn">Nariya Godawn</option>
+                            </select>
+                    </div>
+                 
                 </label>
                 <label className="form-control w-full max-w-xs pt-2">
                     <div className="label">

@@ -10,6 +10,8 @@ import DateToDate from "@/app/components/DateToDate";
 import ExcelExport from "@/app/components/ExcellGeneration";
 
 type Product = {
+  category: string;
+  areaName: string;
   retailerName: string;
   retailerCode: string;
   salesPerson: string;
@@ -56,6 +58,8 @@ const Page = () => {
 
   useEffect(() => {
     const filtered = allProducts.filter(product =>
+      (product.category.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
+      (product.areaName.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
       (product.retailerName.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
       (product.retailerCode.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
       (product.salesPerson.toLowerCase().includes(filterCriteria.toLowerCase()) || '')
@@ -82,6 +86,22 @@ const Page = () => {
   const totalBalance = filteredProducts.reduce((total, product) => {
     return total + product.totalProductValue - product.totalPayment - product.totalCommission;
   }, 0);
+  // Calculate category-wise totals
+
+  const categoryTotals = filteredProducts.reduce((acc, product) => {
+    const balance = product.totalProductValue - product.totalPayment - product.totalCommission;
+    if (!acc[product.category]) {
+      acc[product.category] = { balance: 0 };
+    }
+    acc[product.category].balance += balance;
+    return acc;
+  }, {} as Record<string, { balance: number }>);
+
+  const groupedByCategory = filteredProducts.reduce((acc, product) => {
+    if (!acc[product.category]) acc[product.category] = [];
+    acc[product.category].push(product);
+    return acc;
+  }, {} as Record<string, Product[]>);
 
   return (
     <div className="container-2xl">
@@ -109,6 +129,8 @@ const Page = () => {
                 <thead className="sticky top-16 bg-base-100">
                   <tr>
                     <th>SN</th>
+                    <th>CATEGORY</th>
+                    <th>AREA NAME</th>
                     <th>RETAILER NAME</th>
                     <th>CODE</th>
                     <th>SALE PERSON</th>
@@ -119,29 +141,46 @@ const Page = () => {
                     <th>ACHIEVED</th>
                     <th>BALANCE</th>
                     <th>DETAILS</th>
+                    <th>SUMMARY</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredProducts?.map((product, index) => (
-                    <tr key={index}>
-                      <td>{index + 1}</td>
-                      <td className="uppercase">{product?.retailerName}</td>
-                      <td className="uppercase">{product?.retailerCode}</td>
-                      <td className="uppercase">{product?.salesPerson}</td>
-                      <td>{Number(product?.totalProductQty.toFixed(2)).toLocaleString('en-IN')}</td>
-                      <td>{Number(product?.totalProductValue.toFixed(2)).toLocaleString('en-IN')}</td>
-                      <td>{Number(product?.totalPayment.toFixed(2)).toLocaleString('en-IN')}</td>
-                      <td>{Number(product?.totalCommission.toFixed(2)).toLocaleString('en-IN')}</td>
-                      <td>{Number((product?.totalPayment * 100 / product?.totalProductValue).toFixed(2)).toLocaleString('en-IN')} %</td>
-                      <td>{Number((product?.totalProductValue - product?.totalPayment - product?.totalCommission).toFixed(2)).toLocaleString('en-IN')}</td>
-                      <td><button onClick={() => handleDetails(product?.retailerName)} className="btn btn-xs btn-info">Details</button></td>
-
-                    </tr>
-                  ))}
+                  {Object.entries(groupedByCategory).map(([category, products]) => {
+                    return products.map((product, idx) => (
+                      <tr key={`${category}-${idx}`}>
+                        <td>{idx + 1}</td>
+                        <td className="uppercase">{product?.category}</td>
+                        <td className="uppercase">{product?.areaName}</td>
+                        <td className="uppercase">{product?.retailerName}</td>
+                        <td className="uppercase">{product?.retailerCode}</td>
+                        <td className="uppercase">{product?.salesPerson}</td>
+                        <td>{Number(product?.totalProductQty.toFixed(2)).toLocaleString('en-IN')}</td>
+                        <td>{Number(product?.totalProductValue.toFixed(2)).toLocaleString('en-IN')}</td>
+                        <td>{Number(product?.totalPayment.toFixed(2)).toLocaleString('en-IN')}</td>
+                        <td>{Number(product?.totalCommission.toFixed(2)).toLocaleString('en-IN')}</td>
+                        <td>{Number((product?.totalPayment * 100 / product?.totalProductValue).toFixed(2)).toLocaleString('en-IN')} %</td>
+                        <td>{Number((product?.totalProductValue - product?.totalPayment - product?.totalCommission).toFixed(2)).toLocaleString('en-IN')}</td>
+                        <td>
+                          <button onClick={() => handleDetails(product?.retailerName)} className="btn btn-xs btn-info">Details</button>
+                        </td>
+                        {idx === 0 && (
+                          <td rowSpan={products.length} className="bg-base-200 text-center">
+                            <div className="border border-slate-700">
+                              <div className="font-bold">{category}</div>
+                              <div>
+                                Total Due: {Number(categoryTotals[category]?.balance.toFixed(2)).toLocaleString('en-IN')}
+                              </div>
+                            </div>
+                          </td>
+                        )}
+                      </tr>
+                    ));
+                  })}
                 </tbody>
+
                 <tfoot>
                   <tr className="font-semibold text-lg">
-                    <td colSpan={3}></td>
+                    <td colSpan={5}></td>
                     <td>TOTAL</td>
                     <td>{totalQty.toLocaleString('en-IN')}</td>
                     <td>{totalValue.toLocaleString('en-IN')}</td>

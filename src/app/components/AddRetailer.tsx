@@ -9,6 +9,7 @@ const AddRetailer = () => {
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
     const router = useRouter();
     const [pending, setPending] = useState(false);
+    const [category, setCategory] = useState("");
     const [retailerName, setRetailerName] = useState("");
     const [retailerCode, setRetailerCode] = useState("");
     const [thanaName, setThanaName] = useState("");
@@ -28,7 +29,7 @@ const AddRetailer = () => {
     }
     const handleRetailerSubmit = async (e: any) => {
         e.preventDefault();
-        if (!retailerName || !retailerCode || !thanaName || !zillaName || !areaName || !mobileNumber || !salesPerson) {
+        if (!category ||!retailerName || !retailerCode || !thanaName || !zillaName || !areaName || !mobileNumber || !salesPerson) {
             toast.warning("Item is empty !")
             return;
         }
@@ -39,7 +40,7 @@ const AddRetailer = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ retailerName, retailerCode, thanaName, zillaName, areaName, mobileNumber, salesPerson, status: 'Active' }),
+                body: JSON.stringify({ category, retailerName, retailerCode, thanaName, zillaName, areaName, mobileNumber, salesPerson, status: 'Active' }),
             });
 
             if (!response.ok) {
@@ -102,6 +103,18 @@ const AddRetailer = () => {
                     <div className="flex w-full items-end justify-end">
                         <a href="#retailer_edit" className="btn btn-square btn-ghost"><FaRegEdit size={24} /></a>
                     </div>
+                    <label className="form-control w-full max-w-xs">
+                            <div className="label">
+                                <span className="label-text-alt">CATEGORY</span>
+                            </div>
+                            <select className='select select-sm select-bordered bg-white text-black' onChange={(e: any) => { setCategory(e.target.value) }}>
+                                <option selected disabled>Select . . .</option>
+                                <option value="Pr Cement 1">Pr Cement 1</option>
+                                <option value="Pr Cement 2">Pr Cement 2</option>
+                                <option value="Pr Cement 3">Pr Cement 3</option>
+
+                            </select>
+                        </label>
                     <label className="form-control w-full max-w-xs pt-2">
                         <div className="label">
                             <span className="label-text-alt">RETAILER NAME</span>

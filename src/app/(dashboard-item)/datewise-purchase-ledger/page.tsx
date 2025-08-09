@@ -9,6 +9,7 @@ import ExcelExport from "@/app/components/ExcellGeneration";
 type Product = {
     date: string;
     supplier: string;
+    warehouse: string;
     productName: string;
     status: string;
     dpRate: number;
@@ -51,6 +52,7 @@ useEffect(() => {
                 const filtered = allProducts.filter(product =>
                   searchWords.every(word =>
                     (product.date?.toLowerCase().includes(word) || '') ||
+                    (product.warehouse?.toLowerCase().includes(word) || '') ||
                     (product.productName?.toLowerCase().includes(word) || '') ||
                     (product.supplier?.toLowerCase().includes(word) || '')
                    
@@ -93,6 +95,7 @@ useEffect(() => {
                                         <th>SN</th>
                                         <th>DATE</th>
                                         <th>SUPPLIER NAME</th>
+                                        <th>WAREHOUSE</th>
                                         <th>PRODUCT</th>
                                         <th>P.PRICE</th>
                                         <th>AV.PRICE</th>
@@ -107,8 +110,9 @@ useEffect(() => {
                                         <tr key={index} className="capitalize">
                                             <td>{index + 1}</td>
                                             <td>{product.date}</td>
-                                            <td>{product.supplier}</td>
-                                            <td>{product.productName}</td>
+                                            <td className="capitalize">{product.supplier}</td>
+                                            <td className="capitalize">{product.warehouse}</td>
+                                            <td className="capitalize">{product.productName}</td>
                                             <td>{Number(product.purchasePrice.toFixed(2)).toLocaleString('en-IN')}</td>
                                             <td>{Number(product.costPrice.toFixed(2)).toLocaleString('en-IN')}</td>
                                             <td>{product.status}</td>
@@ -119,7 +123,7 @@ useEffect(() => {
                                 </tbody>
                                 <tfoot>
                                     <tr className="font-semibold text-lg">
-                                        <td colSpan={6}></td>
+                                        <td colSpan={7}></td>
                                         <td>TOTAL</td>
                                         <td>{Number(totalQty.toFixed(2)).toLocaleString('en-IN')}</td>
                                     </tr>

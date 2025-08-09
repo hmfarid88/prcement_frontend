@@ -30,6 +30,7 @@ const ProductStock = () => {
     }, []);
 
     const [stockDate, setStockDate] = useState("");
+    const [warehouse, setWarehouse] = useState("");
     const [supplier, setSupplier] = useState("");
     const [productId, setProductId] = useState("");
     const [productName, setProductName] = useState("");
@@ -147,14 +148,14 @@ const ProductStock = () => {
     }
     const handleProductStock = (e: any) => {
         e.preventDefault();
-        if (!stockDate || !productName || !supplier || !productQty || ! costPrice) {
+        if (!stockDate || !productName || !supplier || !productQty || !costPrice ||!warehouse) {
             toast.warning("Item is empty !");
             return;
         }
-        const product = { id: uid(), date: stockDate, supplier, productName, costPrice, purchasePrice: costPrice, productQty, username, status: 'stored' }
+        const product = { id: uid(), date: stockDate, supplier, productName, costPrice, purchasePrice: costPrice, productQty, warehouse, username, status: 'stored' }
         dispatch(addProducts(product));
-         setProductQty("");
-         setCostPrice("");
+        setProductQty("");
+        setCostPrice("");
 
     }
     const handleDeleteProduct = (id: any) => {
@@ -239,6 +240,7 @@ const ProductStock = () => {
                             </div>
                             <input type="date" name="date" onChange={(e: any) => setStockDate(e.target.value)} max={maxDate} value={stockDate} className="border rounded-md p-2 mt-1.5 bg-white text-black  w-full max-w-xs h-[40px]" />
                         </label>
+
                         <label className="form-control w-full max-w-xs">
                             <div className="label">
                                 <span className="label-text-alt">SUPPLIER NAME</span>
@@ -268,7 +270,17 @@ const ProductStock = () => {
                             </div>
                             <input type='number' className='input input-md h-[40px] bg-white text-black border rounded-md border-slate-300' value={costPrice} onChange={(e) => setCostPrice(e.target.value)} placeholder='00' />
                         </label>
-
+                        <label className="form-control w-full max-w-xs">
+                            <div className="label">
+                                <span className="label-text-alt">WAREHOUSE</span>
+                            </div>
+                            <select className='select select-sm select-bordered bg-white text-black' onChange={(e: any) => { setWarehouse(e.target.value) }}>
+                                <option selected disabled>Select . . .</option>
+                                <option value="Vabnatola Ghat">Vabnatola Ghat</option>
+                                <option value="Takerhat Ghat">Takerhat Ghat</option>
+                                <option value="Nariya Godawn">Nariya Godawn</option>
+                            </select>
+                        </label>
 
                         <label className="form-control w-full max-w-xs pt-5">
                             <button onClick={handleProductStock} className="btn btn-success rounded-md btn-sm h-[40px] w-full max-w-xs" >ADD PRODUCT</button>
@@ -288,6 +300,7 @@ const ProductStock = () => {
                                         <th>Products</th>
                                         <th>Qty</th>
                                         <th>Rate</th>
+                                        <th>Warehouse</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -300,6 +313,7 @@ const ProductStock = () => {
                                             <td>{item.productName}</td>
                                             <td>{item.productQty}</td>
                                             <td>{item.costPrice}</td>
+                                            <td>{item.warehouse}</td>
                                             <td>
                                                 <button onClick={() => {
                                                     handleDeleteProduct(item.id);
