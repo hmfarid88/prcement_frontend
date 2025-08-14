@@ -117,8 +117,7 @@ const Expense = () => {
                   headers: {
                       'Content-Type': 'application/json',
                   },
-  
-              });
+                });
   
               if (!response.ok) {
                   const error = await response.json();
