@@ -15,6 +15,7 @@ type Product = {
     productValue: number;
     payment: number;
     commission: number;
+    balance: number;
 };
 
 
@@ -32,35 +33,41 @@ const Page = () => {
     const handlePrint = useReactToPrint({
         content: () => contentToPrint.current,
     });
+
+    const [page, setPage] = useState(0);
+    const [size] = useState(30); // rows per page
+    const [totalPages, setTotalPages] = useState(0);
+
     const [filterCriteria, setFilterCriteria] = useState('');
     const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
     const [allProducts, setAllProducts] = useState<Product[]>([]);
 
 
     useEffect(() => {
-        fetch(`${apiBaseUrl}/retailer/datewise-retailer-details?retailerName=${encodeURIComponent(retailerName ?? "")}&username=${encodeURIComponent(username ?? "")}&startDate=${startDate}&endDate=${endDate}`)
+        fetch(`${apiBaseUrl}/retailer/datewise-retailer-details?retailerName=${encodeURIComponent(retailerName ?? "")}&username=${encodeURIComponent(username ?? "")}&page=${page}&size=${size}&startDate=${startDate}&endDate=${endDate}`)
             .then(response => response.json())
             .then(data => {
-                setAllProducts(data);
-                setFilteredProducts(data);
+                setAllProducts(data.content || []);
+                setFilteredProducts(data.content || []);
+                setTotalPages(data.totalPages || 0);
             })
             .catch(error => console.error('Error fetching products:', error));
-    }, [apiBaseUrl, username, retailerName, startDate, endDate]);
-useEffect(() => {
-                const searchWords = filterCriteria.toLowerCase().split(" ");
-                const filtered = allProducts.filter(product =>
-                  searchWords.every(word =>
-                    (product.date?.toLowerCase().includes(word) || '') ||
-                    (product.note?.toLowerCase().includes(word) || '') ||
-                    (product.productName?.toLowerCase().includes(word) || '')
-                  
-               )
-                );
-              
-                setFilteredProducts(filtered);
-              }, [filterCriteria, allProducts]);
+    }, [apiBaseUrl, username, retailerName, startDate, endDate, page, size]);
 
-  
+    useEffect(() => {
+        const searchWords = filterCriteria.toLowerCase().split(" ");
+        const filtered = allProducts.filter(product =>
+            searchWords.every(word =>
+                (product.date?.toLowerCase().includes(word) || '') ||
+                (product.note?.toLowerCase().includes(word) || '') ||
+                (product.productName?.toLowerCase().includes(word) || '')
+
+            )
+        );
+
+        setFilteredProducts(filtered);
+    }, [filterCriteria, allProducts]);
+
     const handleFilterChange = (e: any) => {
         setFilterCriteria(e.target.value);
     };
@@ -81,8 +88,8 @@ useEffect(() => {
                         </svg>
                     </label>
                     <div className="flex gap-2">
-                    <ExcelExport tableRef={contentToPrint} fileName="datewise_retail_details" />
-                    <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
+                        <ExcelExport tableRef={contentToPrint} fileName="datewise_retail_details" />
+                        <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
                     </div>
                 </div>
                 <div className="flex w-full justify-center">
@@ -123,7 +130,7 @@ useEffect(() => {
                                                 <td>{Number(product?.productValue.toFixed(2)).toLocaleString('en-IN')}</td>
                                                 <td>{Number(product?.payment.toFixed(2)).toLocaleString('en-IN')}</td>
                                                 <td>{Number(product?.commission.toFixed(2)).toLocaleString('en-IN')}</td>
-                                                <td>{Number(cumulativeBalance.toFixed(2)).toLocaleString('en-IN')}</td>
+                                                <td>{Number(product?.balance.toFixed(2)).toLocaleString('en-IN')}</td>
 
                                             </tr>
                                         );
@@ -143,7 +150,33 @@ useEffect(() => {
                         </div>
                     </div>
                 </div>
+                <div className="flex justify-center mt-4 gap-2">
+                    <button
+                        className="btn btn-sm"
+                        disabled={page === 0}
+                        onClick={() => setPage(prev => Math.max(prev - 1, 0))}
+                    >
+                        Prev
+                    </button>
 
+                    {Array.from({ length: totalPages }, (_, i) => (
+                        <button
+                            key={i}
+                            className={`btn btn-sm ${i === page ? "btn-active" : ""}`}
+                            onClick={() => setPage(i)}
+                        >
+                            {i + 1}
+                        </button>
+                    ))}
+
+                    <button
+                        className="btn btn-sm"
+                        disabled={page + 1 >= totalPages}
+                        onClick={() => setPage(prev => Math.min(prev + 1, totalPages - 1))}
+                    >
+                        Next
+                    </button>
+                </div>
             </div>
         </div>
     )

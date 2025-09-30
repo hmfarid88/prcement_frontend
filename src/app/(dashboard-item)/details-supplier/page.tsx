@@ -13,6 +13,7 @@ type Product = {
     productValue: number;
     payment: number;
     commission: number;
+    note: string;
 };
 
 
@@ -105,7 +106,7 @@ const Page = () => {
                                                 <td>{Number(product?.productQty.toFixed(2)).toLocaleString('en-IN')}</td>
                                                 <td>{Number(product?.productValue.toFixed(2)).toLocaleString('en-IN')}</td>
                                                 <td>{Number(product?.payment.toFixed(2)).toLocaleString('en-IN')}</td>
-                                                <td>{Number(product?.commission.toFixed(2)).toLocaleString('en-IN')}</td>
+                                                <td className="w-24">{Number(product?.commission.toFixed(2)).toLocaleString('en-IN')} ({(product?.note)})</td>
                                                 <td>{Number(cumulativeBalance.toFixed(2)).toLocaleString('en-IN')}</td>
 
                                             </tr>
