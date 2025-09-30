@@ -7,7 +7,7 @@ export default function Home() {
 
   return (
     <main>
-      <div className="container mx-auto">
+      <div className="container min-h-[calc(100vh-228px)]">
         <div className="flex">
           <HomeSummary />
         </div>
