@@ -122,10 +122,10 @@ const Page = () => {
         </div>
         <div className="flex w-full justify-center">
           <div className="overflow-x-auto">
-            <div className="flex justify-end p-5">
+            <div className="flex w-full justify-end p-5">
               <button
                 onClick={() => setShowDetails(prev => !prev)}
-                className="btn btn-sm btn-warning mb-2"
+                className="btn btn-sm btn-info mb-2"
               >
                 {showDetails ? "Hide Details" : "Show Details"}
               </button>
