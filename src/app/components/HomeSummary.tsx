@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAppSelector } from '../store';
 import { HiCurrencyBangladeshi } from "react-icons/hi";
-import { FcShipped, FcOrganization, FcShop, FcBullish  } from "react-icons/fc";
+import { FcShipped, FcOrganization, FcShop, FcBullish } from "react-icons/fc";
 
 const HomeSummary = () => {
   const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -36,26 +36,43 @@ const HomeSummary = () => {
     { id: 5, title: "Cash Balance" }
   ];
 
+  // useEffect(() => {
+  //   fetch(`${apiBaseUrl}/api/getProductStock?username=${username}`)
+  //     .then(response => response.json())
+  //     .then(data => {
+  //       // Create an object to store remaining quantities by productName
+  //       const productStockByName = data.reduce((acc: { [key: string]: number }, product: { productName: string; remainingQty: number; }) => {
+  //         // Accumulate the remainingQty for each productName
+  //         if (acc[product.productName]) {
+  //           acc[product.productName] += product.remainingQty;
+  //         } else {
+  //           acc[product.productName] = product.remainingQty;
+  //         }
+  //         return acc;
+  //       }, {});
+
+  //       // Set the state with the grouped data
+  //       setProductStock(productStockByName);
+  //     })
+  //     .catch(error => console.error('Error fetching products:', error));
+  // }, [apiBaseUrl, username]);
+
   useEffect(() => {
     fetch(`${apiBaseUrl}/api/getProductStock?username=${username}`)
       .then(response => response.json())
       .then(data => {
-        // Create an object to store remaining quantities by productName
-        const productStockByName = data.reduce((acc: { [key: string]: number }, product: { productName: string; remainingQty: number; }) => {
-          // Accumulate the remainingQty for each productName
-          if (acc[product.productName]) {
-            acc[product.productName] += product.remainingQty;
-          } else {
-            acc[product.productName] = product.remainingQty;
-          }
-          return acc;
-        }, {});
+        // Calculate total remainingQty across all products
+        const totalRemainingQty = data.reduce(
+          (sum: number, product: { remainingQty: number }) => sum + product.remainingQty,
+          0
+        );
 
-        // Set the state with the grouped data
-        setProductStock(productStockByName);
+        // Set the total value (instead of product-wise)
+        setProductStock(totalRemainingQty);
       })
       .catch(error => console.error('Error fetching products:', error));
   }, [apiBaseUrl, username]);
+
 
   useEffect(() => {
     fetch(`${apiBaseUrl}/api/getTotalSoldToday`)
@@ -94,7 +111,7 @@ const HomeSummary = () => {
       .catch(error => console.error('Error fetching products:', error));
   }, [apiBaseUrl]);
 
-   
+
   useEffect(() => {
     fetch(`${apiBaseUrl}/paymentApi/payments/today?username=${username}&date=${date}`)
       .then(response => response.json())
@@ -119,7 +136,7 @@ const HomeSummary = () => {
       .catch(error => console.error('Error fetching data:', error));
   }, [apiBaseUrl, date, username]);
 
- 
+
   const [netSumAmount, setNetSumAmount] = useState(0);
   useEffect(() => {
     fetch(`${apiBaseUrl}/paymentApi/net-sum-before-today?username=${username}&date=${date}`)
@@ -135,14 +152,22 @@ const HomeSummary = () => {
           {item.title === "Product Stock" ? (
             <div className='flex flex-col items-center justify-center'>
               <p> {item.title}</p><FcOrganization size={32} />
-              <div className='text-left'>
+              {/* <div className='text-left'>
                 {Object.entries(productStock).map(([productName, remainingQty]) => (
                   <p key={productName} className='flex justify-between text-sm'>
                     <span>{productName}: </span>
                     <span className='font-bold'> {remainingQty.toLocaleString('en-IN')}</span>
                   </p>
                 ))}
+              </div> */}
+              <div className='text-left p-2'>
+                <p className='flex justify-between text-sm'>
+                  <span className='font-bold'>
+                    {productStock?.toLocaleString('en-IN')} Bag
+                  </span>
+                </p>
               </div>
+
             </div>
           ) : item.title === "Today's Delivery" ? (
             <div className='flex flex-col items-center justify-center'>
@@ -157,7 +182,7 @@ const HomeSummary = () => {
           ) : item.title === "Achieve" ? (
             <div className='flex flex-col items-center justify-center'>
               <p>{item.title}</p><FcBullish size={32} />
-              <p className='flex text-lg font-bold gap-2'> {Number((totalCollection*100/totalDistValue).toFixed(2))} %</p>
+              <p className='flex text-lg font-bold gap-2'> {Number((totalCollection * 100 / totalDistValue).toFixed(2))} %</p>
             </div>
           ) : item.title === "Cash Balance" ? (
             <div className='flex flex-col items-center justify-center'>
