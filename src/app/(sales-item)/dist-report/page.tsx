@@ -4,6 +4,7 @@ import { useAppSelector } from "@/app/store";
 import Print from "@/app/components/Print";
 import CurrentMonthYear from "@/app/components/CurrentMonthYear";
 import DateToDate from "@/app/components/DateToDate";
+import ExcelExport from "@/app/components/ExcellGeneration";
 
 type Product = {
   date: string;
@@ -40,20 +41,20 @@ const Page = () => {
   }, [apiBaseUrl, username]);
 
   useEffect(() => {
-        const searchWords = filterCriteria.toLowerCase().split(" ");
-        const filtered = allProducts.filter(product =>
-            searchWords.every(word =>
-                (product.customer?.toLowerCase().includes(word) || '') ||
-                (product.note?.toLowerCase().includes(word) || '') ||
-                (product.date?.toLowerCase().includes(word) || '') ||
-                (product.productName?.toLowerCase().includes(word) || '') ||
-                (product.invoiceNo?.toLowerCase().includes(word) || '')
-            )
-        );
+    const searchWords = filterCriteria.toLowerCase().split(" ");
+    const filtered = allProducts.filter(product =>
+      searchWords.every(word =>
+        (product.customer?.toLowerCase().includes(word) || '') ||
+        (product.note?.toLowerCase().includes(word) || '') ||
+        (product.date?.toLowerCase().includes(word) || '') ||
+        (product.productName?.toLowerCase().includes(word) || '') ||
+        (product.invoiceNo?.toLowerCase().includes(word) || '')
+      )
+    );
 
-        setFilteredProducts(filtered);
-    }, [filterCriteria, allProducts]);
-  
+    setFilteredProducts(filtered);
+  }, [filterCriteria, allProducts]);
+
   const handleFilterChange = (e: any) => {
     setFilterCriteria(e.target.value);
   };
@@ -74,7 +75,11 @@ const Page = () => {
               <path fillRule="evenodd" d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z" clipRule="evenodd" />
             </svg>
           </label>
-          <Print contentRef={contentToPrint} />
+          <div className="flex gap-2">
+            <ExcelExport tableRef={contentToPrint} fileName="delivery_report" />
+            <Print contentRef={contentToPrint} />
+          </div>
+
         </div>
         <div className="flex w-full justify-center">
           <div className="overflow-x-auto">
