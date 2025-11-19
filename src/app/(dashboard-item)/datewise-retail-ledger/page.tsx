@@ -9,14 +9,16 @@ import ExcelExport from "@/app/components/ExcellGeneration";
 
 type Product = {
     category: string;
-    areaName: string;
-    retailerName: string;
-    retailerCode: string;
-    salesPerson: string;
-    totalProductQty: number;
-    totalProductValue: number;
-    totalPayment: number;
-    totalCommission: number;
+    debit:number;
+    credit:number;
+    // areaName: string;
+    // retailerName: string;
+    // retailerCode: string;
+    // salesPerson: string;
+    // totalProductQty: number;
+    // totalProductValue: number;
+    // totalPayment: number;
+    // totalCommission: number;
 };
 
 
@@ -33,7 +35,7 @@ const Page = () => {
     const handlePrint = useReactToPrint({
         content: () => contentToPrint.current,
     });
-    const [showDetails, setShowDetails] = useState(false);
+    // const [showDetails, setShowDetails] = useState(false);
     const [filterCriteria, setFilterCriteria] = useState('');
     const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
     const [allProducts, setAllProducts] = useState<Product[]>([]);
@@ -49,7 +51,7 @@ const Page = () => {
     }
 
     useEffect(() => {
-        fetch(`${apiBaseUrl}/retailer/datewiseRetailerBalance?startDate=${newstartDate}&endDate=${newendDate}`)
+        fetch(`${apiBaseUrl}/retailer/datewiseCategoryRetailerBalance?startDate=${newstartDate}&endDate=${newendDate}`)
             .then(response => response.json())
             .then(data => {
                 setAllProducts(data);
@@ -61,11 +63,11 @@ const Page = () => {
 
     useEffect(() => {
         const filtered = allProducts.filter(product =>
-            (product.category?.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
-            (product.areaName?.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
-            (product.retailerName?.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
-            (product.retailerCode?.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
-            (product.salesPerson?.toLowerCase().includes(filterCriteria.toLowerCase()) || '')
+            (product.category?.toLowerCase().includes(filterCriteria.toLowerCase()) || '')
+            // (product.areaName?.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
+            // (product.retailerName?.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
+            // (product.retailerCode?.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
+            // (product.salesPerson?.toLowerCase().includes(filterCriteria.toLowerCase()) || '')
         );
         setFilteredProducts(filtered);
     }, [filterCriteria, allProducts]);
@@ -74,36 +76,42 @@ const Page = () => {
         setFilterCriteria(e.target.value);
     };
 
-    const totalQty = filteredProducts.reduce((total, product) => {
-        return total + product.totalProductQty;
-    }, 0);
-    const totalValue = filteredProducts.reduce((total, product) => {
-        return total + product.totalProductValue;
-    }, 0);
-    const totalPayment = filteredProducts.reduce((total, product) => {
-        return total + product.totalPayment;
-    }, 0);
-    const totalCommission = filteredProducts.reduce((total, product) => {
-        return total + product.totalCommission;
-    }, 0);
-    const totalBalance = filteredProducts.reduce((total, product) => {
-        return total + product.totalProductValue - product.totalPayment - product.totalCommission;
-    }, 0);
-    const categoryTotals = filteredProducts.reduce((acc, product) => {
-        const balance = product.totalProductValue - product.totalPayment - product.totalCommission;
-        if (!acc[product.category]) {
-            acc[product.category] = { balance: 0 };
-        }
-        acc[product.category].balance += balance;
-        return acc;
-    }, {} as Record<string, { balance: number }>);
+    // const totalQty = filteredProducts.reduce((total, product) => {
+    //     return total + product.totalProductQty;
+    // }, 0);
+    // const totalValue = filteredProducts.reduce((total, product) => {
+    //     return total + product.totalProductValue;
+    // }, 0);
+    // const totalPayment = filteredProducts.reduce((total, product) => {
+    //     return total + product.totalPayment;
+    // }, 0);
+    // const totalCommission = filteredProducts.reduce((total, product) => {
+    //     return total + product.totalCommission;
+    // }, 0);
+    // const totalBalance = filteredProducts.reduce((total, product) => {
+    //     return total + product.totalProductValue - product.totalPayment - product.totalCommission;
+    // }, 0);
+    // const categoryTotals = filteredProducts.reduce((acc, product) => {
+    //     const balance = product.totalProductValue - product.totalPayment - product.totalCommission;
+    //     if (!acc[product.category]) {
+    //         acc[product.category] = { balance: 0 };
+    //     }
+    //     acc[product.category].balance += balance;
+    //     return acc;
+    // }, {} as Record<string, { balance: number }>);
 
-    const groupedByCategory = filteredProducts.reduce((acc, product) => {
-        if (!acc[product.category]) acc[product.category] = [];
-        acc[product.category].push(product);
-        return acc;
-    }, {} as Record<string, Product[]>);
+    // const groupedByCategory = filteredProducts.reduce((acc, product) => {
+    //     if (!acc[product.category]) acc[product.category] = [];
+    //     acc[product.category].push(product);
+    //     return acc;
+    // }, {} as Record<string, Product[]>);
+ const totalDebit = filteredProducts.reduce((total, product) => {
+    return total + product.debit;
+  }, 0);
 
+  const totalCredit = filteredProducts.reduce((total, product) => {
+    return total + product.credit;
+  }, 0);
     return (
         <div className="container-2xl">
             <div className="flex flex-col w-full min-h-[calc(100vh-228px)] p-4">
@@ -121,17 +129,17 @@ const Page = () => {
                 </div>
                 <div className="flex w-full justify-center">
                     <div className="overflow-x-auto">
-                        <div className="flex justify-end p-5">
+                        {/* <div className="flex justify-end p-5">
                             <button
                                 onClick={() => setShowDetails(prev => !prev)}
                                 className="btn btn-sm btn-info mb-2"
                             >
                                 {showDetails ? "Hide Details" : "Show Details"}
                             </button>
-                        </div>
+                        </div> */}
                         <div ref={contentToPrint} className="flex-1 p-5">
-                            <div className="flex flex-col items-center pb-5"><h4 className="font-bold">RETAILER LEDGER</h4>
-                                <h4>{newstartDate} TO {newendDate}</h4>
+                            <div className="flex flex-col items-center pb-5"><h4 className="font-bold">MARKET LEDGER</h4>
+                                <h4>FROM {newstartDate} TO {newendDate}</h4>
                             </div>
                             {/* <table className="table table-xs md:table-sm table-pin-rows table-zebra">
                                 <thead className="sticky top-16 bg-base-100">
@@ -199,7 +207,7 @@ const Page = () => {
                                 </tfoot>
                             </table> */}
 
-                            <table className="table table-xs md:table-sm table-pin-rows table-zebra">
+                            {/* <table className="table table-xs md:table-sm table-pin-rows table-zebra">
                                 <thead className="sticky top-16 bg-base-100">
                                     {showDetails ? (
                                         <tr>
@@ -290,7 +298,46 @@ const Page = () => {
                                         </tr>
                                     )}
                                 </tfoot>
-                            </table>
+                            </table> */}
+   <table className="table table-md table-pin-rows table-zebra">
+                <thead className="sticky top-16 bg-base-100">
+                  {/* 
+                   */}
+                  <tr>
+                    <th>SN</th>
+                    <th>PARTICULARS</th>
+                    <th>DEBIT</th>
+                    <th>CREDIT</th>
+                    <th>DETAILS</th>
+                  </tr>
+                </thead>
+                
+                <tbody>
+                  {filteredProducts?.map((product, index) => (
+                    <tr key={index}>
+                      <td>{index + 1}</td>
+                      <td>{product?.category}</td>
+                      <td>{product.debit}</td>
+                      <td>{product.credit}</td>
+                      <td>
+                        <button onClick={() => handleDetails(product?.category)} className="btn btn-sm btn-info">Details</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+
+                <tfoot>
+                 
+                  <tr className="font-semibold text-lg">
+                    <td colSpan={1}></td>
+                    <td>TOTAL</td>
+                    <td>{totalDebit.toLocaleString('en-IN')}</td>
+                    <td>{totalCredit.toLocaleString('en-IN')}</td>
+                    <td></td>
+                  </tr>
+                </tfoot>
+              </table>
+
                         </div>
                     </div>
                 </div>

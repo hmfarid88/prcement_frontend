@@ -2,11 +2,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { FcPrint } from "react-icons/fc";
 import { useReactToPrint } from 'react-to-print';
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import ExcelExport from "@/app/components/ExcellGeneration";
-import CurrentMonthYear from "@/app/components/CurrentMonthYear";
-import { IoSearch } from "react-icons/io5";
-import { toast } from "react-toastify";
 
 type Product = {
     date: string;
@@ -22,9 +19,11 @@ type Product = {
 const Page = () => {
 
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-    const router = useRouter();
+
     const searchParams = useSearchParams();
     const supplierName = searchParams.get('supplierName');
+    const startDate = searchParams.get('startDate');
+    const endDate = searchParams.get('endDate');
     const username = searchParams.get('username');
 
     const contentToPrint = useRef(null);
@@ -34,40 +33,17 @@ const Page = () => {
     const [filterCriteria, setFilterCriteria] = useState('');
     const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
     const [allProducts, setAllProducts] = useState<Product[]>([]);
-    const [startDate, setStartDate] = useState("");
-    const [endDate, setEndDate] = useState("");
-    const [maxDate, setMaxDate] = useState('');
+
 
     useEffect(() => {
-        const today = new Date();
-        const year = today.getFullYear();
-        const month = String(today.getMonth() + 1).padStart(2, '0');
-        const day = String(today.getDate()).padStart(2, '0');
-        const formattedDate = `${year}-${month}-${day}`;
-        setMaxDate(formattedDate);
-    }, []);
-
-    const handleSubmit = (e: any) => {
-        e.preventDefault();
-        if (!startDate || !endDate) {
-            toast.warning("Start date and end date required !");
-            return;
-        }
-        // Use the dynamic routePath for navigation
-        router.push(`/datewise-supplier-details?username=${encodeURIComponent(username ?? "")}&supplierName=${encodeURIComponent(supplierName ?? "")}&startDate=${startDate}&endDate=${endDate}`);
-        setStartDate("");
-        setEndDate("");
-    };
-
-    useEffect(() => {
-        fetch(`${apiBaseUrl}/supplierBalance/supplier-details?supplierName=${encodeURIComponent(supplierName ?? "")}&username=${encodeURIComponent(username ?? "")}`)
+        fetch(`${apiBaseUrl}/supplierBalance/datewise-supplier-details?supplierName=${encodeURIComponent(supplierName ?? "")}&username=${encodeURIComponent(username ?? "")}&startDate=${startDate}&endDate=${endDate}`)
             .then(response => response.json())
             .then(data => {
                 setAllProducts(data);
                 setFilteredProducts(data);
             })
             .catch(error => console.error('Error fetching products:', error));
-    }, [apiBaseUrl, username, supplierName]);
+    }, [apiBaseUrl, username, supplierName, startDate, endDate]);
 
 
     useEffect(() => {
@@ -86,46 +62,6 @@ const Page = () => {
     return (
         <div className="container-2xl">
             <div className="flex flex-col w-full min-h-[calc(100vh-228px)] p-4 items-center justify-center">
-                <div className="flex p-2">
-                    <div className='flex flex-col md:flex-row w-full gap-3'>
-                        <label className="form-control w-full max-w-xs">
-                            <div className="label">
-                                <span className="label-text-alt">START DATE</span>
-                            </div>
-                            <input
-                                type="date"
-                                name="date"
-                                onChange={(e: any) => setStartDate(e.target.value)}
-                                max={maxDate}
-                                value={startDate}
-                                className="input input-bordered"
-                            />
-                        </label>
-
-                        <label className="form-control w-full max-w-xs">
-                            <div className="label">
-                                <span className="label-text-alt">END DATE</span>
-                            </div>
-                            <input
-                                type="date"
-                                name="date"
-                                onChange={(e: any) => setEndDate(e.target.value)}
-                                max={maxDate}
-                                value={endDate}
-                                className="input input-bordered"
-                            />
-                        </label>
-
-                        <label className="form-control w-full max-w-xs">
-                            <div className="label">
-                                <span className="label-text-alt">SEARCH</span>
-                            </div>
-                            <button onClick={handleSubmit} className='btn btn-success'><IoSearch size={30} /></button>
-                        </label>
-
-                    </div>
-
-                </div>
                 <div className="flex w-full justify-between pl-5 pr-5 pt-1">
                     <label className="input input-bordered flex max-w-xs  items-center gap-2">
                         <input type="text" value={filterCriteria} onChange={handleFilterChange} className="grow" placeholder="Search" />
@@ -143,7 +79,7 @@ const Page = () => {
                         <div ref={contentToPrint} className="flex-1 p-5">
                             <div className="flex flex-col items-center pb-5"><h4 className="font-bold">SUPPLIER LEDGER</h4>
                                 <h4 className="font-bold capitalize">Supplier : {supplierName}</h4>
-                                <h4><CurrentMonthYear /></h4>
+                                <h4>FROM {startDate} TO {endDate}</h4>
                             </div>
                             <table className="table table-xs md:table-sm table-pin-rows table-zebra">
                                 <thead className="sticky top-16 bg-base-100">

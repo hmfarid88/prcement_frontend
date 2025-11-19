@@ -84,7 +84,7 @@ export const Sidebar = () => {
                                 </ul>
                             </details>
                         </li>
-                        <li><Link href="/retailer-ledger"> <PiUserListDuotone size={20} /> RETAILER LEDGER</Link></li>
+                        <li><Link href="/retailer-ledger"> <PiUserListDuotone size={20} /> MARKET LEDGER</Link></li>
                         <li><Link href="/supplier-ledger"> <CgUserList size={20} /> SUPPLIER LEDGER</Link></li>
                         <li><Link href="/transport-ledger"> <MdOutlineEmojiTransportation size={20} /> TRANSPORT LEDGER</Link></li>
                         <li><Link href="/payment-receive"> <FaUsers size={20} /> PAY-RECV LEDGER</Link></li>

@@ -13,7 +13,6 @@ type Product = {
   balance: number;
 };
 
-
 const Page = () => {
   const router = useRouter();
   const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -74,9 +73,9 @@ const Page = () => {
             </svg>
           </label>
           <div className="flex gap-2">
-                        <ExcelExport tableRef={contentToPrint} fileName="supplier_ledger" />
-                        <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
-                    </div>
+            <ExcelExport tableRef={contentToPrint} fileName="supplier_ledger" />
+            <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
+          </div>
         </div>
         <div className="flex w-full justify-center">
           <div className="overflow-x-auto">
@@ -85,7 +84,7 @@ const Page = () => {
                 <h4><CurrentDate /></h4>
               </div>
               <table className="table table-xs md:table-sm table-pin-rows table-zebra">
-               <thead className="sticky top-16 bg-base-100">
+                <thead className="sticky top-16 bg-base-100">
                   <tr>
                     <th>SN</th>
                     <th>SUPPLIER NAME</th>

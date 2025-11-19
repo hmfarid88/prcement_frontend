@@ -1,32 +1,29 @@
 'use client'
 import React, { useState, useEffect, useRef } from "react";
+import { useAppSelector } from "@/app/store";
 import { FcPrint } from "react-icons/fc";
 import { useReactToPrint } from 'react-to-print';
 import { useRouter, useSearchParams } from "next/navigation";
+import { toast } from "react-toastify";
 import ExcelExport from "@/app/components/ExcellGeneration";
 import CurrentMonthYear from "@/app/components/CurrentMonthYear";
 import { IoSearch } from "react-icons/io5";
-import { toast } from "react-toastify";
 
 type Product = {
-    date: string;
-    productName: string;
-    productQty: number;
-    productValue: number;
-    payment: number;
-    commission: number;
-    note: string;
+    category: string;
+    debit: number;
+    credit: number;
+    openingBalance: number;
 };
 
 
 const Page = () => {
-
-    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
     const router = useRouter();
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+    const uname = useAppSelector((state) => state.username.username);
+    const username = uname ? uname.username : 'Guest';
     const searchParams = useSearchParams();
-    const supplierName = searchParams.get('supplierName');
-    const username = searchParams.get('username');
-
+    const category = searchParams.get('category');
     const contentToPrint = useRef(null);
     const handlePrint = useReactToPrint({
         content: () => contentToPrint.current,
@@ -54,26 +51,34 @@ const Page = () => {
             return;
         }
         // Use the dynamic routePath for navigation
-        router.push(`/datewise-supplier-details?username=${encodeURIComponent(username ?? "")}&supplierName=${encodeURIComponent(supplierName ?? "")}&startDate=${startDate}&endDate=${endDate}`);
+        router.push(`/datewise-marketing-ledger?category=${encodeURIComponent(category ?? "")}&startDate=${startDate}&endDate=${endDate}`);
         setStartDate("");
         setEndDate("");
     };
+    const handleDetails = (category: string) => {
+        if (!category) {
+            toast.warning("Particular name is missing!");
+            return;
+        }
+        router.push(`/marketwise-retailer?category=${encodeURIComponent(category)}`);
+    };
+
 
     useEffect(() => {
-        fetch(`${apiBaseUrl}/supplierBalance/supplier-details?supplierName=${encodeURIComponent(supplierName ?? "")}&username=${encodeURIComponent(username ?? "")}`)
+        fetch(`${apiBaseUrl}/retailer/marketingRetailerBalance?category=${encodeURIComponent(category ?? "")}`)
             .then(response => response.json())
             .then(data => {
                 setAllProducts(data);
                 setFilteredProducts(data);
             })
             .catch(error => console.error('Error fetching products:', error));
-    }, [apiBaseUrl, username, supplierName]);
+    }, [apiBaseUrl, category]);
 
 
     useEffect(() => {
         const filtered = allProducts.filter(product =>
-            (product.date.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
-            (product.productName.toLowerCase().includes(filterCriteria.toLowerCase()) || '')
+            (product.category?.toLowerCase().includes(filterCriteria.toLowerCase()) || '')
+
         );
         setFilteredProducts(filtered);
     }, [filterCriteria, allProducts]);
@@ -82,7 +87,16 @@ const Page = () => {
         setFilterCriteria(e.target.value);
     };
 
-    let cumulativeBalance = 0;
+
+    const totalDebit = filteredProducts.reduce((total, product) => {
+        return total + product.debit;
+    }, 0);
+
+    const totalCredit = filteredProducts.reduce((total, product) => {
+        return total + product.credit;
+    }, 0);
+
+
     return (
         <div className="container-2xl">
             <div className="flex flex-col w-full min-h-[calc(100vh-228px)] p-4 items-center justify-center">
@@ -134,56 +148,60 @@ const Page = () => {
                         </svg>
                     </label>
                     <div className="flex gap-2">
-                        <ExcelExport tableRef={contentToPrint} fileName="details_supplier_report" />
+                        <ExcelExport tableRef={contentToPrint} fileName="retailer_ledger" />
                         <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
                     </div>
                 </div>
                 <div className="flex w-full justify-center">
                     <div className="overflow-x-auto">
+
                         <div ref={contentToPrint} className="flex-1 p-5">
-                            <div className="flex flex-col items-center pb-5"><h4 className="font-bold">SUPPLIER LEDGER</h4>
-                                <h4 className="font-bold capitalize">Supplier : {supplierName}</h4>
+                            <div className="flex flex-col items-center pb-5"><h4 className="font-bold">MARKETING OFFICHER LEDGER</h4>
+                                <h4 className="uppercase font-semibold">CATEGORY : {category}</h4>
                                 <h4><CurrentMonthYear /></h4>
                             </div>
-                            <table className="table table-xs md:table-sm table-pin-rows table-zebra">
+                            <table className="table table-md table-pin-rows table-zebra">
                                 <thead className="sticky top-16 bg-base-100">
                                     <tr>
                                         <th>SN</th>
-                                        <th>DATE</th>
-                                        <th>PRODUCT NAME</th>
-                                        <th>PRODUCT QTY</th>
-                                        <th>PRODUCT VALUE</th>
-                                        <th>PAYMENT</th>
-                                        <th>COMMISSION</th>
-                                        <th>BALANCE</th>
+                                        <th>PARTICULARS</th>
+                                        <th>OPENING BALANCE</th>
+                                        <th>DEBIT</th>
+                                        <th>CREDIT</th>
+                                        <th>DETAILS</th>
                                     </tr>
                                 </thead>
+
                                 <tbody>
-                                    {filteredProducts?.map((product, index) => {
-                                        const currentBalance = product.productValue - product.payment - product.commission;
-                                        cumulativeBalance += currentBalance;
-
-                                        return (
-                                            <tr key={index}>
-                                                <td>{index + 1}</td>
-                                                <td>{product?.date}</td>
-                                                <td>{product?.productName}</td>
-                                                <td>{Number(product?.productQty.toFixed(2)).toLocaleString('en-IN')}</td>
-                                                <td>{Number(product?.productValue.toFixed(2)).toLocaleString('en-IN')}</td>
-                                                <td>{Number(product?.payment.toFixed(2)).toLocaleString('en-IN')}</td>
-                                                <td className="w-24">{Number(product?.commission.toFixed(2)).toLocaleString('en-IN')} ({(product?.note)})</td>
-                                                <td>{Number(cumulativeBalance.toFixed(2)).toLocaleString('en-IN')}</td>
-
-                                            </tr>
-                                        );
-                                    })}
+                                    {filteredProducts?.map((product, index) => (
+                                        <tr key={index}>
+                                            <td>{index + 1}</td>
+                                            <td>{product?.category}</td>
+                                            <td>{product?.openingBalance}</td>
+                                            <td>{product.debit}</td>
+                                            <td>{product.credit}</td>
+                                            <td>
+                                                <button onClick={() => handleDetails(product?.category)} className="btn btn-sm btn-info">Details</button>
+                                            </td>
+                                        </tr>
+                                    ))}
                                 </tbody>
 
+                                <tfoot>
+
+                                    <tr className="font-semibold text-lg">
+                                        <td colSpan={2}></td>
+                                        <td>TOTAL</td>
+                                        <td>{totalDebit.toLocaleString('en-IN')}</td>
+                                        <td>{totalCredit.toLocaleString('en-IN')}</td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>
                             </table>
+
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     )
