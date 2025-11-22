@@ -9,8 +9,8 @@ import ExcelExport from "@/app/components/ExcellGeneration";
 
 type Product = {
     category: string;
-    debit:number;
-    credit:number;
+    debit: number;
+    credit: number;
     // areaName: string;
     // retailerName: string;
     // retailerCode: string;
@@ -40,13 +40,14 @@ const Page = () => {
     const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
     const [allProducts, setAllProducts] = useState<Product[]>([]);
 
-    const handleDetails = (retailerName: string) => {
-        if (!retailerName) {
-            toast.warning("Retailer name is empty!");
+    const handleDetails = (category: string) => {
+        if (!category) {
+            toast.warning("Particular name is empty!");
             return;
         }
         // router.push(`/datewise-retailer-details?startDate=${newstartDate}&endDate=${newendDate}&retailerName=${encodeURIComponent(retailerName)}&username=${encodeURIComponent(username)}`);
-        router.push(`/details-retailer-ledger?retailerName=${encodeURIComponent(retailerName)}&username=${encodeURIComponent(username)}`);
+        // router.push(`/details-retailer-ledger?retailerName=${encodeURIComponent(retailerName)}&username=${encodeURIComponent(username)}`);
+        router.push(`/marketing-officher-ledger?category=${encodeURIComponent(category)}`);
 
     }
 
@@ -105,13 +106,13 @@ const Page = () => {
     //     acc[product.category].push(product);
     //     return acc;
     // }, {} as Record<string, Product[]>);
- const totalDebit = filteredProducts.reduce((total, product) => {
-    return total + product.debit;
-  }, 0);
+    const totalDebit = filteredProducts.reduce((total, product) => {
+        return total + product.debit;
+    }, 0);
 
-  const totalCredit = filteredProducts.reduce((total, product) => {
-    return total + product.credit;
-  }, 0);
+    const totalCredit = filteredProducts.reduce((total, product) => {
+        return total + product.credit;
+    }, 0);
     return (
         <div className="container-2xl">
             <div className="flex flex-col w-full min-h-[calc(100vh-228px)] p-4">
@@ -299,44 +300,47 @@ const Page = () => {
                                     )}
                                 </tfoot>
                             </table> */}
-   <table className="table table-md table-pin-rows table-zebra">
-                <thead className="sticky top-16 bg-base-100">
-                  {/* 
+                            <table className="table table-md table-pin-rows table-zebra">
+                                <thead className="sticky top-16 bg-base-100">
+                                    {/* 
                    */}
-                  <tr>
-                    <th>SN</th>
-                    <th>PARTICULARS</th>
-                    <th>DEBIT</th>
-                    <th>CREDIT</th>
-                    <th>DETAILS</th>
-                  </tr>
-                </thead>
-                
-                <tbody>
-                  {filteredProducts?.map((product, index) => (
-                    <tr key={index}>
-                      <td>{index + 1}</td>
-                      <td>{product?.category}</td>
-                      <td>{product.debit}</td>
-                      <td>{product.credit}</td>
-                      <td>
-                        <button onClick={() => handleDetails(product?.category)} className="btn btn-sm btn-info">Details</button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
+                                    <tr>
+                                        <th>SN</th>
+                                        <th>PARTICULARS</th>
+                                        <th>DEBIT</th>
+                                        <th>CREDIT</th>
+                                        <th>CLOSING</th>
+                                        <th>DETAILS</th>
+                                    </tr>
+                                </thead>
 
-                <tfoot>
-                 
-                  <tr className="font-semibold text-lg">
-                    <td colSpan={1}></td>
-                    <td>TOTAL</td>
-                    <td>{totalDebit.toLocaleString('en-IN')}</td>
-                    <td>{totalCredit.toLocaleString('en-IN')}</td>
-                    <td></td>
-                  </tr>
-                </tfoot>
-              </table>
+                                <tbody>
+                                    {filteredProducts?.map((product, index) => (
+                                        <tr key={index}>
+                                            <td>{index + 1}</td>
+                                            <td>{product?.category}</td>
+                                            <td>{product.debit}</td>
+                                            <td>{product.credit}</td>
+                                            <td>{product.credit - product.debit}</td>
+                                            <td>
+                                                <button onClick={() => handleDetails(product?.category)} className="btn btn-sm btn-info">Details</button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+
+                                <tfoot>
+
+                                    <tr className="font-semibold text-lg">
+                                        <td colSpan={1}></td>
+                                        <td>TOTAL</td>
+                                        <td>{totalDebit.toLocaleString('en-IN')}</td>
+                                        <td>{totalCredit.toLocaleString('en-IN')}</td>
+                                        <td>{(totalCredit - totalDebit).toLocaleString('en-IN')}</td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
 
                         </div>
                     </div>

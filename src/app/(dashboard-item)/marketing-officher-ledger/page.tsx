@@ -168,6 +168,7 @@ const Page = () => {
                                         <th>OPENING BALANCE</th>
                                         <th>DEBIT</th>
                                         <th>CREDIT</th>
+                                        <th>CLOSING</th>
                                         <th>DETAILS</th>
                                     </tr>
                                 </thead>
@@ -180,6 +181,7 @@ const Page = () => {
                                             <td>{product?.openingBalance}</td>
                                             <td>{product.debit}</td>
                                             <td>{product.credit}</td>
+                                            <td>{product.credit-product.debit}</td>
                                             <td>
                                                 <button onClick={() => handleDetails(product?.category)} className="btn btn-sm btn-info">Details</button>
                                             </td>
@@ -194,6 +196,7 @@ const Page = () => {
                                         <td>TOTAL</td>
                                         <td>{totalDebit.toLocaleString('en-IN')}</td>
                                         <td>{totalCredit.toLocaleString('en-IN')}</td>
+                                        <td>{(totalCredit-totalDebit).toLocaleString('en-IN')}</td>
                                         <td></td>
                                     </tr>
                                 </tfoot>
