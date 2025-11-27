@@ -11,6 +11,7 @@ type Product = {
     category: string;
     debit: number;
     credit: number;
+    openingBalance: number;
     // areaName: string;
     // retailerName: string;
     // retailerCode: string;
@@ -106,6 +107,9 @@ const Page = () => {
     //     acc[product.category].push(product);
     //     return acc;
     // }, {} as Record<string, Product[]>);
+    const totalOpening = filteredProducts.reduce((total, product) => {
+        return total + product.openingBalance;
+    }, 0);
     const totalDebit = filteredProducts.reduce((total, product) => {
         return total + product.debit;
     }, 0);
@@ -307,6 +311,7 @@ const Page = () => {
                                     <tr>
                                         <th>SN</th>
                                         <th>PARTICULARS</th>
+                                        <th>OPENING BALANCE</th>
                                         <th>DEBIT</th>
                                         <th>CREDIT</th>
                                         <th>CLOSING</th>
@@ -319,9 +324,10 @@ const Page = () => {
                                         <tr key={index}>
                                             <td>{index + 1}</td>
                                             <td>{product?.category}</td>
-                                            <td>{product.debit}</td>
-                                            <td>{product.credit}</td>
-                                            <td>{product.credit - product.debit}</td>
+                                            <td>{product?.openingBalance}</td>
+                                            <td>{product?.debit}</td>
+                                            <td>{product?.credit}</td>
+                                            <td>{product?.openingBalance + product?.credit - product?.debit}</td>
                                             <td>
                                                 <button onClick={() => handleDetails(product?.category)} className="btn btn-sm btn-info">Details</button>
                                             </td>
@@ -332,11 +338,11 @@ const Page = () => {
                                 <tfoot>
 
                                     <tr className="font-semibold text-lg">
-                                        <td colSpan={1}></td>
+                                        <td colSpan={2}></td>
                                         <td>TOTAL</td>
                                         <td>{totalDebit.toLocaleString('en-IN')}</td>
                                         <td>{totalCredit.toLocaleString('en-IN')}</td>
-                                        <td>{(totalCredit - totalDebit).toLocaleString('en-IN')}</td>
+                                        <td>{(totalOpening + totalCredit - totalDebit).toLocaleString('en-IN')}</td>
                                         <td></td>
                                     </tr>
                                 </tfoot>

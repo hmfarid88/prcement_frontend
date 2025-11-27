@@ -31,7 +31,7 @@ const Page = () => {
     const [filterCriteria, setFilterCriteria] = useState('');
     const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
     const [allProducts, setAllProducts] = useState<Product[]>([]);
-       
+
     const handleDetails = (category: string) => {
         if (!category) {
             toast.warning("Particular name is missing!");
@@ -65,6 +65,10 @@ const Page = () => {
     };
 
 
+    const totalOpening = filteredProducts.reduce((total, product) => {
+        return total + product.openingBalance;
+    }, 0);
+
     const totalDebit = filteredProducts.reduce((total, product) => {
         return total + product.debit;
     }, 0);
@@ -77,7 +81,7 @@ const Page = () => {
     return (
         <div className="container-2xl">
             <div className="flex flex-col w-full min-h-[calc(100vh-228px)] p-4 items-center justify-center">
-               
+
                 <div className="flex w-full justify-between pl-5 pr-5 pt-1">
                     <label className="input input-bordered flex max-w-xs  items-center gap-2">
                         <input type="text" value={filterCriteria} onChange={handleFilterChange} className="grow" placeholder="Search" />
@@ -117,9 +121,9 @@ const Page = () => {
                                             <td>{index + 1}</td>
                                             <td>{product?.category}</td>
                                             <td>{product?.openingBalance}</td>
-                                            <td>{product.debit}</td>
-                                            <td>{product.credit}</td>
-                                            <td>{product.credit-product.debit}</td>
+                                            <td>{product?.debit}</td>
+                                            <td>{product?.credit}</td>
+                                            <td>{product?.openingBalance + product?.credit - product?.debit}</td>
                                             <td>
                                                 <button onClick={() => handleDetails(product?.category)} className="btn btn-sm btn-info">Details</button>
                                             </td>
@@ -134,7 +138,7 @@ const Page = () => {
                                         <td>TOTAL</td>
                                         <td>{totalDebit.toLocaleString('en-IN')}</td>
                                         <td>{totalCredit.toLocaleString('en-IN')}</td>
-                                        <td>{(totalCredit-totalDebit).toLocaleString('en-IN')}</td>
+                                        <td>{(totalOpening + totalCredit - totalDebit).toLocaleString('en-IN')}</td>
                                         <td></td>
                                     </tr>
                                 </tfoot>

@@ -168,7 +168,7 @@ useEffect(() => {
                                         <th>TOTAL VALUE</th>
                                         <th>PAYMENT</th>
                                         <th>COMMISSION</th>
-                                        <th>BALANCE</th>
+                                        <th>CLOSING</th>
                                     </tr>
                                 </thead>
                              

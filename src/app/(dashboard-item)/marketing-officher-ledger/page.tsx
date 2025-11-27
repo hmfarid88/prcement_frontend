@@ -88,6 +88,10 @@ const Page = () => {
     };
 
 
+    const totalOpening = filteredProducts.reduce((total, product) => {
+        return total + product.openingBalance;
+    }, 0);
+
     const totalDebit = filteredProducts.reduce((total, product) => {
         return total + product.debit;
     }, 0);
@@ -179,9 +183,9 @@ const Page = () => {
                                             <td>{index + 1}</td>
                                             <td>{product?.category}</td>
                                             <td>{product?.openingBalance}</td>
-                                            <td>{product.debit}</td>
-                                            <td>{product.credit}</td>
-                                            <td>{product.credit-product.debit}</td>
+                                            <td>{product?.debit}</td>
+                                            <td>{product?.credit}</td>
+                                            <td>{product?.openingBalance - product?.credit - product?.debit}</td>
                                             <td>
                                                 <button onClick={() => handleDetails(product?.category)} className="btn btn-sm btn-info">Details</button>
                                             </td>
@@ -196,7 +200,7 @@ const Page = () => {
                                         <td>TOTAL</td>
                                         <td>{totalDebit.toLocaleString('en-IN')}</td>
                                         <td>{totalCredit.toLocaleString('en-IN')}</td>
-                                        <td>{(totalCredit-totalDebit).toLocaleString('en-IN')}</td>
+                                        <td>{(totalOpening + totalCredit - totalDebit).toLocaleString('en-IN')}</td>
                                         <td></td>
                                     </tr>
                                 </tfoot>
