@@ -11,6 +11,7 @@ import CurrentMonthYear from "@/app/components/CurrentMonthYear";
 
 type Product = {
   category: string;
+  qty:number;
   // areaName: string;
   // retailerName: string;
   // retailerCode: string;
@@ -113,6 +114,10 @@ const Page = () => {
     return total + product.openingBalance;
   }, 0);
 
+  const totalQty = filteredProducts.reduce((total, product) => {
+    return total + product.qty;
+  }, 0);
+
   const totalDebit = filteredProducts.reduce((total, product) => {
     return total + product.debit;
   }, 0);
@@ -174,6 +179,7 @@ const Page = () => {
                     <th>SN</th>
                     <th>PARTICULARS</th>
                     <th>OPENING BALANCE</th>
+                    <th>QTY</th>
                     <th>DEBIT</th>
                     <th>CREDIT</th>
                     <th>CLOSING</th>
@@ -220,9 +226,10 @@ const Page = () => {
                       <td>{index + 1}</td>
                       <td>{product?.category}</td>
                       <td>{product?.openingBalance}</td>
+                      <td>{product?.qty}</td>
                       <td>{product?.debit}</td>
                       <td>{product?.credit}</td>
-                      <td>{product?.openingBalance + product?.credit - product?.debit}</td>
+                      <td>{product?.openingBalance + product?.debit - product?.credit}</td>
                       <td>
                         <button onClick={() => handleDetails(product?.category)} className="btn btn-sm btn-info">Details</button>
                       </td>
@@ -244,9 +251,10 @@ const Page = () => {
                   <tr className="font-semibold text-lg">
                     <td colSpan={2}></td>
                     <td>TOTAL</td>
+                    <td>{totalQty.toLocaleString('en-IN')}</td>
                     <td>{totalDebit.toLocaleString('en-IN')}</td>
                     <td>{totalCredit.toLocaleString('en-IN')}</td>
-                    <td>{(totalOpening + totalCredit - totalDebit).toLocaleString('en-IN')}</td>
+                    <td>{(totalOpening + totalDebit - totalCredit).toLocaleString('en-IN')}</td>
                     <td></td>
                   </tr>
                 </tfoot>
