@@ -3,8 +3,10 @@ import React, { useState, useEffect, useRef } from "react";
 import { useAppSelector } from "@/app/store";
 import { FcPrint } from "react-icons/fc";
 import { useReactToPrint } from 'react-to-print';
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import ExcelExport from "@/app/components/ExcellGeneration";
+import { MdOutlineEditNote } from "react-icons/md";
+import { toast } from "react-toastify";
 
 type Product = {
     date: string;
@@ -17,7 +19,7 @@ type Product = {
     costPrice: number;
     productQty: number;
     remainingQty: number;
-
+    productId: number;
 };
 
 
@@ -25,7 +27,7 @@ const Page = () => {
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
     const uname = useAppSelector((state) => state.username.username);
     const username = uname ? uname.username : 'Guest';
-
+    const router = useRouter();
     const searchParams = useSearchParams();
     const startDate = searchParams.get('startDate');
     const endDate = searchParams.get('endDate');
@@ -38,6 +40,14 @@ const Page = () => {
     const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
     const [allProducts, setAllProducts] = useState<Product[]>([]);
 
+    const handleEdit = (productId: number) => {
+        if (!productId) {
+            toast.warning("Product id is required !");
+            return;
+        }
+        router.push(`/purchase-edit?productId=${encodeURIComponent(productId)}`);
+
+    };
     useEffect(() => {
         fetch(`${apiBaseUrl}/api/datewise-stock-ledger?username=${encodeURIComponent(username)}&startDate=${startDate}&endDate=${endDate}`)
             .then(response => response.json())
@@ -47,28 +57,30 @@ const Page = () => {
             })
             .catch(error => console.error('Error fetching products:', error));
     }, [apiBaseUrl, username, startDate, endDate]);
-useEffect(() => {
-                const searchWords = filterCriteria.toLowerCase().split(" ");
-                const filtered = allProducts.filter(product =>
-                  searchWords.every(word =>
-                    (product.date?.toLowerCase().includes(word) || '') ||
-                    (product.warehouse?.toLowerCase().includes(word) || '') ||
-                    (product.productName?.toLowerCase().includes(word) || '') ||
-                    (product.supplier?.toLowerCase().includes(word) || '')
-                   
-               )
-                );
-              
-                setFilteredProducts(filtered);
-              }, [filterCriteria, allProducts]);
 
-      const handleFilterChange = (e: any) => {
+    useEffect(() => {
+        const searchWords = filterCriteria.toLowerCase().split(" ");
+        const filtered = allProducts.filter(product =>
+            searchWords.every(word =>
+                (product.date?.toLowerCase().includes(word) || '') ||
+                (product.warehouse?.toLowerCase().includes(word) || '') ||
+                (product.productName?.toLowerCase().includes(word) || '') ||
+                (product.supplier?.toLowerCase().includes(word) || '')
+
+            )
+        );
+
+        setFilteredProducts(filtered);
+    }, [filterCriteria, allProducts]);
+
+    const handleFilterChange = (e: any) => {
         setFilterCriteria(e.target.value);
     };
 
     const totalQty = filteredProducts.reduce((total, product) => {
         return total + product.productQty;
     }, 0);
+    
     return (
         <div className="container-2xl">
             <div className="flex flex-col w-full min-h-[calc(100vh-228px)] p-4">
@@ -81,8 +93,8 @@ useEffect(() => {
                         </svg>
                     </label>
                     <div className="flex gap-2">
-                    <ExcelExport tableRef={contentToPrint} fileName="datewise_purchase_report" />
-                    <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
+                        <ExcelExport tableRef={contentToPrint} fileName="datewise_purchase_report" />
+                        <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
                     </div>
                 </div>
                 <div className="flex w-full justify-center">
@@ -90,7 +102,7 @@ useEffect(() => {
                         <div ref={contentToPrint} className="flex-1 p-5">
                             <div className="flex flex-col items-center pb-5"><h4 className="font-bold">PURCHASE LEDGER</h4>Date: {startDate} TO {endDate}</div>
                             <table className="table table-xs md:table-sm table-pin-rows table-zebra">
-                              <thead className="sticky top-16 bg-base-100">
+                                <thead className="sticky top-16 bg-base-100">
                                     <tr>
                                         <th>SN</th>
                                         <th>DATE</th>
@@ -102,6 +114,7 @@ useEffect(() => {
                                         <th>STATUS</th>
                                         <th>ENTRY QTY</th>
                                         <th>TOTAL QTY</th>
+                                        <th>EDIT</th>
 
                                     </tr>
                                 </thead>
@@ -118,6 +131,7 @@ useEffect(() => {
                                             <td>{product.status}</td>
                                             <td>{Number(product.productQty.toFixed(2)).toLocaleString('en-IN')}</td>
                                             <td>{Number(product.remainingQty.toFixed(2)).toLocaleString('en-IN')}</td>
+                                            <td><button onClick={() => handleEdit(product.productId)} className="btn btn-primary btn-sm"><MdOutlineEditNote size={24} /></button></td>
                                         </tr>
                                     ))}
                                 </tbody>

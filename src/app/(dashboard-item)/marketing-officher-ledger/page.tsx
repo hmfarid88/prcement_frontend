@@ -203,8 +203,9 @@ const Page = () => {
                                 <tfoot>
 
                                     <tr className="font-semibold text-lg">
-                                        <td colSpan={2}></td>
+                                        <td></td>
                                         <td>TOTAL</td>
+                                        <td>{totalOpening.toLocaleString('en-IN')}</td>
                                         <td>{totalQty.toLocaleString('en-IN')}</td>
                                         <td>{totalDebit.toLocaleString('en-IN')}</td>
                                         <td>{totalCredit.toLocaleString('en-IN')}</td>
