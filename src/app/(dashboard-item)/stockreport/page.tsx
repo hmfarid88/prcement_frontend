@@ -5,6 +5,9 @@ import { FcPrint } from "react-icons/fc";
 import { useReactToPrint } from 'react-to-print';
 import CurrentDate from "@/app/components/CurrentDate";
 import ExcelExport from "@/app/components/ExcellGeneration";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
+import { IoSearch } from "react-icons/io5";
 
 type Product = {
 
@@ -19,7 +22,32 @@ const Page = () => {
   const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   const uname = useAppSelector((state) => state.username.username);
   const username = uname ? uname.username : 'Guest';
+  const router = useRouter();
+  const [maxDate, setMaxDate] = useState('');
 
+  useEffect(() => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    const formattedDate = `${year}-${month}-${day}`;
+    setMaxDate(formattedDate);
+  }, []);
+
+  const [date, setStartDate] = useState("");
+
+
+  const handleSubmit = (e: any) => {
+    e.preventDefault();
+    if (!date) {
+      toast.warning("Start date and end date required !");
+      return;
+    }
+    // Use the dynamic routePath for navigation
+    router.push(`/datewise-stockreport?date=${date}`);
+    setStartDate("");
+
+  };
   const contentToPrint = useRef(null);
   const handlePrint = useReactToPrint({
     content: () => contentToPrint.current,
@@ -68,7 +96,30 @@ const Page = () => {
   return (
     <div className="container-2xl">
       <div className="flex w-full min-h-[calc(100vh-228px)] p-4 items-center justify-center">
-        <div className="flex flex-col w-full">
+        <div className="flex flex-col p-5 gap-4  w-full">
+          <div className='flex flex-col md:flex-row w-full items-center justify-center gap-3'>
+            <label className="form-control w-full max-w-xs">
+              <div className="label">
+                <span className="label-text-alt">SELECT DATE</span>
+              </div>
+              <input
+                type="date"
+                name="date"
+                onChange={(e: any) => setStartDate(e.target.value)}
+                max={maxDate}
+                value={date}
+                className="input input-bordered"
+              />
+            </label>
+
+            <label className="w-full max-w-xs">
+              <div className="label">
+                <span className="label-text-alt">SEARCH</span>
+              </div>
+              <button onClick={handleSubmit} className='btn btn-success'><IoSearch size={30} /></button>
+            </label>
+
+          </div>
           <div className="flex justify-between pl-5 pr-5 pt-1">
             <label className="input input-bordered flex max-w-xs  items-center gap-2">
               <input type="text" value={filterCriteria} onChange={handleFilterChange} className="grow" placeholder="Search" />
