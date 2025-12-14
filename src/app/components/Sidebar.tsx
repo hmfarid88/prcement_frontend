@@ -11,13 +11,13 @@ import { MdOutlineInterests } from "react-icons/md";
 import { GrUserAdmin } from "react-icons/gr";
 import CashBook from './CashBook';
 import Invoice from './Invoice';
-import { BsDatabaseAdd } from 'react-icons/bs';
+import { BsCalendarDate, BsDatabaseAdd } from 'react-icons/bs';
 import { RiListUnordered } from "react-icons/ri";
 import { TbLayoutDistributeVertical } from "react-icons/tb";
 import { FaHandHoldingMedical } from "react-icons/fa";
 import { CgUserList } from "react-icons/cg";
 import { FaUsers } from "react-icons/fa6";
-
+import DayBook from './DayBook';
 
 
 export const Sidebar = () => {
@@ -104,6 +104,16 @@ export const Sidebar = () => {
                                 <ul>
                                     <li>
                                         <CashBook />
+                                    </li>
+                                </ul>
+                            </details>
+                        </li>
+                        <li>
+                            <details>
+                                <summary><a className='flex gap-2'><BsCalendarDate size={18} /> DAY BOOK </a></summary>
+                                <ul>
+                                    <li>
+                                        <DayBook />
                                     </li>
                                 </ul>
                             </details>

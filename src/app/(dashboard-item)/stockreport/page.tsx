@@ -10,11 +10,18 @@ import { toast } from "react-toastify";
 import { IoSearch } from "react-icons/io5";
 
 type Product = {
-
   warehouse: string;
   productName: string;
+  previousQty: number;
+  todayEntryQty: number;
+  todaySaleQty: number;
+  presentQty: number;
   costPrice: number;
-  remainingQty: number;
+  totalValue: number;
+  // warehouse: string;
+  // productName: string;
+  // costPrice: number;
+  // remainingQty: number;
 };
 
 
@@ -35,8 +42,6 @@ const Page = () => {
   }, []);
 
   const [date, setStartDate] = useState("");
-
-
   const handleSubmit = (e: any) => {
     e.preventDefault();
     if (!date) {
@@ -57,7 +62,8 @@ const Page = () => {
   const [allProducts, setAllProducts] = useState<Product[]>([]);
 
   useEffect(() => {
-    fetch(`${apiBaseUrl}/api/getProductStock?username=${encodeURIComponent(username)}`)
+    const today = new Date().toISOString().split('T')[0];
+    fetch(`${apiBaseUrl}/api/daily-stock-report?username=${encodeURIComponent(username)}&date=${today}`)
       .then(response => response.json())
       .then(data => {
         setAllProducts(data);
@@ -79,19 +85,35 @@ const Page = () => {
   const handleFilterChange = (e: any) => {
     setFilterCriteria(e.target.value);
   };
-  const totalValue = filteredProducts.reduce((total, product) => {
-    return total + product.costPrice * product.remainingQty;
+  const totalPrevious = filteredProducts.reduce((total, product) => {
+    return total + product?.previousQty;
   }, 0);
 
-  const totalQty = filteredProducts.reduce((total, product) => {
-    return total + product.remainingQty;
+  const totalTodayEntry = filteredProducts.reduce((total, product) => {
+    return total + product?.todayEntryQty;
   }, 0);
 
-  const groupedByWarehouse = filteredProducts.reduce((acc, product) => {
-    if (!acc[product.warehouse]) acc[product.warehouse] = [];
-    acc[product.warehouse].push(product);
-    return acc;
-  }, {} as Record<string, Product[]>);
+  const totalTodaySale = filteredProducts.reduce((total, product) => {
+    return total + product?.todaySaleQty;
+  }, 0);
+
+  const totalPrestntQty = filteredProducts.reduce((total, product) => {
+    return total + product?.presentQty;
+  }, 0);
+
+  const totalCost = filteredProducts.reduce((total, product) => {
+    return total + product?.costPrice;
+  }, 0);
+
+  const totalTotal = filteredProducts.reduce((total, product) => {
+    return total + product?.totalValue;
+  }, 0);
+
+  // const groupedByWarehouse = filteredProducts.reduce((acc, product) => {
+  //   if (!acc[product.warehouse]) acc[product.warehouse] = [];
+  //   acc[product.warehouse].push(product);
+  //   return acc;
+  // }, {} as Record<string, Product[]>);
 
   return (
     <div className="container-2xl">
@@ -139,7 +161,7 @@ const Page = () => {
                   <h4><CurrentDate /></h4>
                 </div>
                 <table className="table table-zebra table-xs md:table-sm table-pin-rows">
-                  <thead className="sticky top-16 bg-base-100">
+                  {/* <thead className="sticky top-16 bg-base-100">
                     <tr>
                       <th>SN</th>
                       <th>WAREHOUSE</th>
@@ -149,8 +171,8 @@ const Page = () => {
                       <th>SUB TOTAL</th>
                       <th>SUMMARY</th>
                     </tr>
-                  </thead>
-                  <tbody>
+                  </thead> */}
+                  {/* <tbody>
                     {Object.entries(groupedByWarehouse).map(([warehouse, products]) => {
                       const warehouseTotalValue = products.reduce((sum, p) => sum + (p.costPrice * p.remainingQty), 0);
                       const warehouseTotalQty = products.reduce((sum, p) => sum + p.remainingQty, 0);
@@ -165,7 +187,7 @@ const Page = () => {
                           <td>{Number((product.costPrice * product.remainingQty).toFixed(2)).toLocaleString('en-IN')}</td>
 
                           {/* Show total column only on the first row of this warehouse */}
-                          {idx === 0 && (
+                  {/* {idx === 0 && (
                             <td rowSpan={products.length} className="bg-base-200 text-center">
                               <div className="border border-slate-700 p-1">
                                 <div className="font-bold">{warehouse}</div>
@@ -177,15 +199,47 @@ const Page = () => {
                         </tr>
                       ));
                     })}
+                  </tbody>  */}
+                  <thead className="sticky top-16 bg-base-100">
+                    <tr>
+                      <th>SN</th>
+                      <th>WAREHOUSE</th>
+                      <th>PRODUCT</th>
+                      <th>OPENING</th>
+                      <th>ENTRY</th>
+                      <th>SOLD</th>
+                      <th>PURCHASE RATE</th>
+                      <th>CLOSING</th>
+                      <th>VALUE</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredProducts?.map((product, index) => (
+                      <tr key={index}>
+                        <td>{index + 1}</td>
+                        <td className="uppercase">{product.warehouse}</td>
+                        <td className="uppercase">{product.productName}</td>
+                        <td>{Number(product?.previousQty.toFixed(2)).toLocaleString('en-IN')}</td>
+                        <td>{Number(product?.todayEntryQty.toFixed(2)).toLocaleString('en-IN')}</td>
+                        <td>{Number(product?.todaySaleQty.toFixed(2)).toLocaleString('en-IN')}</td>
+                        <td>{Number(product?.presentQty.toFixed(2)).toLocaleString('en-IN')}</td>
+                        <td>{Number(product?.costPrice.toFixed(2)).toLocaleString('en-IN')}</td>
+                        <td>{Number(product?.totalValue.toFixed(2)).toLocaleString('en-IN')}</td>
+                       
+                      </tr>
+                    ))}
                   </tbody>
-
 
                   <tfoot>
                     <tr className="font-semibold text-lg">
-                      <td colSpan={3}></td>
+                      <td colSpan={2}></td>
                       <td>TOTAL</td>
-                      <td>{totalQty.toLocaleString('en-IN')}</td>
-                      <td>{Number(totalValue.toFixed(2)).toLocaleString('en-IN')}</td>
+                      <td>{Number(totalPrevious?.toFixed(2)).toLocaleString('en-IN')}</td>
+                      <td>{Number(totalTodayEntry?.toFixed(2)).toLocaleString('en-IN')}</td>
+                      <td>{Number(totalTodaySale?.toFixed(2)).toLocaleString('en-IN')}</td>
+                      <td>{Number(totalPrestntQty?.toFixed(2)).toLocaleString('en-IN')}</td>
+                      <td>{Number(totalCost?.toFixed(2)).toLocaleString('en-IN')}</td>
+                      <td>{Number(totalTotal?.toFixed(2)).toLocaleString('en-IN')}</td>
                     </tr>
                   </tfoot>
                 </table>
