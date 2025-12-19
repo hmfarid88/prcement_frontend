@@ -156,7 +156,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { useAppSelector } from "@/app/store";
 import { FcPrint } from "react-icons/fc";
 import { useReactToPrint } from 'react-to-print';
-import CurrentDate from "@/app/components/CurrentDate";
 import ExcelExport from "@/app/components/ExcellGeneration";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "react-toastify";

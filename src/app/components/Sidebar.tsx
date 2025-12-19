@@ -110,7 +110,7 @@ export const Sidebar = () => {
                         </li>
                         <li>
                             <details>
-                                <summary><a className='flex gap-2'><BsCalendarDate size={18} /> DAY BOOK </a></summary>
+                                <summary><a className='flex gap-2'><BsCalendarDate size={17} /> DAY BOOK </a></summary>
                                 <ul>
                                     <li>
                                         <DayBook />

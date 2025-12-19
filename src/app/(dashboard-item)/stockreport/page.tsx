@@ -62,7 +62,7 @@ const Page = () => {
   const [allProducts, setAllProducts] = useState<Product[]>([]);
 
   useEffect(() => {
-    const today = new Date().toISOString().split('T')[0];
+    const today = new Date().toLocaleDateString('en-CA');
     fetch(`${apiBaseUrl}/api/daily-stock-report?username=${encodeURIComponent(username)}&date=${today}`)
       .then(response => response.json())
       .then(data => {
