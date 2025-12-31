@@ -96,7 +96,7 @@ const Page = () => {
                                             <td>{index + 1}</td>
                                             <td>{product.productName}</td>
                                             <td className="uppercase">{product.invoiceNo}</td>
-                                            <td>{Number(product.costPrice.toFixed(2)).toLocaleString('en-IN')}</td>
+                                            <td>{Number(product.costPrice?.toFixed(2)).toLocaleString('en-IN')}</td>
                                             <td>{Number(product.dpRate.toFixed(2)).toLocaleString('en-IN')}</td>
                                             <td>{Number(product.dpRate - product.costPrice).toLocaleString('en-IN')}</td>
                                             <td>{product.productQty.toLocaleString('en-IN')}</td>

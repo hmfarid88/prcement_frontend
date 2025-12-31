@@ -280,6 +280,7 @@ const ProductStock = () => {
                                 <option value="Takerhat Ghat">Takerhat Ghat</option>
                                 <option value="Nariya Godawn">Nariya Godawn</option>
                                 <option value="Factory House">Factory House</option>
+                                <option value="Iron House">Iron House</option>
                             </select>
                         </label>
 
