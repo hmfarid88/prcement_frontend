@@ -6,7 +6,7 @@ import { FcPrint } from 'react-icons/fc';
 import { useReactToPrint } from 'react-to-print';
 interface ProductStock {
   costPrice: number;
-  productQty: number;
+  remainingQty: number;
 }
 
 const Page = () => {
@@ -74,7 +74,7 @@ useEffect(() => {
     .then((data: ProductStock[]) => {
       const total = data.reduce(
         (sum: number, product: ProductStock) =>
-          sum + (product.costPrice * product.productQty),
+          sum + (product.costPrice * product.remainingQty),
         0
       );
 
