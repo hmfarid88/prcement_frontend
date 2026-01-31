@@ -18,12 +18,8 @@ type Product = {
   presentQty: number;
   costPrice: number;
   totalValue: number;
-  // warehouse: string;
-  // productName: string;
-  // costPrice: number;
-  // remainingQty: number;
+ 
 };
-
 
 const Page = () => {
   const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -51,7 +47,6 @@ const Page = () => {
     // Use the dynamic routePath for navigation
     router.push(`/datewise-stockreport?date=${date}`);
     setStartDate("");
-
   };
   const contentToPrint = useRef(null);
   const handlePrint = useReactToPrint({
@@ -71,7 +66,6 @@ const Page = () => {
       })
       .catch(error => console.error('Error fetching products:', error));
   }, [apiBaseUrl, username]);
-
 
   useEffect(() => {
     const filtered = allProducts.filter(product =>
@@ -109,12 +103,7 @@ const Page = () => {
     return total + product?.totalValue;
   }, 0);
 
-  // const groupedByWarehouse = filteredProducts.reduce((acc, product) => {
-  //   if (!acc[product.warehouse]) acc[product.warehouse] = [];
-  //   acc[product.warehouse].push(product);
-  //   return acc;
-  // }, {} as Record<string, Product[]>);
-
+ 
   return (
     <div className="container-2xl">
       <div className="flex w-full min-h-[calc(100vh-228px)] p-4 items-center justify-center">
@@ -161,45 +150,7 @@ const Page = () => {
                   <h4><CurrentDate /></h4>
                 </div>
                 <table className="table table-zebra table-xs md:table-sm table-pin-rows">
-                  {/* <thead className="sticky top-16 bg-base-100">
-                    <tr>
-                      <th>SN</th>
-                      <th>WAREHOUSE</th>
-                      <th>PRODUCT</th>
-                      <th>COST PRICE</th>
-                      <th>QUANTITY</th>
-                      <th>SUB TOTAL</th>
-                      <th>SUMMARY</th>
-                    </tr>
-                  </thead> */}
-                  {/* <tbody>
-                    {Object.entries(groupedByWarehouse).map(([warehouse, products]) => {
-                      const warehouseTotalValue = products.reduce((sum, p) => sum + (p.costPrice * p.remainingQty), 0);
-                      const warehouseTotalQty = products.reduce((sum, p) => sum + p.remainingQty, 0);
-
-                      return products.map((product, idx) => (
-                        <tr key={`${warehouse}-${idx}`}>
-                          <td>{idx + 1}</td>
-                          <td className="capitalize">{product?.warehouse}</td>
-                          <td className="capitalize">{product.productName}</td>
-                          <td>{Number(product.costPrice.toFixed(2)).toLocaleString('en-IN')}</td>
-                          <td>{product.remainingQty.toLocaleString('en-IN')}</td>
-                          <td>{Number((product.costPrice * product.remainingQty).toFixed(2)).toLocaleString('en-IN')}</td>
-
-                          {/* Show total column only on the first row of this warehouse */}
-                  {/* {idx === 0 && (
-                            <td rowSpan={products.length} className="bg-base-200 text-center">
-                              <div className="border border-slate-700 p-1">
-                                <div className="font-bold">{warehouse}</div>
-                                <div>Total Qty: {warehouseTotalQty.toLocaleString('en-IN')}</div>
-                                <div>Total Value: {Number(warehouseTotalValue.toFixed(2)).toLocaleString('en-IN')}</div>
-                              </div>
-                            </td>
-                          )}
-                        </tr>
-                      ));
-                    })}
-                  </tbody>  */}
+                 
                   <thead className="sticky top-16 bg-base-100">
                     <tr>
                       <th>SN</th>
@@ -208,8 +159,8 @@ const Page = () => {
                       <th>OPENING</th>
                       <th>ENTRY</th>
                       <th>SOLD</th>
-                      <th>PURCHASE RATE</th>
                       <th>CLOSING</th>
+                      <th>AVE RATE</th>
                       <th>VALUE</th>
                     </tr>
                   </thead>
@@ -225,7 +176,7 @@ const Page = () => {
                         <td>{Number(product?.presentQty.toFixed(2)).toLocaleString('en-IN')}</td>
                         <td>{Number(product?.costPrice.toFixed(2)).toLocaleString('en-IN')}</td>
                         <td>{Number(product?.totalValue.toFixed(2)).toLocaleString('en-IN')}</td>
-                       
+
                       </tr>
                     ))}
                   </tbody>

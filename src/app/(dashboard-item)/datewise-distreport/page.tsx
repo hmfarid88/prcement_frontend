@@ -557,7 +557,7 @@ const Page = () => {
           <div className="overflow-x-auto w-full">
             <div ref={contentToPrint} className="flex-1 p-5">
               <div className="flex flex-col items-center pb-5">
-                <h4 className="font-bold">DELIVERY REPORT</h4>
+                <h4 className="font-bold">SALE REPORT</h4>
                <h4>{startDate} TO {endDate}</h4>
               </div>
 

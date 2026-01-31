@@ -110,10 +110,8 @@ const Page = () => {
                                         <th>WAREHOUSE</th>
                                         <th>PRODUCT</th>
                                         <th>P.PRICE</th>
-                                        <th>AV.PRICE</th>
-                                        <th>STATUS</th>
+                                        <th>AVE.PRICE</th>
                                         <th>ENTRY QTY</th>
-                                        <th>TOTAL QTY</th>
                                         <th>EDIT</th>
 
                                     </tr>
@@ -128,16 +126,14 @@ const Page = () => {
                                             <td className="capitalize">{product?.productName}</td>
                                             <td>{Number(product?.purchasePrice?.toFixed(2)).toLocaleString('en-IN')}</td>
                                             <td>{Number(product?.costPrice?.toFixed(2)).toLocaleString('en-IN')}</td>
-                                            <td>{product?.status}</td>
                                             <td>{Number(product?.productQty?.toFixed(2)).toLocaleString('en-IN')}</td>
-                                            <td>{Number(product?.remainingQty?.toFixed(2)).toLocaleString('en-IN')}</td>
                                             <td><button onClick={() => handleEdit(product.productId)} className="btn btn-primary btn-sm"><MdOutlineEditNote size={24} /></button></td>
                                         </tr>
                                     ))}
                                 </tbody>
                                 <tfoot>
                                     <tr className="font-semibold text-lg">
-                                        <td colSpan={7}></td>
+                                        <td colSpan={6}></td>
                                         <td>TOTAL</td>
                                         <td>{Number(totalQty.toFixed(2)).toLocaleString('en-IN')}</td>
                                     </tr>

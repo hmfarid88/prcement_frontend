@@ -119,6 +119,7 @@ const DayBook = () => {
                                 <table className="table table-sm md:table-md table-pin-rows">
                                     <thead>
                                         <tr>
+                                            <th>SN</th>
                                             <th>DATE</th>
                                             <th>DESCRIPTION</th>
                                             <th>AMOUNT</th>
@@ -128,6 +129,7 @@ const DayBook = () => {
 
                                         {receives?.map((receive, index) => (
                                             <tr key={index}>
+                                                <td>{index+1}</td>
                                                 <td>{receive.date}</td>
                                                 <td className='capitalize'>{receive.name}, {receive.note}</td>
                                                 <td>{(receive.amount ?? 0).toLocaleString('en-IN')}</td>
@@ -135,6 +137,7 @@ const DayBook = () => {
                                         ))}
                                         {allPProducts?.map((purse, index) => (
                                             <tr key={index}>
+                                               <td>{(receives?.length || 0) + index + 1}</td>
                                                 <td>{purse.date}</td>
                                                 <td className='capitalize'>{purse.supplier}, {purse.productName}, {purse.productQty}</td>
                                                 <td>{(purse.costPrice * purse.productQty).toLocaleString('en-IN')}</td>
@@ -144,7 +147,8 @@ const DayBook = () => {
                                     </tbody>
                                     <tfoot>
                                         <tr className='font-semibold'>
-                                            <td colSpan={1}></td>
+                                            <td></td>
+                                            <td></td>
                                             <td>TOTAL DEBIT</td>
                                             <td>{Number((totalDebit() + totalSale()).toFixed(2)).toLocaleString('en-IN')}</td>
                                         </tr>
@@ -155,6 +159,7 @@ const DayBook = () => {
                                 <table className="table table-sm md:table-md table-pin-rows">
                                     <thead>
                                         <tr>
+                                            <th>SN</th>
                                             <th>DATE</th>
                                             <th>DESCRIPTION</th>
                                             <th>AMOUNT</th>
@@ -163,6 +168,7 @@ const DayBook = () => {
                                     <tbody>
                                         {payments.map((payment, index) => (
                                             <tr key={index}>
+                                                <td>{index+1}</td>
                                                 <td>{payment.date}</td>
                                                 <td className='capitalize'>{payment.name} {payment.note}</td>
                                                 <td>{(payment.amount ?? 0).toLocaleString('en-IN')}</td>
@@ -170,6 +176,7 @@ const DayBook = () => {
                                         ))}
                                         {allProducts.map((sales, index) => (
                                             <tr key={index}>
+                                                <td>{(payments?.length || 0) + index + 1}</td>
                                                 <td>{sales.date}</td>
                                                 <td className='capitalize'>{sales.customer}, {sales.productName}, {sales.productQty}</td>
                                                 <td>{(sales.dpRate * sales.productQty).toLocaleString('en-IN')}</td>
@@ -179,6 +186,7 @@ const DayBook = () => {
                                     <tfoot>
 
                                         <tr className='font-semibold'>
+                                            <td></td>
                                             <td></td>
                                             <td>TOTAL CREDIT</td>
                                             <td>{Number((totalCredit() + totalPurse()).toFixed(2)).toLocaleString('en-IN')}</td>

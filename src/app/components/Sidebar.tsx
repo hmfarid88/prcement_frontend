@@ -4,7 +4,7 @@ import { IoHomeOutline } from "react-icons/io5";
 import { RiSecurePaymentLine } from "react-icons/ri";
 import { GoDatabase } from "react-icons/go";
 import { TbReportSearch } from "react-icons/tb";
-import { MdOutlineEmojiTransportation, MdOutlinePayments } from "react-icons/md";
+import { MdOutlineEmojiTransportation, MdOutlinePayments, MdOutlineSell } from "react-icons/md";
 import { PiUserListDuotone, PiTargetDuotone, PiUsersFourFill } from "react-icons/pi";
 import { VscRepo } from "react-icons/vsc";
 import { MdOutlineInterests } from "react-icons/md";
@@ -16,7 +16,7 @@ import { RiListUnordered } from "react-icons/ri";
 import { TbLayoutDistributeVertical } from "react-icons/tb";
 import { FaHandHoldingMedical } from "react-icons/fa";
 import { CgUserList } from "react-icons/cg";
-import { FaUsers } from "react-icons/fa6";
+import { FaScaleBalanced, FaUsers } from "react-icons/fa6";
 import DayBook from './DayBook';
 
 
@@ -59,7 +59,7 @@ export const Sidebar = () => {
                                 </ul>
                             </details>
                         </li>
-                        <li><Link href="/dp-dist-report"><TbReportSearch size={20} /> DELIVERY REPORT</Link></li>
+                        <li><Link href="/dp-dist-report"><MdOutlineSell size={20} /> SALE REPORT</Link></li>
                         <li>
                             <details>
                                 <summary><MdOutlinePayments size={20} /> PAYMENT REPORT</summary>
@@ -129,6 +129,7 @@ export const Sidebar = () => {
                             </details>
                         </li> */}
                         <li><Link href="/monthly-profit"><MdOutlineInterests size={20} /> PROFIT / LOSS</Link></li>
+                        <li><Link href="/balance-sheet"><FaScaleBalanced size={20} /> BALANCE SHEET</Link></li>
                         <li><Link href="/adminstration"><GrUserAdmin size={20} /> ADMINSTRATION</Link></li>
 
                     </ul>

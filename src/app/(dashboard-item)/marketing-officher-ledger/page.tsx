@@ -174,7 +174,7 @@ const Page = () => {
                                     <tr>
                                         <th>SN</th>
                                         <th>PARTICULARS</th>
-                                        <th>OPENING BALANCE</th>
+                                        <th>OPENING</th>
                                         <th>QTY</th>
                                         <th>DEBIT</th>
                                         <th>CREDIT</th>

@@ -552,7 +552,9 @@ const Page = () => {
           </label>
 
           <div className="flex gap-2">
-            <ExcelExport tableRef={contentToPrint} fileName="distribution_report" />
+            <a href="#sr_summary" className="btn btn-ghost text-lg">Marketing Officer Summary</a>
+            <a href="#sale_summary" className="btn btn-ghost text-lg">Sale Summary</a>
+            <ExcelExport tableRef={contentToPrint} fileName="sale_report" />
             <Print contentRef={contentToPrint} />
           </div>
         </div>
@@ -562,7 +564,7 @@ const Page = () => {
           <div className="overflow-x-auto w-full">
             <div ref={contentToPrint} className="flex-1 p-5">
               <div className="flex flex-col items-center pb-5">
-                <h4 className="font-bold">DELIVERY REPORT</h4>
+                <h4 className="font-bold">SALE REPORT</h4>
                 <CurrentMonthYear />
               </div>
 
@@ -706,6 +708,36 @@ const Page = () => {
                 </tfoot>
               </table>
             </div>
+          </div>
+        </div>
+      </div>
+      <div className="modal sm:modal-middle" role="dialog" id="sale_summary">
+        <div className="modal-box">
+          <div className="flex w-full items-center justify-center p-2">
+           
+            <DateToDate routePath="/sale-summary" />
+          </div>
+          <div className="modal-action">
+            <a href="#" className="btn btn-square btn-ghost">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-10 h-10">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div className="modal sm:modal-middle" role="dialog" id="sr_summary">
+        <div className="modal-box">
+          <div className="flex w-full items-center justify-center p-2">
+           
+            <DateToDate routePath="/sr-summary" />
+          </div>
+          <div className="modal-action">
+            <a href="#" className="btn btn-square btn-ghost">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-10 h-10">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+              </svg>
+            </a>
           </div>
         </div>
       </div>
