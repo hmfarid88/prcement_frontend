@@ -11,7 +11,7 @@ type Product = {
     srname: string;
     month: number;
     saleQty: number;
-    totalSale: number;
+    totalValue: number;
 };
 
 
@@ -43,7 +43,7 @@ const Page = () => {
     }, [apiBaseUrl, username, startDate, endDate]);
 
     const totalSale = filteredProducts.reduce((total, product) => {
-        return total + product?.totalSale;
+        return total + product?.totalValue;
     }, 0);
 
     const MONTH_NAMES = [
@@ -91,17 +91,17 @@ const Page = () => {
                                         {filteredProducts?.map((product, index) => (
                                             <tr key={index}>
                                                 <td>{index + 1}</td>
-                                                <td className="uppercase">{product.srname}</td>
-                                                <td className="uppercase">{MONTH_NAMES[product.month - 1]}</td>
-                                                <td>{Number(product?.totalSale.toFixed(2)).toLocaleString('en-IN')}</td>
-                                                <td>{Number(product?.totalSale.toFixed(2)).toLocaleString('en-IN')}</td>
+                                                <td className="uppercase">{product?.srname}</td>
+                                                <td className="uppercase">{MONTH_NAMES[product?.month - 1]}</td>
+                                                <td>{Number(product?.totalValue.toFixed(2)).toLocaleString('en-IN')}</td>
+                                                <td>{Number(product?.totalValue.toFixed(2)).toLocaleString('en-IN')}</td>
                                             </tr>
                                         ))}
                                     </tbody>
 
                                     <tfoot>
                                         <tr className="font-semibold text-lg">
-                                            <td colSpan={2}></td>
+                                            <td colSpan={3}></td>
                                             <td>TOTAL</td>
                                             <td>{Number(totalSale?.toFixed(2)).toLocaleString('en-IN')}</td>
 
