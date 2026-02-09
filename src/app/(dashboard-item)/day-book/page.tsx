@@ -20,6 +20,7 @@ type Product = {
     date: string;
     customer: string;
     productName: string;
+    note: string;
     dpRate: number;
     productQty: number;
 };
@@ -178,7 +179,7 @@ const DayBook = () => {
                                             <tr key={index}>
                                                 <td>{(payments?.length || 0) + index + 1}</td>
                                                 <td>{sales.date}</td>
-                                                <td className='capitalize'>{sales.customer}, {sales.productName}, {sales.productQty}</td>
+                                                <td className='capitalize'>{sales.customer}, {sales.productName}, {sales.productQty}, {sales.note}</td>
                                                 <td>{(sales.dpRate * sales.productQty).toLocaleString('en-IN')}</td>
                                             </tr>
                                         ))}
