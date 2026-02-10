@@ -140,7 +140,7 @@ const DayBook = () => {
                                             <tr key={index}>
                                                <td>{(receives?.length || 0) + index + 1}</td>
                                                 <td>{purse.date}</td>
-                                                <td className='capitalize'>{purse.supplier}, {purse.productName}, {purse.productQty}</td>
+                                                <td className='capitalize text-wrap max-w-44'>{purse.supplier}, {purse.productName}, {purse.productQty}</td>
                                                 <td>{(purse.costPrice * purse.productQty).toLocaleString('en-IN')}</td>
                                             </tr>
                                         ))}
@@ -179,7 +179,7 @@ const DayBook = () => {
                                             <tr key={index}>
                                                 <td>{(payments?.length || 0) + index + 1}</td>
                                                 <td>{sales.date}</td>
-                                                <td className='capitalize'>{sales.customer}, {sales.productName}, {sales.productQty}, {sales.note}</td>
+                                                <td className='capitalize text-wrap w-44'>{sales.customer}, {sales.productName}, {sales.productQty}, {sales.note}</td>
                                                 <td>{(sales.dpRate * sales.productQty).toLocaleString('en-IN')}</td>
                                             </tr>
                                         ))}
