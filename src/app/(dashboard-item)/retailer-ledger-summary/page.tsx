@@ -21,7 +21,7 @@ const Page = () => {
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
     const uname = useAppSelector((state) => state.username.username);
     const username = uname ? uname.username : 'Guest';
-
+    const [groupByCategory, setGroupByCategory] = useState(false);
     const contentToPrint = useRef(null);
     const handlePrint = useReactToPrint({
         content: () => contentToPrint.current,
@@ -29,8 +29,27 @@ const Page = () => {
     const [filterCriteria, setFilterCriteria] = useState('');
     const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
     const [allProducts, setAllProducts] = useState<Product[]>([]);
+    const groupedData = Object.values(
+        filteredProducts.reduce((acc: any, item) => {
 
- 
+            const key = item.category || "Unknown";
+
+            if (!acc[key]) {
+                acc[key] = {
+                    category: key,
+                    debit: 0,
+                    credit: 0
+                };
+            }
+
+            acc[key].debit += item.debit;
+            acc[key].credit += item.credit;
+
+            return acc;
+
+        }, {})
+    );
+
     useEffect(() => {
         fetch(`${apiBaseUrl}/retailer/retailerBalance`)
             .then(response => response.json())
@@ -74,6 +93,12 @@ const Page = () => {
                         </svg>
                     </label>
                     <div className="flex gap-2">
+                        <button
+                            onClick={() => setGroupByCategory(!groupByCategory)}
+                            className="btn btn-sm btn-primary mt-2"
+                        >
+                            {groupByCategory ? "Normal View" : "Group View"}
+                        </button>
                         <ExcelExport tableRef={contentToPrint} fileName="retailer_ledger_summary" />
                         <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
                     </div>
@@ -95,9 +120,8 @@ const Page = () => {
                                         <th>MARKET CREDIT</th>
                                     </tr>
                                 </thead>
-
                                 <tbody>
-                                    {filteredProducts?.map((product, index) => (
+                                    {!groupByCategory && filteredProducts?.map((product, index) => (
                                         <tr key={index}>
                                             <td>{index + 1}</td>
                                             <td>{product?.category}</td>
@@ -107,6 +131,18 @@ const Page = () => {
                                             <td>{product?.credit}</td>
                                         </tr>
                                     ))}
+
+                                    {groupByCategory && groupedData.map((item: any, index) => (
+                                        <tr key={index}>
+                                            <td>{index + 1}</td>
+                                            <td>{item.category}</td>
+                                            <td>-</td>
+                                            <td>-</td>
+                                            <td>{item.debit}</td>
+                                            <td>{item.credit}</td>
+                                        </tr>
+                                    ))}
+
                                 </tbody>
 
                                 <tfoot>
