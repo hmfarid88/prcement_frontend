@@ -104,7 +104,30 @@ const Page = () => {
     const totalTotal = filteredProducts.reduce((total, product) => {
         return total + product?.totalValue;
     }, 0);
+    type WarehouseGroup = {
+        products: Product[];
+        totalClosingQty: number;
+        totalValue: number;
+    };
 
+    const warehouseGroups: Record<string, WarehouseGroup> = {};
+
+    filteredProducts?.forEach((product) => {
+        const warehouse = product.warehouse;
+
+        if (!warehouseGroups[warehouse]) {
+            warehouseGroups[warehouse] = {
+                products: [],
+                totalClosingQty: 0,
+                totalValue: 0,
+            };
+        }
+
+        warehouseGroups[warehouse].products.push(product);
+        warehouseGroups[warehouse].totalClosingQty += product.presentQty;
+        warehouseGroups[warehouse].totalValue += product.totalValue;
+    });
+    let serialNo = 1;
 
     return (
         <div className="container-2xl">
@@ -164,10 +187,11 @@ const Page = () => {
                                             <th>CLOSING</th>
                                             <th>AVE RATE</th>
                                             <th>VALUE</th>
+                                            <th>SUMMARY</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {filteredProducts?.map((product, index) => (
+                                        {/* {filteredProducts?.map((product, index) => (
                                             <tr key={index}>
                                                 <td>{index + 1}</td>
                                                 <td className="uppercase">{product.warehouse}</td>
@@ -180,7 +204,33 @@ const Page = () => {
                                                 <td>{Number(product?.totalValue.toFixed(2)).toLocaleString('en-IN')}</td>
 
                                             </tr>
-                                        ))}
+                                        ))} */}
+
+                                        {Object.entries(warehouseGroups)?.map(([warehouse, { products, totalClosingQty, totalValue }]) => {
+                                            return products.map((product, idx) => (
+                                                <tr key={`${warehouse}-${idx}`}>
+                                                    <td>{serialNo++}</td>
+                                                    <td className="uppercase">{product.warehouse}</td>
+                                                    <td className="uppercase">{product.productName}</td>
+                                                    <td>{product.previousQty}</td>
+                                                    <td>{product.todayEntryQty}</td>
+                                                    <td>{product.todaySaleQty}</td>
+                                                    <td>{product.presentQty}</td>
+                                                    <td>{product.costPrice}</td>
+                                                    <td>{product.totalValue}</td>
+
+                                                    {idx === 0 && (
+                                                        <td rowSpan={products.length} className="bg-base-200 text-center">
+                                                            <div className="border border-slate-700 p-2">
+                                                                <div className="font-bold">{warehouse}</div>
+                                                                <div>Closing Qty: {totalClosingQty.toLocaleString("en-IN")}</div>
+                                                                <div>Value: {Number((totalValue).toFixed(2)).toLocaleString("en-IN")}</div>
+                                                            </div>
+                                                        </td>
+                                                    )}
+                                                </tr>
+                                            ));
+                                        })}
                                     </tbody>
 
                                     <tfoot>

@@ -1,4 +1,5 @@
 "use client"
+import ExcelExport from '@/app/components/ExcellGeneration';
 import { useAppSelector } from '@/app/store';
 import { useSearchParams } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react'
@@ -66,7 +67,8 @@ const CashBook = () => {
 
   return (
     <div className='container min-h-screen'>
-      <div className="flex justify-between pl-5 pr-5">
+      <div className="flex gap-4 pl-5 pr-5">
+        <ExcelExport tableRef={contentToPrint} fileName="cash_book" />
         <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
       </div>
       <div className="w-full card">

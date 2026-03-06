@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import DateToDate from "@/app/components/DateToDate";
 import ExcelExport from "@/app/components/ExcellGeneration";
 import CurrentMonthYear from "@/app/components/CurrentMonthYear";
+import Link from "next/link";
 
 type Product = {
   category: string;
@@ -153,6 +154,7 @@ const Page = () => {
             </svg>
           </label>
           <div className="flex gap-2">
+            <Link href="/retailer-ledger-summary">SUMMARY</Link>
             <ExcelExport tableRef={contentToPrint} fileName="retailer_ledger" />
             <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
           </div>
