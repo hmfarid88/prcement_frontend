@@ -212,18 +212,18 @@ const Page = () => {
                                                     <td>{serialNo++}</td>
                                                     <td className="uppercase">{product.warehouse}</td>
                                                     <td className="uppercase">{product.productName}</td>
-                                                    <td>{product.previousQty}</td>
-                                                    <td>{product.todayEntryQty}</td>
-                                                    <td>{product.todaySaleQty}</td>
-                                                    <td>{product.presentQty}</td>
-                                                    <td>{product.costPrice}</td>
-                                                    <td>{product.totalValue}</td>
+                                                    <td>{Number(product.previousQty?.toFixed(2)).toLocaleString('en-IN')}</td>
+                                                    <td>{Number(product.todayEntryQty?.toFixed(2)).toLocaleString('en-IN')}</td>
+                                                    <td>{Number(product.todaySaleQty?.toFixed(2)).toLocaleString('en-IN')}</td>
+                                                    <td>{Number(product.presentQty?.toFixed(2)).toLocaleString('en-IN')}</td>
+                                                    <td>{Number(product.costPrice?.toFixed(2)).toLocaleString('en-IN')}</td>
+                                                    <td>{Number(product.totalValue?.toFixed(2)).toLocaleString('en-IN')}</td>
 
                                                     {idx === 0 && (
                                                         <td rowSpan={products.length} className="bg-base-200 text-center">
                                                             <div className="border border-slate-700 p-2">
                                                                 <div className="font-bold">{warehouse}</div>
-                                                                <div>Closing Qty: {totalClosingQty.toLocaleString("en-IN")}</div>
+                                                                <div>Closing Qty: {Number(totalClosingQty?.toFixed(2)).toLocaleString("en-IN")}</div>
                                                                 <div>Value: {Number((totalValue).toFixed(2)).toLocaleString("en-IN")}</div>
                                                             </div>
                                                         </td>
