@@ -154,7 +154,7 @@ const Page = () => {
             </svg>
           </label>
           <div className="flex gap-2">
-            <Link href="/retailer-ledger-summary">SUMMARY</Link>
+            <Link href="/retailer-ledger-summary" ><button className="btn btn-ghost">SUMMARY</button></Link>
             <ExcelExport tableRef={contentToPrint} fileName="retailer_ledger" />
             <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
           </div>

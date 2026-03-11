@@ -101,7 +101,6 @@ const Page = () => {
                                 className="input input-bordered"
                             />
                         </label>
-
                         <label className="form-control w-full max-w-xs">
                             <div className="label">
                                 <span className="label-text-alt">END DATE</span>
@@ -115,16 +114,13 @@ const Page = () => {
                                 className="input input-bordered"
                             />
                         </label>
-
                         <label className="form-control w-full max-w-xs">
                             <div className="label">
                                 <span className="label-text-alt">SEARCH</span>
                             </div>
                             <button onClick={handleSubmit} className='btn btn-success'><IoSearch size={30} /></button>
                         </label>
-
                     </div>
-
                 </div>
                 <div className="flex w-full justify-between pl-5 pr-5 pt-1">
                     <label className="input input-bordered flex max-w-xs  items-center gap-2">
