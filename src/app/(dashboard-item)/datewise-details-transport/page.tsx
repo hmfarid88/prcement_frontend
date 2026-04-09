@@ -2,11 +2,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { FcPrint } from "react-icons/fc";
 import { useReactToPrint } from 'react-to-print';
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import CurrentDate from "@/app/components/CurrentDate";
 import ExcelExport from "@/app/components/ExcellGeneration";
-import { IoSearch } from "react-icons/io5";
-import { toast } from "react-toastify";
-import CurrentMonthYear from "@/app/components/CurrentMonthYear";
 
 type Product = {
     date: string;
@@ -21,34 +19,12 @@ type Product = {
 const Page = () => {
 
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-    const router = useRouter();
     const searchParams = useSearchParams();
     const transport = searchParams.get('transport');
     const username = searchParams.get('username');
-    const [maxDate, setMaxDate] = useState('');
+    const startDate = searchParams.get('startDate');
+    const endDate = searchParams.get('endDate');
 
-    useEffect(() => {
-        const today = new Date();
-        const year = today.getFullYear();
-        const month = String(today.getMonth() + 1).padStart(2, '0');
-        const day = String(today.getDate()).padStart(2, '0');
-        const formattedDate = `${year}-${month}-${day}`;
-        setMaxDate(formattedDate);
-    }, []);
-
-    const [startDate, setStartDate] = useState("");
-    const [endDate, setEndDate] = useState("");
-
-    const handleSubmit = (e: any) => {
-        e.preventDefault();
-        if (!startDate || !endDate) {
-            toast.warning("Start date and end date required !");
-            return;
-        }
-        router.push(`/datewise-details-transport?username=${encodeURIComponent(username ?? "")}&transport=${encodeURIComponent(transport ?? "")}&startDate=${startDate}&endDate=${endDate}`);
-        setStartDate("");
-        setEndDate("");
-    };
     const contentToPrint = useRef(null);
     const handlePrint = useReactToPrint({
         content: () => contentToPrint.current,
@@ -59,14 +35,14 @@ const Page = () => {
 
 
     useEffect(() => {
-        fetch(`${apiBaseUrl}/supplierBalance/transport-details?transport=${encodeURIComponent(transport ?? "")}&username=${encodeURIComponent(username ?? "")}`)
+        fetch(`${apiBaseUrl}/supplierBalance/datewise-transport-details?transport=${encodeURIComponent(transport ?? "")}&username=${encodeURIComponent(username ?? "")}&startDate=${startDate}&endDate=${endDate}`)
             .then(response => response.json())
             .then(data => {
                 setAllProducts(data);
                 setFilteredProducts(data);
             })
             .catch(error => console.error('Error fetching products:', error));
-    }, [apiBaseUrl, username, transport]);
+    }, [apiBaseUrl, username, transport, startDate, endDate]);
 
 
     useEffect(() => {
@@ -92,47 +68,9 @@ const Page = () => {
                             <path fillRule="evenodd" d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z" clipRule="evenodd" />
                         </svg>
                     </label>
-                    <div className="flex">
-                        <div className='flex flex-col md:flex-row w-full gap-3'>
-                            <label className="form-control w-full max-w-xs">
-                                <div className="label">
-                                    <span className="label-text-alt">START DATE</span>
-                                </div>
-                                <input
-                                    type="date"
-                                    name="date"
-                                    onChange={(e: any) => setStartDate(e.target.value)}
-                                    max={maxDate}
-                                    value={startDate}
-                                    className="input input-bordered"
-                                />
-                            </label>
-
-                            <label className="form-control w-full max-w-xs">
-                                <div className="label">
-                                    <span className="label-text-alt">END DATE</span>
-                                </div>
-                                <input
-                                    type="date"
-                                    name="date"
-                                    onChange={(e: any) => setEndDate(e.target.value)}
-                                    max={maxDate}
-                                    value={endDate}
-                                    className="input input-bordered"
-                                />
-                            </label>
-
-                            <label className="form-control w-full max-w-xs">
-                                <div className="label">
-                                    <span className="label-text-alt">SEARCH</span>
-                                </div>
-                                <button onClick={handleSubmit} className='btn btn-success'><IoSearch size={30} /></button>
-                            </label>
-                        </div>
-                    </div>
                     <div className="flex gap-2">
-                        <ExcelExport tableRef={contentToPrint} fileName="details_transport_report" />
-                        <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
+                    <ExcelExport tableRef={contentToPrint} fileName="details_transport_report" />
+                    <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
                     </div>
                 </div>
                 <div className="flex w-full justify-center">
@@ -140,7 +78,7 @@ const Page = () => {
                         <div ref={contentToPrint} className="flex-1 p-5">
                             <div className="flex flex-col items-center pb-5"><h4 className="font-bold">TRANSPORT LEDGER</h4>
                                 <h4 className="font-bold capitalize">Transport : {transport}</h4>
-                                <h4><CurrentMonthYear/></h4>
+                                <h4>{startDate} TO {endDate}</h4>
                             </div>
                             <table className="table table-xs md:table-sm table-pin-rows table-zebra">
                                 <thead className="sticky top-16 bg-base-100">

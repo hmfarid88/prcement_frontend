@@ -73,7 +73,7 @@ export default async function middleware(req: NextRequest) {
     roleRouteMap[role].includes(path)
   );
 
-  const cookie = cookies().get('session_charu')?.value;
+  const cookie = cookies().get('session_pr')?.value;
 
   // If no session cookie is found and the route is protected, redirect to the home page
   if (!cookie && protectingRoles.length > 0) {
