@@ -65,14 +65,14 @@ useEffect(() => {
   };
 
     useEffect(() => {
-        fetch(`${apiBaseUrl}/retailer/retailer-details-currentmonth?retailerName=${encodeURIComponent(retailerName ?? "")}&username=${encodeURIComponent(username ?? "")}`)
+        fetch(`${apiBaseUrl}/retailer/retailer-details-currentmonth?retailerName=${encodeURIComponent(retailerName ?? "")}`)
             .then(response => response.json())
             .then(data => {
                 setAllProducts(data);
                 setFilteredProducts(data);
             })
             .catch(error => console.error('Error fetching products:', error));
-    }, [apiBaseUrl, username, retailerName]);
+    }, [apiBaseUrl, retailerName]);
 
   useEffect(() => {
                 const searchWords = filterCriteria.toLowerCase().split(" ");

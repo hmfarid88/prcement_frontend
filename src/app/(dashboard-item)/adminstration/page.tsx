@@ -24,10 +24,10 @@ const Page = () => {
             <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6">
               <ShopInfo />
             </div>
-            <input type="radio" name="my_tabs_2" role="tab" className="tab" aria-label="CLOSING SETUP" />
+            {/* <input type="radio" name="my_tabs_2" role="tab" className="tab" aria-label="CLOSING SETUP" />
             <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6">
               <ClosingSetup />
-            </div>
+            </div> */}
             <input type="radio" name="my_tabs_2" role="tab" className="tab" aria-label="TARGET SETUP" />
             <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6">
               <EmployeeTarget />

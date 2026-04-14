@@ -4,7 +4,6 @@ import { FcPrint } from "react-icons/fc";
 import { useReactToPrint } from 'react-to-print';
 import { useSearchParams } from "next/navigation";
 import ExcelExport from "@/app/components/ExcellGeneration";
-import CurrentMonthYear from "@/app/components/CurrentMonthYear";
 
 type Product = {
     date: string;
@@ -15,6 +14,7 @@ type Product = {
     productValue: number;
     payment: number;
     commission: number;
+    balance: number;
 
 };
 
@@ -24,7 +24,6 @@ const Page = () => {
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
     const searchParams = useSearchParams();
-    const salesPerson = searchParams.get('salesPerson');
     const retailerName = searchParams.get('retailerName');
     const startDate = searchParams.get('startDate');
     const endDate = searchParams.get('endDate');
@@ -39,14 +38,15 @@ const Page = () => {
 
 
     useEffect(() => {
-        fetch(`${apiBaseUrl}/retailer/sales-datewise-retailer-details?retailerName=${encodeURIComponent(retailerName ?? "")}&salesPerson=${encodeURIComponent(salesPerson ?? "")}&startDate=${startDate}&endDate=${endDate}`)
+         fetch(`${apiBaseUrl}/retailer/retailer-details-datetodate?retailerName=${encodeURIComponent(retailerName ?? "")}&startDate=${startDate}&endDate=${endDate}`)
+        // fetch(`${apiBaseUrl}/retailer/sales-datewise-retailer-details?retailerName=${encodeURIComponent(retailerName ?? "")}&salesPerson=${encodeURIComponent(salesPerson ?? "")}&startDate=${startDate}&endDate=${endDate}`)
             .then(response => response.json())
             .then(data => {
                 setAllProducts(data);
                 setFilteredProducts(data);
             })
             .catch(error => console.error('Error fetching products:', error));
-    }, [apiBaseUrl, retailerName, salesPerson, startDate, endDate]);
+    }, [apiBaseUrl, retailerName, startDate, endDate]);
 
 
     useEffect(() => {
@@ -65,7 +65,7 @@ const Page = () => {
     const totalValue = filteredProducts.reduce((acc, item) => acc + item.productValue, 0);
     const totalPayment = filteredProducts.reduce((acc, item) => acc + item.payment, 0);
     const totalComm = filteredProducts.reduce((acc, item) => acc + item.commission, 0);
-    let cumulativeBalance = 0;
+   
     return (
         <div className="container-2xl">
             <div className="flex flex-col w-full min-h-[calc(100vh-228px)] p-4 items-center justify-center">
@@ -77,8 +77,8 @@ const Page = () => {
                         </svg>
                     </label>
                     <div className="flex gap-2">
-                    <ExcelExport tableRef={contentToPrint} fileName="retailer_ledger" />
-                    <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
+                        <ExcelExport tableRef={contentToPrint} fileName="retailer_ledger" />
+                        <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
                     </div>
                 </div>
                 <div className="flex w-full justify-center">
@@ -104,27 +104,22 @@ const Page = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {filteredProducts?.map((product, index) => {
-                                        const currentBalance = product.productValue - product.payment - product.commission;
-                                        cumulativeBalance += currentBalance;
-
-                                        return (
-                                            <tr key={index}>
-                                                <td>{index + 1}</td>
-                                                <td>{product?.date}</td>
-                                                <td>{product?.note}</td>
-                                                <td>{product?.productName}</td>
-                                                <td>{Number(product?.productQty.toFixed(2)).toLocaleString('en-IN')}</td>
-                                                <td>{Number(product?.dpRate.toFixed(2)).toLocaleString('en-IN')}</td>
-                                                <td>{Number(product?.productValue.toFixed(2)).toLocaleString('en-IN')}</td>
-                                                <td>{Number(product?.payment.toFixed(2)).toLocaleString('en-IN')}</td>
-                                                <td>{Number(product?.commission.toFixed(2)).toLocaleString('en-IN')}</td>
-                                                <td>{Number(cumulativeBalance.toFixed(2)).toLocaleString('en-IN')}</td>
-
-                                            </tr>
-                                        );
-                                    })}
+                                    {filteredProducts?.map((product, index) => (
+                                        <tr key={index}>
+                                            <td>{index + 1}</td>
+                                            <td>{product?.date}</td>
+                                            <td className="capitalize">{product?.note}</td>
+                                            <td>{product?.productName}</td>
+                                            <td>{Number(product?.productQty?.toFixed(2) || 0).toLocaleString('en-IN')}</td>
+                                            <td>{Number(product?.dpRate?.toFixed(2) || 0).toLocaleString('en-IN')}</td>
+                                            <td>{Number(product?.productValue?.toFixed(2) || 0).toLocaleString('en-IN')}</td>
+                                            <td>{Number(product?.payment?.toFixed(2) || 0).toLocaleString('en-IN')}</td>
+                                            <td>{Number(product?.commission?.toFixed(2) || 0).toLocaleString('en-IN')}</td>
+                                            <td>{Number(product?.balance?.toFixed(2) || 0).toLocaleString('en-IN')}</td>
+                                        </tr>
+                                    ))}
                                 </tbody>
+
                                 <tfoot>
                                     <tr className="font-semibold text-lg">
                                         <td colSpan={4}></td>
@@ -135,6 +130,7 @@ const Page = () => {
                                         <td>{Number(totalComm.toFixed(2)).toLocaleString('en-IN')}</td>
                                     </tr>
                                 </tfoot>
+
                             </table>
                         </div>
                     </div>

@@ -41,7 +41,6 @@ const Page = () => {
         router.push(`/details-retailer-ledger?retailerName=${encodeURIComponent(category)}&username=${encodeURIComponent(username)}`);
     };
 
-
     useEffect(() => {
         fetch(`${apiBaseUrl}/retailer/datewiseMarketRetailerBalance?salesPerson=${encodeURIComponent(salesPerson ?? "")}&startDate=${startDate}&endDate=${endDate}`)
             .then(response => response.json())

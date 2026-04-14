@@ -39,7 +39,7 @@ const Page = () => {
 
 
     useEffect(() => {
-        fetch(`${apiBaseUrl}/retailer/retailer-details-datetodate?username=${encodeURIComponent(username ?? "")}&retailerName=${encodeURIComponent(retailerName ?? "")}&startDate=${startDate}&endDate=${endDate}`)
+        fetch(`${apiBaseUrl}/retailer/retailer-details-datetodate?retailerName=${encodeURIComponent(retailerName ?? "")}&startDate=${startDate}&endDate=${endDate}`)
             .then(response => response.json())
             .then(data => {
                 setAllProducts(data);
@@ -47,7 +47,7 @@ const Page = () => {
                 console.log("fetched data"+data)
             })
             .catch(error => console.error('Error fetching products:', error));
-    }, [apiBaseUrl, username, retailerName, startDate, endDate]);
+    }, [apiBaseUrl, retailerName, startDate, endDate]);
 
 
     useEffect(() => {

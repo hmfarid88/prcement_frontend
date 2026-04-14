@@ -17,6 +17,8 @@ type Product = {
     productValue: number;
     payment: number;
     commission: number;
+    balance: number;
+    
 };
 
 const Page = () => {
@@ -47,7 +49,7 @@ const Page = () => {
             return;
         }
 
-        router.push(`/sales-datewise-details-retail-ledger?salesPerson=${encodeURIComponent(salesPerson ?? "")}&retailerName=${encodeURIComponent(retailerName ?? "")}&startDate=${startDate}&endDate=${endDate}`);
+        router.push(`/sales-datewise-details-retail-ledger?retailerName=${encodeURIComponent(retailerName ?? "")}&startDate=${startDate}&endDate=${endDate}`);
         setStartDate("");
         setEndDate("");
     };
@@ -61,7 +63,8 @@ const Page = () => {
 
 
     useEffect(() => {
-        fetch(`${apiBaseUrl}/retailer/sales-retailer-details?retailerName=${encodeURIComponent(retailerName ?? "")}&salesPerson=${encodeURIComponent(salesPerson ?? "")}`)
+        fetch(`${apiBaseUrl}/retailer/retailer-details-currentmonth?retailerName=${encodeURIComponent(retailerName ?? "")}`)
+        // fetch(`${apiBaseUrl}/retailer/sales-retailer-details?retailerName=${encodeURIComponent(retailerName ?? "")}&salesPerson=${encodeURIComponent(salesPerson ?? "")}`)
             .then(response => response.json())
             .then(data => {
                 setAllProducts(data);
@@ -87,7 +90,7 @@ const Page = () => {
     const totalValue = filteredProducts.reduce((acc, item) => acc + item.productValue, 0);
     const totalPayment = filteredProducts.reduce((acc, item) => acc + item.payment, 0);
     const totalComm = filteredProducts.reduce((acc, item) => acc + item.commission, 0);
-    let cumulativeBalance = 0;
+    
     return (
         <div className="container-2xl">
             <div className="flex flex-col w-full min-h-[calc(100vh-228px)] p-4 items-center justify-center">
@@ -164,27 +167,22 @@ const Page = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {filteredProducts?.map((product, index) => {
-                                        const currentBalance = product.productValue - product.payment - product.commission;
-                                        cumulativeBalance += currentBalance;
-
-                                        return (
-                                            <tr key={index}>
-                                                <td>{index + 1}</td>
-                                                <td>{product?.date}</td>
-                                                <td>{product?.note}</td>
-                                                <td>{product?.productName}</td>
-                                                <td>{Number(product?.productQty.toFixed(2)).toLocaleString('en-IN')}</td>
-                                                <td>{Number(product?.dpRate.toFixed(2)).toLocaleString('en-IN')}</td>
-                                                <td>{Number(product?.productValue.toFixed(2)).toLocaleString('en-IN')}</td>
-                                                <td>{Number(product?.payment.toFixed(2)).toLocaleString('en-IN')}</td>
-                                                <td>{Number(product?.commission.toFixed(2)).toLocaleString('en-IN')}</td>
-                                                <td>{Number(cumulativeBalance.toFixed(2)).toLocaleString('en-IN')}</td>
-
-                                            </tr>
-                                        );
-                                    })}
+                                    {filteredProducts?.map((product, index) => (
+                                        <tr key={index}>
+                                            <td>{index + 1}</td>
+                                            <td>{product?.date}</td>
+                                            <td className="capitalize">{product?.note}</td>
+                                            <td>{product?.productName}</td>
+                                            <td>{Number(product?.productQty?.toFixed(2) || 0).toLocaleString('en-IN')}</td>
+                                            <td>{Number(product?.dpRate?.toFixed(2) || 0).toLocaleString('en-IN')}</td>
+                                            <td>{Number(product?.productValue?.toFixed(2) || 0).toLocaleString('en-IN')}</td>
+                                            <td>{Number(product?.payment?.toFixed(2) || 0).toLocaleString('en-IN')}</td>
+                                            <td>{Number(product?.commission?.toFixed(2) || 0).toLocaleString('en-IN')}</td>
+                                            <td>{Number(product?.balance?.toFixed(2) || 0).toLocaleString('en-IN')}</td>
+                                        </tr>
+                                    ))}
                                 </tbody>
+
                                 <tfoot>
                                     <tr className="font-semibold text-lg">
                                         <td colSpan={4}></td>
@@ -195,6 +193,7 @@ const Page = () => {
                                         <td>{Number(totalComm.toFixed(2)).toLocaleString('en-IN')}</td>
                                     </tr>
                                 </tfoot>
+                               
                             </table>
                         </div>
                     </div>

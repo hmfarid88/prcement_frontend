@@ -5,18 +5,17 @@ import { FcPrint } from "react-icons/fc";
 import { useReactToPrint } from 'react-to-print';
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import CurrentDate from "@/app/components/CurrentDate";
 import DateToDate from "@/app/components/DateToDate";
 import ExcelExport from "@/app/components/ExcellGeneration";
+import CurrentMonthYear from "@/app/components/CurrentMonthYear";
 
 type Product = {
-  retailerName: string;
-  retailerCode: string;
-  salesPerson: string;
-  totalProductQty: number;
-  totalProductValue: number;
-  totalPayment: number;
-  totalCommission: number;
+ 
+  category: string;
+  qty: number;
+  debit: number;
+  credit: number;
+  openingBalance: number;
 };
 
 
@@ -45,7 +44,8 @@ const Page = () => {
   }
 
   useEffect(() => {
-    fetch(`${apiBaseUrl}/retailer/salesRetailerBalance?salesPerson=${username}`)
+    fetch(`${apiBaseUrl}/retailer/marketwiseRetailerBalance?salesPerson=${encodeURIComponent(username ?? "")}`)
+      // fetch(`${apiBaseUrl}/retailer/salesRetailerBalance?salesPerson=${username}`)
       .then(response => response.json())
       .then(data => {
         setAllProducts(data);
@@ -57,9 +57,8 @@ const Page = () => {
 
   useEffect(() => {
     const filtered = allProducts.filter(product =>
-      (product.retailerName.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
-      (product.retailerCode.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
-      (product.salesPerson.toLowerCase().includes(filterCriteria.toLowerCase()) || '')
+      (product.category.toLowerCase().includes(filterCriteria.toLowerCase()) || '')
+
     );
     setFilteredProducts(filtered);
   }, [filterCriteria, allProducts]);
@@ -68,22 +67,22 @@ const Page = () => {
     setFilterCriteria(e.target.value);
   };
 
-  const totalQty = filteredProducts.reduce((total, product) => {
-    return total + product.totalProductQty;
-  }, 0);
-  const totalValue = filteredProducts.reduce((total, product) => {
-    return total + product.totalProductValue;
-  }, 0);
-  const totalPayment = filteredProducts.reduce((total, product) => {
-    return total + product.totalPayment;
-  }, 0);
-  const totalCommission = filteredProducts.reduce((total, product) => {
-    return total + product.totalCommission;
-  }, 0);
-  const totalBalance = filteredProducts.reduce((total, product) => {
-    return total + product.totalProductValue - product.totalPayment - product.totalCommission;
+  
+  const totalOpening = filteredProducts.reduce((total, product) => {
+    return total + product.openingBalance;
   }, 0);
 
+  const totalQty = filteredProducts.reduce((total, product) => {
+    return total + product.qty;
+  }, 0);
+
+  const totalDebit = filteredProducts.reduce((total, product) => {
+    return total + product.debit;
+  }, 0);
+
+  const totalCredit = filteredProducts.reduce((total, product) => {
+    return total + product.credit;
+  }, 0);
   return (
     <div className="container-2xl">
       <div className="flex flex-col w-full min-h-[calc(100vh-228px)] items-center justify-center p-4">
@@ -104,52 +103,50 @@ const Page = () => {
           <div className="overflow-x-auto">
             <div ref={contentToPrint} className="flex-1 p-5">
               <div className="flex flex-col items-center pb-5"><h4 className="font-bold">RETAILER LEDGER</h4>
-                <h4><CurrentDate /></h4>
+                <h4><CurrentMonthYear /></h4>
               </div>
-              <table className="table table-xs md:table-sm table-pin-rows table-zebra">
+              <table className="table table-md table-pin-rows table-zebra">
                 <thead className="sticky top-16 bg-base-100">
                   <tr>
                     <th>SN</th>
-                    <th>RETAILER NAME</th>
-                    <th>CODE</th>
-                    <th>SALE PERSON</th>
+                    <th>PARTICULARS</th>
+                    <th>OPENING</th>
                     <th>QTY</th>
-                    <th>VALUE</th>
-                    <th>PAYMENT</th>
-                    <th>COMMISSION</th>
-                    <th>ACHIEVED</th>
-                    <th>BALANCE</th>
+                    <th>DEBIT</th>
+                    <th>CREDIT</th>
+                    <th>CLOSING</th>
                     <th>DETAILS</th>
                   </tr>
                 </thead>
+
                 <tbody>
                   {filteredProducts?.map((product, index) => (
                     <tr key={index}>
                       <td>{index + 1}</td>
-                      <td className="uppercase">{product?.retailerName}</td>
-                      <td className="uppercase">{product?.retailerCode}</td>
-                      <td className="uppercase">{product?.salesPerson}</td>
-                      <td>{Number(product?.totalProductQty.toFixed(2)).toLocaleString('en-IN')}</td>
-                      <td>{Number(product?.totalProductValue.toFixed(2)).toLocaleString('en-IN')}</td>
-                      <td>{Number(product?.totalPayment.toFixed(2)).toLocaleString('en-IN')}</td>
-                      <td>{Number(product?.totalCommission.toFixed(2)).toLocaleString('en-IN')}</td>
-                      <td>{Number((product?.totalPayment * 100 / product?.totalProductValue).toFixed(2)).toLocaleString('en-IN')} %</td>
-                      <td>{Number((product?.totalProductValue - product?.totalPayment - product?.totalCommission).toFixed(2)).toLocaleString('en-IN')}</td>
-                      <td><button onClick={() => handleDetails(product?.retailerName)} className="btn btn-xs btn-info">Details</button></td>
-
+                      <td>{product?.category}</td>
+                      <td>{product?.openingBalance}</td>
+                      <td>{product?.qty}</td>
+                      <td>{product?.debit}</td>
+                      <td>{product?.credit}</td>
+                      <td>{product?.openingBalance - product?.debit - product?.credit}</td>
+                      <td>
+                        <button onClick={() => handleDetails(product?.category)} className="btn btn-sm btn-info">Details</button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
+
                 <tfoot>
+
                   <tr className="font-semibold text-lg">
-                    <td colSpan={3}></td>
-                    <td>TOTAL</td>
-                    <td>{totalQty.toLocaleString('en-IN')}</td>
-                    <td>{totalValue.toLocaleString('en-IN')}</td>
-                    <td>{totalPayment.toLocaleString('en-IN')}</td>
-                    <td>{totalCommission.toLocaleString('en-IN')}</td>
                     <td></td>
-                    <td>{totalBalance.toLocaleString('en-IN')}</td>
+                    <td>TOTAL</td>
+                    <td>{totalOpening.toLocaleString('en-IN')}</td>
+                    <td>{totalQty.toLocaleString('en-IN')}</td>
+                    <td>{totalDebit.toLocaleString('en-IN')}</td>
+                    <td>{totalCredit.toLocaleString('en-IN')}</td>
+                    <td>{(totalOpening + totalDebit - totalCredit).toLocaleString('en-IN')}</td>
+                    <td></td>
                   </tr>
                 </tfoot>
               </table>
