@@ -65,7 +65,7 @@ const CashBook = () => {
     return receives.reduce((credit, receive) => credit + (receive.amount), 0);
   };
   const groupedReceives = receives.reduce((acc: Record<string, Receive[]>, curr) => {
-    const key = curr.salesPerson || "Unknown";
+    const key = curr.salesPerson || "Office Receive";
     if (!acc[key]) acc[key] = [];
     acc[key].push(curr);
     return acc;
@@ -107,7 +107,7 @@ const CashBook = () => {
                     {/* {receives?.map((receive, index) => (
                       <tr key={index}>
                         <td>{receive.date}</td>
-                        <td className='capitalize'>{receive.name}|{receive.salesPerson}, {receive.note}</td>
+                        <td className='capitalize'>{receive.name}|{receive.note}</td>
                         <td>{(receive.amount ?? 0).toLocaleString('en-IN')}</td>
                       </tr>
                     ))} */}
