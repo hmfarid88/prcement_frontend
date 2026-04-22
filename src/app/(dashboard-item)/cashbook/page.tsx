@@ -15,6 +15,7 @@ interface Receive {
   date: string;
   name: string;
   note: string;
+  salesPerson: string;
   amount: number;
 }
 
@@ -53,7 +54,6 @@ const CashBook = () => {
   };
 
   const [receives, setReceives] = useState<Receive[]>([]);
-
   useEffect(() => {
     fetch(`${apiBaseUrl}/paymentApi/receives/today?username=${username}&date=${date}`)
       .then(response => response.json())
@@ -64,6 +64,12 @@ const CashBook = () => {
   const totalDebit = () => {
     return receives.reduce((credit, receive) => credit + (receive.amount), 0);
   };
+  const groupedReceives = receives.reduce((acc: Record<string, Receive[]>, curr) => {
+    const key = curr.salesPerson || "Unknown";
+    if (!acc[key]) acc[key] = [];
+    acc[key].push(curr);
+    return acc;
+  }, {});
 
   return (
     <div className='container min-h-screen'>
@@ -98,13 +104,50 @@ const CashBook = () => {
                       <td>BALANCE B/D</td>
                       <td>{(netSumAmount ?? 0).toLocaleString('en-IN')}</td>
                     </tr>
-                    {receives?.map((receive, index) => (
+                    {/* {receives?.map((receive, index) => (
                       <tr key={index}>
                         <td>{receive.date}</td>
-                        <td className='capitalize'>{receive.name}, {receive.note}</td>
+                        <td className='capitalize'>{receive.name}|{receive.salesPerson}, {receive.note}</td>
                         <td>{(receive.amount ?? 0).toLocaleString('en-IN')}</td>
                       </tr>
-                    ))}
+                    ))} */}
+                    {/* GROUPED RECEIVES */}
+                    {Object.entries(groupedReceives).map(([salesPerson, group], gIndex) => {
+                      const groupTotal = group.reduce((sum, item) => sum + (item.amount || 0), 0);
+
+                      return (
+                        <React.Fragment key={gIndex}>
+
+                          {/* Group Header */}
+                          <tr className="bg-gray-100 font-semibold">
+                            <td colSpan={4}>{salesPerson}</td>
+                          </tr>
+
+                          {group.map((receive, index) => (
+                            <tr key={index}>
+                              <td>{receive.date}</td>
+
+                              <td className='capitalize'>
+                                {receive.name} | {receive.note}
+                              </td>
+
+                              {/* ✅ Individual amount */}
+                              <td>
+                                {(receive.amount || 0).toLocaleString('en-IN')}
+                              </td>
+
+                              {/* ✅ Group total (only once) */}
+                              {index === 0 && (
+                                <td rowSpan={group.length} className="font-bold align-top">
+                                  {groupTotal.toLocaleString('en-IN')}
+                                </td>
+                              )}
+                            </tr>
+                          ))}
+
+                        </React.Fragment>
+                      );
+                    })}
                     <tr className='font-semibold'>
                       <td colSpan={1}></td>
                       <td>TOTAL</td>
