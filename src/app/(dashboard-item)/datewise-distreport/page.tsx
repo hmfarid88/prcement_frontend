@@ -658,22 +658,22 @@ const Page = () => {
                                   products.map((p, idx) => (
                                     <tr key={idx} className="text-sm">
                                       <td>{idx + 1}</td>
-                                      <td>{p.date}</td>
+                                      <td>{p?.date}</td>
                                       <td></td>
                                       <td></td>
-                                      <td className="capitalize">{p.customer}</td>
-                                      <td className="capitalize">{p.note}</td>
-                                      <td className="capitalize">{p.productName}</td>
-                                      <td className="uppercase">{p.invoiceNo}</td>
-                                      <td className="uppercase">{p.transport}</td>
-                                      <td className="uppercase">{p.truckNo}</td>
-                                      <td>{p.rent.toLocaleString("en-IN")}</td>
-                                      <td>{p.productQty.toLocaleString("en-IN")}</td>
-                                      <td>{p.dpRate.toLocaleString("en-IN")}</td>
-                                      <td>{(p.dpRate * p.productQty).toLocaleString("en-IN")}</td>
+                                      <td className="capitalize">{p?.customer}</td>
+                                      <td className="capitalize">{p?.note}</td>
+                                      <td className="capitalize">{p?.productName}</td>
+                                      <td className="uppercase">{p?.invoiceNo}</td>
+                                      <td className="uppercase">{p?.transport}</td>
+                                      <td className="uppercase">{p?.truckNo}</td>
+                                      <td>{p?.rent.toLocaleString("en-IN")}</td>
+                                      <td>{p?.productQty.toLocaleString("en-IN")}</td>
+                                      <td>{p?.dpRate.toLocaleString("en-IN")}</td>
+                                      <td>{(p?.dpRate * p?.productQty).toLocaleString("en-IN")}</td>
                                       <td>
                                         <button
-                                          onClick={() => handleEdit(p.productId)}
+                                          onClick={() => handleEdit(p?.productId)}
                                           className="btn btn-xs btn-primary"
                                         >
                                           <MdOutlineEditNote size={16} />
