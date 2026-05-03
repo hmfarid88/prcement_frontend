@@ -189,20 +189,6 @@ const Page = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {/* {filteredProducts?.map((product, index) => (
-                      <tr key={index}>
-                        <td>{index + 1}</td>
-                        <td className="uppercase">{product.warehouse}</td>
-                        <td className="uppercase">{product.productName}</td>
-                        <td>{Number(product?.previousQty.toFixed(2)).toLocaleString('en-IN')}</td>
-                        <td>{Number(product?.todayEntryQty.toFixed(2)).toLocaleString('en-IN')}</td>
-                        <td>{Number(product?.todaySaleQty.toFixed(2)).toLocaleString('en-IN')}</td>
-                        <td>{Number(product?.presentQty.toFixed(2)).toLocaleString('en-IN')}</td>
-                        <td>{Number(product?.costPrice.toFixed(2)).toLocaleString('en-IN')}</td>
-                        <td>{Number(product?.totalValue.toFixed(2)).toLocaleString('en-IN')}</td>
-
-                      </tr>
-                    ))} */}
 
                     {Object.entries(warehouseGroups)?.map(([warehouse, { products, totalClosingQty, totalValue }]) => {
                       return products.map((product, idx) => (

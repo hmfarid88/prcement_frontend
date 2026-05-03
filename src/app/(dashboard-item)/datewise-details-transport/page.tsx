@@ -56,7 +56,9 @@ const Page = () => {
     const handleFilterChange = (e: any) => {
         setFilterCriteria(e.target.value);
     };
-
+    const totalQty = filteredProducts.reduce((sum, p) => sum + (p.productQty || 0), 0);
+    const totalRent = filteredProducts.reduce((sum, p) => sum + (p.rent || 0), 0);
+    const totalPayment = filteredProducts.reduce((sum, p) => sum + (p.payment || 0), 0);
     let cumulativeBalance = 0;
     return (
         <div className="container-2xl">
@@ -69,8 +71,8 @@ const Page = () => {
                         </svg>
                     </label>
                     <div className="flex gap-2">
-                    <ExcelExport tableRef={contentToPrint} fileName="details_transport_report" />
-                    <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
+                        <ExcelExport tableRef={contentToPrint} fileName="details_transport_report" />
+                        <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
                     </div>
                 </div>
                 <div className="flex w-full justify-center">
@@ -111,7 +113,15 @@ const Page = () => {
                                         );
                                     })}
                                 </tbody>
-
+                                <tfoot>
+                                    <tr className="font-bold bg-base-200">
+                                        <td colSpan={3}>TOTAL</td>
+                                        <td>{Number(totalQty.toFixed(2)).toLocaleString('en-IN')}</td>
+                                        <td>{Number(totalRent.toFixed(2)).toLocaleString('en-IN')}</td>
+                                        <td>{Number(totalPayment.toFixed(2)).toLocaleString('en-IN')}</td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>
                             </table>
                         </div>
                     </div>

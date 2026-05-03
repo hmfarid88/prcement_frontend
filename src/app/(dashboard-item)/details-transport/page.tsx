@@ -80,7 +80,9 @@ const Page = () => {
     const handleFilterChange = (e: any) => {
         setFilterCriteria(e.target.value);
     };
-
+    const totalQty = filteredProducts.reduce((sum, p) => sum + (p.productQty || 0), 0);
+    const totalRent = filteredProducts.reduce((sum, p) => sum + (p.rent || 0), 0);
+    const totalPayment = filteredProducts.reduce((sum, p) => sum + (p.payment || 0), 0);
     let cumulativeBalance = 0;
     return (
         <div className="container-2xl">
@@ -140,7 +142,7 @@ const Page = () => {
                         <div ref={contentToPrint} className="flex-1 p-5">
                             <div className="flex flex-col items-center pb-5"><h4 className="font-bold">TRANSPORT LEDGER</h4>
                                 <h4 className="font-bold capitalize">Transport : {transport}</h4>
-                                <h4><CurrentMonthYear/></h4>
+                                <h4><CurrentMonthYear /></h4>
                             </div>
                             <table className="table table-xs md:table-sm table-pin-rows table-zebra">
                                 <thead className="sticky top-16 bg-base-100">
@@ -173,7 +175,15 @@ const Page = () => {
                                         );
                                     })}
                                 </tbody>
-
+                                <tfoot>
+                                    <tr className="font-bold bg-base-200">
+                                        <td colSpan={3}>TOTAL</td>
+                                        <td>{Number(totalQty.toFixed(2)).toLocaleString('en-IN')}</td>
+                                        <td>{Number(totalRent.toFixed(2)).toLocaleString('en-IN')}</td>
+                                        <td>{Number(totalPayment.toFixed(2)).toLocaleString('en-IN')}</td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>
                             </table>
                         </div>
                     </div>
