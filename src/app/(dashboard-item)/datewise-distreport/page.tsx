@@ -511,8 +511,8 @@ const Page = () => {
     (sum, p) => sum + p.dpRate * p.productQty,
     0
   );
-  const totalQty = filteredProducts.reduce((sum, p) => sum + p.productQty, 0);
-  const totalRent = filteredProducts.reduce((sum, p) => sum + p.rent, 0);
+  const totalQty = filteredProducts.reduce((sum, p) => sum + p?.productQty, 0);
+  const totalRent = filteredProducts.reduce((sum, p) => sum + p?.rent, 0);
 
   // Group by Category > Salesperson
   const groupedData = filteredProducts.reduce((acc, product) => {
