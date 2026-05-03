@@ -517,7 +517,11 @@ const Page = () => {
     0
   );
   const totalQty = filteredProducts.reduce((sum, p) => sum + p.productQty, 0);
-  const totalRent = filteredProducts.reduce((sum, p) => sum + p.rent, 0);
+  // const totalRent = filteredProducts.reduce((sum, p) => sum + p.rent, 0);
+  const totalRent = filteredProducts.reduce(
+  (sum, p) => sum + Number(p?.rent || 0),
+  0
+);
 
   // Group by Category > Salesperson
   const groupedData = filteredProducts.reduce((acc, product) => {
@@ -674,10 +678,10 @@ const Page = () => {
                                       <td className="uppercase">{p.invoiceNo}</td>
                                       <td className="uppercase">{p.transport}</td>
                                       <td className="uppercase">{p.truckNo}</td>
-                                      <td>{p.rent.toLocaleString("en-IN")}</td>
-                                      <td>{p.productQty.toLocaleString("en-IN")}</td>
-                                      <td>{p.dpRate.toLocaleString("en-IN")}</td>
-                                      <td>{(p.dpRate * p.productQty).toLocaleString("en-IN")}</td>
+                                      <td>{Number(p?.rent || 0).toLocaleString("en-IN")}</td>
+                                      <td>{Number(p?.productQty || 0).toLocaleString("en-IN")}</td>
+                                      <td>{Number(p?.dpRate || 0).toLocaleString("en-IN")}</td>
+                                      <td>{Number((p?.dpRate || 0) * (p?.productQty || 0)).toLocaleString("en-IN")}</td>
                                       <td>
                                         <button
                                           onClick={() => handleEdit(p.productId)}
