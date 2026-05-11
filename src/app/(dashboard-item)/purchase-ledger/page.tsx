@@ -81,6 +81,7 @@ const Page = () => {
         return total + product.productQty;
     }, 0);
 
+   
     type SupplierGroup = {
         products: Product[];
         totalQty: number;
@@ -101,9 +102,13 @@ const Page = () => {
         }
 
         supplierGroups[supplier].products.push(product);
+
         supplierGroups[supplier].totalQty += product.productQty;
-        supplierGroups[supplier].totalValue += product.productQty * product.costPrice; // value
+
+        supplierGroups[supplier].totalValue +=
+            product.productQty * product.costPrice;
     });
+
     let serialNo = 1;
     return (
         <div className="container-2xl">
@@ -141,55 +146,174 @@ const Page = () => {
 
                                     </tr>
                                 </thead>
+                             
                                 <tbody>
-                                    {/* {filteredProducts?.map((product, index) => (
-                                        <tr key={index} className="capitalize">
-                                            <td>{index + 1}</td>
-                                            <td>{product?.date}</td>
-                                            <td className="capitalize">{product?.supplier}</td>
-                                            <td className="capitalize">{product?.warehouse}</td>
-                                            <td className="capitalize">{product?.productName}</td>
-                                            <td>{Number(product?.purchasePrice?.toFixed(2)).toLocaleString('en-IN')}</td>
-                                            <td>{Number(product?.costPrice?.toFixed(2)).toLocaleString('en-IN')}</td>
-                                            <td>{Number(product?.productQty?.toFixed(2)).toLocaleString('en-IN')}</td>
-                                            <td><button onClick={() => handleEdit(product.productId)} className="btn btn-primary btn-sm"><MdOutlineEditNote size={24} /></button></td>
-                                        </tr>
-                                    ))} */}
+                                    {Object.entries(supplierGroups).map(
+                                        ([supplier, supplierData]) => {
 
-                                    {Object.entries(supplierGroups).map(([supplier, { products, totalQty, totalValue }]) => {
-                                        return products.map((product, idx) => (
-                                            <tr key={`${supplier}-${idx}`} className="capitalize">
-                                                <td>{serialNo++}</td>
-                                                <td>{product?.date}</td>
-                                                <td>{product?.supplier}</td>
-                                                <td>{product?.warehouse}</td>
-                                                <td>{product?.productName}</td>
-                                                <td>{Number(product?.purchasePrice?.toFixed(2)).toLocaleString('en-IN')}</td>
-                                                <td>{Number(product?.costPrice?.toFixed(2)).toLocaleString('en-IN')}</td>
-                                                <td>{Number(product?.productQty?.toFixed(2)).toLocaleString('en-IN')}</td>
-                                                <td>
-                                                    <button onClick={() => handleEdit(product.productId)} className="btn btn-primary btn-sm">
-                                                        <MdOutlineEditNote size={24} />
-                                                    </button>
-                                                </td>
+                                            const { products, totalQty, totalValue } = supplierData;
 
-                                                {/* ✅ Supplier Summary (rowSpan like warehouse) */}
-                                                {idx === 0 && (
-                                                    <td rowSpan={products.length} className="bg-base-200 text-center">
-                                                        <div className="border border-slate-700 p-2">
-                                                            <div className="font-bold">{supplier}</div>
-                                                            <div>
-                                                                Total Qty: {Number(totalQty.toFixed(2)).toLocaleString("en-IN")}
-                                                            </div>
-                                                            <div>
-                                                                Value: {Number(totalValue.toFixed(2)).toLocaleString("en-IN")}
-                                                            </div>
-                                                        </div>
+                                            // PRODUCT SUMMARY
+                                            const productSummary: Record<
+                                                string,
+                                                { qty: number; value: number }
+                                            > = {};
+
+                                            products.forEach((p) => {
+                                                const productName =
+                                                    p.productName || "Unknown";
+
+                                                if (!productSummary[productName]) {
+                                                    productSummary[productName] = {
+                                                        qty: 0,
+                                                        value: 0,
+                                                    };
+                                                }
+
+                                                productSummary[productName].qty +=
+                                                    p.productQty;
+
+                                                productSummary[productName].value +=
+                                                    p.productQty * p.costPrice;
+                                            });
+
+                                            return products.map((product, idx) => (
+                                                <tr
+                                                    key={`${supplier}-${idx}`}
+                                                    className="capitalize"
+                                                >
+                                                    <td>{serialNo++}</td>
+
+                                                    <td>{product?.date}</td>
+
+                                                    <td>{product?.supplier}</td>
+
+                                                    <td>{product?.warehouse}</td>
+
+                                                    <td>{product?.productName}</td>
+
+                                                    <td>
+                                                        {Number(
+                                                            product?.purchasePrice?.toFixed(2)
+                                                        ).toLocaleString("en-IN")}
                                                     </td>
-                                                )}
-                                            </tr>
-                                        ));
-                                    })}
+
+                                                    <td>
+                                                        {Number(
+                                                            product?.costPrice?.toFixed(2)
+                                                        ).toLocaleString("en-IN")}
+                                                    </td>
+
+                                                    <td>
+                                                        {Number(
+                                                            product?.productQty?.toFixed(2)
+                                                        ).toLocaleString("en-IN")}
+                                                    </td>
+
+                                                    <td>
+                                                        <button
+                                                            onClick={() =>
+                                                                handleEdit(product.productId)
+                                                            }
+                                                            className="btn btn-primary btn-sm"
+                                                        >
+                                                            <MdOutlineEditNote size={24} />
+                                                        </button>
+                                                    </td>
+
+                                                    {/* SUMMARY COLUMN */}
+                                                    {idx === 0 && (
+                                                        <td
+                                                            rowSpan={products.length}
+                                                            className="bg-base-200 align-top min-w-[280px]"
+                                                        >
+                                                            <div className="border border-slate-700 p-2 space-y-2">
+
+                                                                {/* SUPPLIER SUMMARY */}
+                                                                <div className="border-b pb-2">
+                                                                    <div className="font-bold text-center">
+                                                                        {supplier}
+                                                                    </div>
+
+                                                                    <div className="text-sm">
+                                                                        Total Qty :
+                                                                        {" "}
+                                                                        {Number(
+                                                                            totalQty.toFixed(2)
+                                                                        ).toLocaleString(
+                                                                            "en-IN"
+                                                                        )}
+                                                                    </div>
+
+                                                                    <div className="text-sm">
+                                                                        Total Value :
+                                                                        {" "}
+                                                                        {Number(
+                                                                            totalValue.toFixed(2)
+                                                                        ).toLocaleString(
+                                                                            "en-IN"
+                                                                        )}
+                                                                    </div>
+                                                                </div>
+
+                                                                {/* PRODUCT WISE SUMMARY */}
+                                                                <div className="space-y-2">
+
+                                                                    {Object.entries(
+                                                                        productSummary
+                                                                    ).map(
+                                                                        (
+                                                                            [
+                                                                                productName,
+                                                                                summary,
+                                                                            ]
+                                                                        ) => (
+                                                                            <div
+                                                                                key={
+                                                                                    productName
+                                                                                }
+                                                                                className="border border-slate-400 p-2 rounded"
+                                                                            >
+                                                                                <div className="font-semibold text-sm">
+                                                                                    {
+                                                                                        productName
+                                                                                    }
+                                                                                </div>
+
+                                                                                <div className="text-xs">
+                                                                                    Qty :
+                                                                                    {" "}
+                                                                                    {Number(
+                                                                                        summary.qty.toFixed(
+                                                                                            2
+                                                                                        )
+                                                                                    ).toLocaleString(
+                                                                                        "en-IN"
+                                                                                    )}
+                                                                                </div>
+
+                                                                                <div className="text-xs">
+                                                                                    Value :
+                                                                                    {" "}
+                                                                                    {Number(
+                                                                                        summary.value.toFixed(
+                                                                                            2
+                                                                                        )
+                                                                                    ).toLocaleString(
+                                                                                        "en-IN"
+                                                                                    )}
+                                                                                </div>
+                                                                            </div>
+                                                                        )
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    )}
+                                                </tr>
+                                            ));
+                                        }
+                                    )}
                                 </tbody>
                                 <tfoot>
                                     <tr className="font-semibold text-lg">

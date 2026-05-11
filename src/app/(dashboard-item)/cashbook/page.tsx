@@ -64,12 +64,14 @@ const CashBook = () => {
   const totalDebit = () => {
     return receives.reduce((credit, receive) => credit + (receive.amount), 0);
   };
+
   const groupedReceives = receives.reduce((acc: Record<string, Receive[]>, curr) => {
     const key = curr.salesPerson || "Office Receive";
     if (!acc[key]) acc[key] = [];
     acc[key].push(curr);
     return acc;
   }, {});
+
 
   return (
     <div className='container min-h-screen'>
@@ -174,7 +176,7 @@ const CashBook = () => {
                       <th>AMOUNT</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  {/* <tbody>
                     {payments.map((payment, index) => (
                       <tr key={index}>
                         <td>{payment.date}</td>
@@ -197,6 +199,91 @@ const CashBook = () => {
                       <td>TOTAL</td>
                       <td>{(totalCredit() + ((totalDebit() + netSumAmount) - (totalCredit()))).toLocaleString('en-IN')}</td>
                     </tr>
+                  </tbody> */}
+                  <tbody>
+
+                    {/* GROUP PAYMENTS */}
+                    {Object.entries(
+                      payments.reduce((acc: Record<string, Payment[]>, curr) => {
+                        const key = curr.name || "Office Payment";
+
+                        if (!acc[key]) acc[key] = [];
+
+                        acc[key].push(curr);
+
+                        return acc;
+                      }, {})
+                    ).map(([paymentGroup, group], gIndex) => {
+
+                      const groupTotal = group.reduce(
+                        (sum, item) => sum + (item.amount || 0),
+                        0
+                      );
+
+                      return (
+                        <React.Fragment key={gIndex}>
+
+                          {/* Group Header */}
+                          <tr className="bg-gray-100 font-semibold">
+                            <td colSpan={4}>{paymentGroup}</td>
+                          </tr>
+
+                          {group.map((payment, index) => (
+                            <tr key={index}>
+                              <td>{payment.date}</td>
+
+                              <td className='capitalize'>
+                                {payment.name} | {payment.note}
+                              </td>
+
+                              {/* Individual amount */}
+                              <td>
+                                {(payment.amount || 0).toLocaleString('en-IN')}
+                              </td>
+
+                              {/* Group total only once */}
+                              {index === 0 && (
+                                <td
+                                  rowSpan={group.length}
+                                  className="font-bold align-top"
+                                >
+                                  {groupTotal.toLocaleString('en-IN')}
+                                </td>
+                              )}
+                            </tr>
+                          ))}
+
+                        </React.Fragment>
+                      );
+                    })}
+
+                    <tr className='font-semibold'>
+                      <td>{date}</td>
+                      <td>TOTAL CREDIT</td>
+                      <td>{Number(totalCredit()).toLocaleString('en-IN')}</td>
+                    </tr>
+
+                    <tr className='font-semibold'>
+                      <td>{date}</td>
+                      <td>BALANCE C/D</td>
+                      <td>
+                        {(
+                          (totalDebit() + netSumAmount) - totalCredit()
+                        ).toLocaleString('en-IN')}
+                      </td>
+                    </tr>
+
+                    <tr className='font-semibold'>
+                      <td colSpan={1}></td>
+                      <td>TOTAL</td>
+                      <td>
+                        {(
+                          totalCredit() +
+                          ((totalDebit() + netSumAmount) - totalCredit())
+                        ).toLocaleString('en-IN')}
+                      </td>
+                    </tr>
+
                   </tbody>
                   <tfoot>
                     <tr>
