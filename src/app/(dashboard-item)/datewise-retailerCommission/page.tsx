@@ -49,10 +49,10 @@ const Page = () => {
 
     useEffect(() => {
         const filtered = allProducts.filter(product =>
-            (product.retailerName.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
-            (product.year.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
-            (product.month.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
-            (product.note.toLowerCase().includes(filterCriteria.toLowerCase()) || '')
+            (product?.retailerName?.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
+            (product?.year?.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
+            (product?.month?.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
+            (product?.note?.toLowerCase().includes(filterCriteria.toLowerCase()) || '')
         );
         setFilteredProducts(filtered);
     }, [filterCriteria, allProducts]);
