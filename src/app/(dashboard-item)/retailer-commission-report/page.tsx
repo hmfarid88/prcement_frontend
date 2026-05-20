@@ -41,21 +41,21 @@ const Page = () => {
             .catch(error => console.error('Error fetching products:', error));
     }, [apiBaseUrl, username]);
 
-    useEffect(() => {
-        const searchWords = filterCriteria.toLowerCase().split(" ");
-        const filtered = allProducts.filter(product =>
-            searchWords.every(word =>
-                (product.retailerName?.toLowerCase().includes(word) || '') ||
-                (product.note?.toLowerCase().includes(word) || '') ||
-                (product.year?.toLowerCase().includes(word) || '') ||
-                (product.month?.toLowerCase().includes(word) || '')
+   
+useEffect(() => {
+    const searchWords = filterCriteria.toLowerCase().trim().split(" ");
 
-            )
-        );
+    const filtered = allProducts.filter(product =>
+        searchWords.every(word =>
+            product?.retailerName?.toString().toLowerCase().includes(word) ||
+            product?.note?.toString().toLowerCase().includes(word) ||
+            product?.year?.toString().toLowerCase().includes(word) ||
+            product?.month?.toString().toLowerCase().includes(word)
+        )
+    );
 
-        setFilteredProducts(filtered);
-    }, [filterCriteria, allProducts]);
-
+    setFilteredProducts(filtered);
+}, [filterCriteria, allProducts]);
 
     const handleFilterChange = (e: any) => {
         setFilterCriteria(e.target.value);
