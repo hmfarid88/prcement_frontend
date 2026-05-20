@@ -41,30 +41,21 @@ const Page = () => {
             .catch(error => console.error('Error fetching products:', error));
     }, [apiBaseUrl, username]);
 
-useEffect(() => {
-                const searchWords = filterCriteria.toLowerCase().split(" ");
-                const filtered = allProducts.filter(product =>
-                  searchWords.every(word =>
-                    (product.retailerName?.toLowerCase().includes(word) || '') ||
-                    (product.note?.toLowerCase().includes(word) || '') ||
-                    (product.year?.toLowerCase().includes(word) || '') ||
-                    (product.month?.toLowerCase().includes(word) || '')
-                   
-               )
-                );
-              
-                setFilteredProducts(filtered);
-              }, [filterCriteria, allProducts]);
-              
     useEffect(() => {
+        const searchWords = filterCriteria.toLowerCase().split(" ");
         const filtered = allProducts.filter(product =>
-            (product?.retailerName?.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
-            (product?.year?.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
-            (product?.month?.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
-            (product?.note?.toLowerCase().includes(filterCriteria.toLowerCase()) || '')
+            searchWords.every(word =>
+                (product.retailerName?.toLowerCase().includes(word) || '') ||
+                (product.note?.toLowerCase().includes(word) || '') ||
+                (product.year?.toLowerCase().includes(word) || '') ||
+                (product.month?.toLowerCase().includes(word) || '')
+
+            )
         );
+
         setFilteredProducts(filtered);
     }, [filterCriteria, allProducts]);
+
 
     const handleFilterChange = (e: any) => {
         setFilterCriteria(e.target.value);
@@ -86,7 +77,7 @@ useEffect(() => {
                             <path fillRule="evenodd" d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z" clipRule="evenodd" />
                         </svg>
                     </label>
-                   <div className="flex gap-2">
+                    <div className="flex gap-2">
                         <ExcelExport tableRef={contentToPrint} fileName="retailer_com_report" />
                         <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
                     </div>
