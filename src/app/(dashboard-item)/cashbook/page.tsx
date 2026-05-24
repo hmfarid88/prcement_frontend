@@ -106,13 +106,7 @@ const CashBook = () => {
                       <td>BALANCE B/D</td>
                       <td>{(netSumAmount ?? 0).toLocaleString('en-IN')}</td>
                     </tr>
-                    {/* {receives?.map((receive, index) => (
-                      <tr key={index}>
-                        <td>{receive.date}</td>
-                        <td className='capitalize'>{receive.name}|{receive.note}</td>
-                        <td>{(receive.amount ?? 0).toLocaleString('en-IN')}</td>
-                      </tr>
-                    ))} */}
+
                     {/* GROUPED RECEIVES */}
                     {Object.entries(groupedReceives).map(([salesPerson, group], gIndex) => {
                       const groupTotal = group.reduce((sum, item) => sum + (item.amount || 0), 0);
@@ -176,30 +170,6 @@ const CashBook = () => {
                       <th>AMOUNT</th>
                     </tr>
                   </thead>
-                  {/* <tbody>
-                    {payments.map((payment, index) => (
-                      <tr key={index}>
-                        <td>{payment.date}</td>
-                        <td className='capitalize'>{payment.name} {payment.note}</td>
-                        <td>{(payment.amount ?? 0).toLocaleString('en-IN')}</td>
-                      </tr>
-                    ))}
-                    <tr className='font-semibold'>
-                      <td>{date}</td>
-                      <td>TOTAL CREDIT</td>
-                      <td>{Number(totalCredit()).toLocaleString('en-IN')}</td>
-                    </tr>
-                    <tr className='font-semibold'>
-                      <td>{date}</td>
-                      <td>BALANCE C/D</td>
-                      <td>{((totalDebit() + netSumAmount) - (totalCredit())).toLocaleString('en-IN')}</td>
-                    </tr>
-                    <tr className='font-semibold'>
-                      <td colSpan={1}></td>
-                      <td>TOTAL</td>
-                      <td>{(totalCredit() + ((totalDebit() + netSumAmount) - (totalCredit()))).toLocaleString('en-IN')}</td>
-                    </tr>
-                  </tbody> */}
                   <tbody>
 
                     {/* GROUP PAYMENTS */}
