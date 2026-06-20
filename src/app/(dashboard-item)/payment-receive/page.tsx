@@ -75,7 +75,7 @@ const Page = () => {
                             <path fillRule="evenodd" d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z" clipRule="evenodd" />
                         </svg>
                     </label>
-                   <div className="flex gap-2">
+                    <div className="flex gap-2">
                         <ExcelExport tableRef={contentToPrint} fileName="pay-receive_report" />
                         <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
                     </div>
@@ -83,6 +83,17 @@ const Page = () => {
                 <div className="flex w-full justify-center">
                     <div className="overflow-x-auto">
                         <div ref={contentToPrint} className="flex-1 p-5">
+                            <div className="flex justify-center">
+                                <img src="/img/crowncement-logo.png" alt="Logo" className="m-4" />
+                            </div>
+                            <div className="flex w-full justify-center items-center">
+                                <img src="/img/logo.png" alt="Logo" className="w-16 h-20 mr-3" />
+                                <div className="text-center">
+                                    <h2 className="text-2xl font-bold">P.R CEMENT CENTER</h2>
+                                    <p className="text-sm">Char Sayedpur, Narayanganj - 1400</p>
+                                    <p className="text-sm">Phone: 01675-336060 | Email: prcementcenter@gmail.com</p>
+                                </div>
+                            </div>
                             <div className="flex flex-col items-center pb-5"><h4 className="font-bold">PAYMENT-RECEIVE LEDGER</h4>
                                 <h4><CurrentDate /></h4>
                             </div>

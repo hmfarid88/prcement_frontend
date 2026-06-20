@@ -74,6 +74,17 @@ const Page = () => {
                     <div className="flex w-full justify-center p-5">
                         <div className="overflow-x-auto">
                             <div ref={contentToPrint} className="flex-1 p-5">
+                                <div className="flex justify-center">
+                                    <img src="/img/crowncement-logo.png" alt="Logo" className="m-4" />
+                                </div>
+                                <div className="flex w-full justify-center items-center">
+                                    <img src="/img/logo.png" alt="Logo" className="w-16 h-20 mr-3" />
+                                    <div className="text-center">
+                                        <h2 className="text-2xl font-bold">P.R CEMENT CENTER</h2>
+                                        <p className="text-sm">Char Sayedpur, Narayanganj - 1400</p>
+                                        <p className="text-sm">Phone: 01675-336060 | Email: prcementcenter@gmail.com</p>
+                                    </div>
+                                </div>
                                 <div className="flex flex-col items-center pb-5"><h4 className="font-bold">MARKETING OFFICER SUMMARY</h4>
                                     <h4>FROM {startDate} TO {endDate}</h4>
                                 </div>
