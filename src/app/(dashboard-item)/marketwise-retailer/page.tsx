@@ -107,7 +107,7 @@ const Page = () => {
         return total + product.credit;
     }, 0);
 
-
+    const totalClosing = totalOpening + totalDebit - totalCredit;
     return (
         <div className="container-2xl">
             <div className="flex flex-col w-full min-h-[calc(100vh-228px)] p-4 items-center justify-center">
@@ -191,12 +191,13 @@ const Page = () => {
                                         <th>QTY</th>
                                         <th>DEBIT</th>
                                         <th>CREDIT</th>
-                                        <th>CLOSING</th>
+                                        <th>DEBIT BALANCE</th>
+                                        <th>CREDIT BALANCE</th>
                                         <th>DETAILS</th>
                                     </tr>
                                 </thead>
 
-                                <tbody>
+                                {/* <tbody>
                                     {filteredProducts?.map((product, index) => (
                                         <tr key={index}>
                                             <td>{index + 1}</td>
@@ -211,9 +212,51 @@ const Page = () => {
                                             </td>
                                         </tr>
                                     ))}
+                                </tbody> */}
+                                <tbody>
+                                    {filteredProducts?.map((product, index) => {
+                                        const closing =
+                                            product?.openingBalance +
+                                            product?.debit -
+                                            product?.credit;
+
+                                        return (
+                                            <tr key={index}>
+                                                <td>{index + 1}</td>
+                                                <td>{product?.category}</td>
+                                                <td>{product?.openingBalance}</td>
+                                                <td>{product?.qty}</td>
+                                                <td>{product?.debit}</td>
+                                                <td>{product?.credit}</td>
+
+                                                {/* Debit Balance */}
+                                                <td>
+                                                    {closing < 0
+                                                        ? Math.abs(closing).toLocaleString('en-IN')
+                                                        : ''}
+                                                </td>
+
+                                                {/* Credit Balance */}
+                                                <td>
+                                                    {closing > 0
+                                                        ? closing.toLocaleString('en-IN')
+                                                        : ''}
+                                                </td>
+
+                                                <td>
+                                                    <button
+                                                        onClick={() => handleDetails(product?.category)}
+                                                        className="btn btn-sm btn-info"
+                                                    >
+                                                        Details
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
                                 </tbody>
 
-                                <tfoot>
+                                {/* <tfoot>
 
                                     <tr className="font-semibold text-lg">
                                         <td></td>
@@ -223,6 +266,32 @@ const Page = () => {
                                         <td>{totalDebit.toLocaleString('en-IN')}</td>
                                         <td>{totalCredit.toLocaleString('en-IN')}</td>
                                         <td>{(totalOpening + totalDebit - totalCredit).toLocaleString('en-IN')}</td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot> */}
+                                const totalClosing = totalOpening + totalDebit - totalCredit;
+
+                                <tfoot>
+                                    <tr className="font-semibold text-lg">
+                                        <td></td>
+                                        <td>TOTAL</td>
+                                        <td>{totalOpening.toLocaleString('en-IN')}</td>
+                                        <td>{totalQty.toLocaleString('en-IN')}</td>
+                                        <td>{totalDebit.toLocaleString('en-IN')}</td>
+                                        <td>{totalCredit.toLocaleString('en-IN')}</td>
+
+                                        <td>
+                                            {totalClosing < 0
+                                                ? Math.abs(totalClosing).toLocaleString('en-IN')
+                                                : ''}
+                                        </td>
+
+                                        <td>
+                                            {totalClosing > 0
+                                                ? totalClosing.toLocaleString('en-IN')
+                                                : ''}
+                                        </td>
+
                                         <td></td>
                                     </tr>
                                 </tfoot>
