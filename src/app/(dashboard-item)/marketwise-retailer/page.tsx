@@ -269,8 +269,7 @@ const Page = () => {
                                         <td></td>
                                     </tr>
                                 </tfoot> */}
-                                const totalClosing = totalOpening + totalDebit - totalCredit;
-
+                               
                                 <tfoot>
                                     <tr className="font-semibold text-lg">
                                         <td></td>
