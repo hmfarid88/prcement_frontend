@@ -108,6 +108,24 @@ const Page = () => {
     }, 0);
 
     const totalClosing = totalOpening + totalDebit - totalCredit;
+
+    const totalDebitBalance = filteredProducts?.reduce((sum, product) => {
+        const closing =
+            product?.openingBalance +
+            product?.debit -
+            product?.credit;
+
+        return closing < 0 ? sum + Math.abs(closing) : sum;
+    }, 0);
+
+    const totalCreditBalance = filteredProducts?.reduce((sum, product) => {
+        const closing =
+            product?.openingBalance +
+            product?.debit -
+            product?.credit;
+
+        return closing > 0 ? sum + closing : sum;
+    }, 0);
     return (
         <div className="container-2xl">
             <div className="flex flex-col w-full min-h-[calc(100vh-228px)] p-4 items-center justify-center">
@@ -269,7 +287,7 @@ const Page = () => {
                                         <td></td>
                                     </tr>
                                 </tfoot> */}
-                               
+
                                 <tfoot>
                                     <tr className="font-semibold text-lg">
                                         <td></td>
@@ -278,18 +296,10 @@ const Page = () => {
                                         <td>{totalQty.toLocaleString('en-IN')}</td>
                                         <td>{totalDebit.toLocaleString('en-IN')}</td>
                                         <td>{totalCredit.toLocaleString('en-IN')}</td>
-
-                                        <td>
-                                            {totalClosing < 0
-                                                ? Math.abs(totalClosing).toLocaleString('en-IN')
-                                                : ''}
-                                        </td>
-
-                                        <td>
-                                            {totalClosing > 0
-                                                ? totalClosing.toLocaleString('en-IN')
-                                                : ''}
-                                        </td>
+                                        {/* Total Debit Balance */}
+                                        <td>{totalDebitBalance.toLocaleString('en-IN')}</td>
+                                        {/* Total Credit Balance */}
+                                        <td>{totalCreditBalance.toLocaleString('en-IN')}</td>
 
                                         <td></td>
                                     </tr>
