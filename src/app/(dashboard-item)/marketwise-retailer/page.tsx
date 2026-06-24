@@ -209,8 +209,8 @@ const Page = () => {
                                         <th>QTY</th>
                                         <th>DEBIT</th>
                                         <th>CREDIT</th>
-                                        <th>DEBIT BALANCE</th>
                                         <th>CREDIT BALANCE</th>
+                                        <th>DEBIT BALANCE</th>
                                         <th>DETAILS</th>
                                     </tr>
                                 </thead>
