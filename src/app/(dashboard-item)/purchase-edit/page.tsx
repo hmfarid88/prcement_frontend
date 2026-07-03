@@ -22,15 +22,16 @@ const Page = () => {
         const day = String(today.getDate()).padStart(2, '0');
         const formattedDate = `${year}-${month}-${day}`;
         setMaxDate(formattedDate);
-       
+
     }, []);
-        const [date, setDate] = useState("");
-        const [supplier, setSupplier] = useState("");
-        const [warehouse, setWarehouse] = useState("");
-        const [productName, setProductName] = useState("");
-        const [purchasePrice, setPurchasePrice] = useState("");
-        const [productQty, setProductQty] = useState("");
-        
+    const [date, setDate] = useState("");
+    const [supplier, setSupplier] = useState("");
+    const [warehouse, setWarehouse] = useState("");
+    const [category, setCategory] = useState("");
+    const [productName, setProductName] = useState("");
+    const [purchasePrice, setPurchasePrice] = useState("");
+    const [productQty, setProductQty] = useState("");
+
 
     useEffect(() => {
         if (!productId) return;
@@ -40,10 +41,11 @@ const Page = () => {
                 setDate(data.date);
                 setSupplier(data.supplier);
                 setWarehouse(data.warehouse);
+                setCategory(data.category);
                 setProductName(data.productName);
                 setPurchasePrice(data.purchasePrice);
                 setProductQty(data.productQty);
-             
+
             })
             .catch(error => console.error('Error fetching products:', error));
 
@@ -51,7 +53,7 @@ const Page = () => {
 
     const handleUpdateSubmit = async (e: any) => {
         e.preventDefault();
-        if (!date || !supplier || !productName || !purchasePrice || !productQty ||!warehouse) {
+        if (!date || !supplier || !productName || !purchasePrice || !productQty || !warehouse || !category) {
             toast.warning("Item is empty !")
             return;
         }
@@ -62,13 +64,13 @@ const Page = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ date, supplier, productName, purchasePrice, productQty, warehouse }),
+                body: JSON.stringify({ date, supplier, category, productName, purchasePrice, productQty, warehouse }),
             });
 
             if (!response.ok) {
                 const error = await response.json();
                 toast.error(error.message);
-             } else {
+            } else {
                 toast.success("Information updated successfully.");
 
             }
@@ -119,24 +121,24 @@ const Page = () => {
     }, [apiBaseUrl, username]);
 
     const [itemOption, setItemOption] = useState([]);
-        useEffect(() => {
-    
-            const fetchMadeProducts = () => {
-                fetch(`${apiBaseUrl}/api/getProductName?username=${username}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        const transformedData = data.map((product: any) => ({
-                            value: product.productName,
-                            label: product.productName
-                        }));
-                        setItemOption(transformedData);
-                    })
-                    .catch(error => console.error('Error fetching products:', error));
-            };
-    
-            // Fetch data initially
-            fetchMadeProducts();
-        }, [apiBaseUrl, username]);
+    useEffect(() => {
+
+        const fetchMadeProducts = () => {
+            fetch(`${apiBaseUrl}/api/getProductName?username=${username}`)
+                .then(response => response.json())
+                .then(data => {
+                    const transformedData = data.map((product: any) => ({
+                        value: product.productName,
+                        label: product.productName
+                    }));
+                    setItemOption(transformedData);
+                })
+                .catch(error => console.error('Error fetching products:', error));
+        };
+
+        // Fetch data initially
+        fetchMadeProducts();
+    }, [apiBaseUrl, username]);
     return (
         <div className='container-2xl min-h-screen pb-5'>
             <div className="flex flex-col w-full items-center justify-center p-2">
@@ -166,14 +168,31 @@ const Page = () => {
                     <div className="flex justify-between gap-2">
                         <p className='capitalize w-[50%] p-2 bg-white text-black rounded-md'>{warehouse}</p>
                         <select className='select select-md select-bordered bg-white text-black w-[50%]' onChange={(e: any) => { setWarehouse(e.target.value) }}>
-                                <option selected disabled>Select . . .</option>
-                                <option value="Vabnatola Ghat">Vabnatola Ghat</option>
-                                <option value="Takerhat Ghat">Takerhat Ghat</option>
-                                <option value="Nariya Godawn">Nariya Godawn</option>
-                                <option value="Factory House">Factory House</option>
-                            </select>
+                            <option selected disabled>Select . . .</option>
+                            <option value="Vabnatola Ghat">Vabnatola Ghat</option>
+                            <option value="Takerhat Ghat">Takerhat Ghat</option>
+                            <option value="Nariya Godawn">Nariya Godawn</option>
+                            <option value="Factory House">Factory House</option>
+                        </select>
                     </div>
-                 
+
+                </label>
+                <label className="form-control w-full max-w-xs pt-2">
+                    <div className="label">
+                        <span className="label-text-alt">CATEGORY</span>
+                    </div>
+                    <div className="flex justify-between gap-2">
+                        <p className='capitalize w-[50%] p-2 bg-white text-black rounded-md'>{category}</p>
+                        <select className='select select-md select-bordered bg-white text-black w-[50%]' onChange={(e: any) => { setCategory(e.target.value) }}>
+                            <option selected disabled>Select . . .</option>
+                            <option value="Pr Cement 1">Pr Cement 1</option>
+                            <option value="Pr Cement 2">Pr Cement 2</option>
+                            <option value="Pr Cement 3">Pr Cement 3</option>
+                            <option value="Rod">Rod</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
                 </label>
                 <label className="form-control w-full max-w-xs pt-2">
                     <div className="label">
@@ -183,7 +202,7 @@ const Page = () => {
                         <p className='capitalize w-[50%] p-2 bg-white text-black rounded-md'>{productName}</p>
                         <Select className="text-black w-[50%]" name="retailer" onChange={(selectedOption: any) => setProductName(selectedOption.value)} options={itemOption} />
                     </div>
-                 
+
                 </label>
                 <label className="form-control w-full max-w-xs pt-2">
                     <div className="label">

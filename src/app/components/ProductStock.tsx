@@ -31,6 +31,7 @@ const ProductStock = () => {
 
     const [stockDate, setStockDate] = useState("");
     const [warehouse, setWarehouse] = useState("");
+    const [category, setCategory] = useState("");
     const [supplier, setSupplier] = useState("");
     const [productId, setProductId] = useState("");
     const [productName, setProductName] = useState("");
@@ -148,11 +149,11 @@ const ProductStock = () => {
     }
     const handleProductStock = (e: any) => {
         e.preventDefault();
-        if (!stockDate || !productName || !supplier || !productQty || !costPrice ||!warehouse) {
+        if (!stockDate || !productName || !supplier || !productQty || !costPrice || !warehouse || !category) {
             toast.warning("Item is empty !");
             return;
         }
-        const product = { id: uid(), date: stockDate, supplier, productName, costPrice, purchasePrice: costPrice, productQty, warehouse, username, status: 'stored' }
+        const product = { id: uid(), date: stockDate, supplier, category, productName, costPrice, purchasePrice: costPrice, productQty, warehouse, username, status: 'stored' }
         dispatch(addProducts(product));
         setProductQty("");
         setCostPrice("");
@@ -251,6 +252,20 @@ const ProductStock = () => {
 
                         <label className="form-control w-full max-w-xs">
                             <div className="label">
+                                <span className="label-text-alt">CATEGORY</span>
+                            </div>
+                            <select className='select select-sm select-bordered bg-white text-black' onChange={(e: any) => { setCategory(e.target.value) }}>
+                                <option selected disabled>Select . . .</option>
+                                <option value="Pr Cement 1">Pr Cement 1</option>
+                                <option value="Pr Cement 2">Pr Cement 2</option>
+                                <option value="Pr Cement 3">Pr Cement 3</option>
+                                <option value="Rod">Rod</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </label>
+
+                        <label className="form-control w-full max-w-xs">
+                            <div className="label">
                                 <span className="label-text-alt">PRODUCT NAME</span>
                                 <a href="#my_modal_productadd" className="btn btn-xs btn-circle btn-ghost"><FcPlus size={20} /></a>
                             </div>
@@ -299,6 +314,7 @@ const ProductStock = () => {
                                         <th>SN</th>
                                         <th>Date</th>
                                         <th>Supplier</th>
+                                        <th>Category</th>
                                         <th>Products</th>
                                         <th>Qty</th>
                                         <th>Rate</th>
@@ -312,6 +328,7 @@ const ProductStock = () => {
                                             <td>{index + 1}</td>
                                             <td>{item.date}</td>
                                             <td>{item.supplier}</td>
+                                            <td>{item.category}</td>
                                             <td>{item.productName}</td>
                                             <td>{item.productQty}</td>
                                             <td>{item.costPrice}</td>

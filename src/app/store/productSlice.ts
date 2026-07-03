@@ -5,6 +5,7 @@ interface Product {
     id: string;
     date: string;
     supplier: string;
+    category: string;
     productName: string;
     costPrice: string;
     purchasePrice: string;

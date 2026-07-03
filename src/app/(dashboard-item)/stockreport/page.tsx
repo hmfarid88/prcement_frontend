@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 import { IoSearch } from "react-icons/io5";
 
 type Product = {
+  category: string;
   warehouse: string;
   productName: string;
   previousQty: number;
@@ -27,6 +28,7 @@ const Page = () => {
   const username = uname ? uname.username : 'Guest';
   const router = useRouter();
   const [maxDate, setMaxDate] = useState('');
+  const [viewMode, setViewMode] = useState<"group" | "details">("group");
 
   useEffect(() => {
     const today = new Date();
@@ -66,10 +68,30 @@ const Page = () => {
       })
       .catch(error => console.error('Error fetching products:', error));
   }, [apiBaseUrl, username]);
+  const categorySummary = Object.values(
+    filteredProducts.reduce((acc: any, item) => {
+      if (!acc[item.category]) {
+        acc[item.category] = {
+          category: item.category,
+          opening: 0,
+          entry: 0,
+          sold: 0,
+          closing: 0,
+        };
+      }
 
+      acc[item.category].opening += item.previousQty;
+      acc[item.category].entry += item.todayEntryQty;
+      acc[item.category].sold += item.todaySaleQty;
+      acc[item.category].closing += item.presentQty;
+
+      return acc;
+    }, {})
+  );
   useEffect(() => {
     const filtered = allProducts.filter(product =>
       (product.warehouse?.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
+      (product.category?.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
       (product.productName.toLowerCase().includes(filterCriteria.toLowerCase()) || '')
 
     );
@@ -162,6 +184,20 @@ const Page = () => {
               </svg>
             </label>
             <div className="flex gap-2">
+              <div className="flex gap-2">
+                <button
+                  className={`btn ${viewMode === "group" ? "btn-primary" : "btn-outline"}`}
+                  onClick={() => setViewMode("group")}
+                >
+                  Group View
+                </button>
+                <button
+                  className={`btn ${viewMode === "details" ? "btn-primary" : "btn-outline"}`}
+                  onClick={() => setViewMode("details")}
+                >
+                  Details
+                </button>
+              </div>
               <ExcelExport tableRef={contentToPrint} fileName="stock_report" />
               <button onClick={handlePrint} className='btn btn-ghost btn-square'><FcPrint size={36} /></button>
             </div>
@@ -170,25 +206,26 @@ const Page = () => {
             <div className="overflow-x-auto">
               <div ref={contentToPrint} className="flex-1 p-5">
                 <div className="flex justify-center">
-                <img src="/img/crowncement-logo.png" alt="Logo" className="m-4" />
-              </div>
-              <div className="flex w-full justify-center items-center">
-                <img src="/img/logo.png" alt="Logo" className="w-16 h-20 mr-3" />
-                <div className="text-center">
-                  <h2 className="text-2xl font-bold">P.R CEMENT CENTER</h2>
-                  <p className="text-sm">Char Sayedpur, Narayanganj - 1400</p>
-                  <p className="text-sm">Phone: 01675-336060 | Email: prcementcenter@gmail.com</p>
+                  <img src="/img/crowncement-logo.png" alt="Logo" className="m-4" />
                 </div>
-              </div>
+                <div className="flex w-full justify-center items-center">
+                  <img src="/img/logo.png" alt="Logo" className="w-16 h-20 mr-3" />
+                  <div className="text-center">
+                    <h2 className="text-2xl font-bold">P.R CEMENT CENTER</h2>
+                    <p className="text-sm">Char Sayedpur, Narayanganj - 1400</p>
+                    <p className="text-sm">Phone: 01675-336060 | Email: prcementcenter@gmail.com</p>
+                  </div>
+                </div>
                 <div className="flex flex-col items-center pb-5"><h4 className="font-bold">PRODUCT STOCK</h4>
                   <h4><CurrentDate /></h4>
                 </div>
                 <table className="table table-zebra table-xs md:table-sm table-pin-rows">
 
-                  <thead className="sticky top-16 bg-base-100">
+                  {/* <thead className="sticky top-16 bg-base-100">
                     <tr>
                       <th>SN</th>
                       <th>WAREHOUSE</th>
+                      <th>CATEGORY</th>
                       <th>PRODUCT</th>
                       <th>OPENING</th>
                       <th>ENTRY</th>
@@ -206,6 +243,7 @@ const Page = () => {
                         <tr key={`${warehouse}-${idx}`}>
                           <td>{serialNo++}</td>
                           <td className="uppercase">{product.warehouse}</td>
+                          <td className="uppercase">{product.category}</td>
                           <td className="uppercase">{product.productName}</td>
                           <td>{Number(product.previousQty?.toFixed(2)).toLocaleString('en-IN')}</td>
                           <td>{Number(product.todayEntryQty?.toFixed(2)).toLocaleString('en-IN')}</td>
@@ -226,9 +264,8 @@ const Page = () => {
                         </tr>
                       ));
                     })}
-                  </tbody>
-
-                  <tfoot>
+                  </tbody> */}
+                  {/* <tfoot>
                     <tr className="font-semibold text-lg">
                       <td colSpan={2}></td>
                       <td>TOTAL</td>
@@ -239,6 +276,98 @@ const Page = () => {
                       <td>{Number(totalCost?.toFixed(2)).toLocaleString('en-IN')}</td>
                       <td>{Number(totalTotal?.toFixed(2)).toLocaleString('en-IN')}</td>
                     </tr>
+                  </tfoot> */}
+                  <thead>
+                    {viewMode === "details" ? (
+                      <tr>
+                        <th>SN</th>
+                        <th>WAREHOUSE</th>
+                        <th>CATEGORY</th>
+                        <th>PRODUCT</th>
+                        <th>OPENING</th>
+                        <th>ENTRY</th>
+                        <th>SOLD</th>
+                        <th>CLOSING</th>
+                        <th>AVE RATE</th>
+                        <th>VALUE</th>
+                        <th>SUMMARY</th>
+                      </tr>
+                    ) : (
+                      <tr>
+                        <th>SN</th>
+                        <th>CATEGORY</th>
+                        <th>OPENING</th>
+                        <th>ENTRY</th>
+                        <th>SOLD</th>
+                        <th>CLOSING</th>
+                      </tr>
+                    )}
+                  </thead>
+                  <tbody>
+                    {viewMode === "details" ? (
+                      Object.entries(warehouseGroups).map(
+                        ([warehouse, { products, totalClosingQty, totalValue }]) =>
+                          products.map((product, idx) => (
+                            <tr key={`${warehouse}-${idx}`}>
+                              <td>{serialNo++}</td>
+                              <td>{product.warehouse}</td>
+                              <td>{product.category}</td>
+                              <td>{product.productName}</td>
+                              <td>{product.previousQty.toFixed(2)}</td>
+                              <td>{product.todayEntryQty.toFixed(2)}</td>
+                              <td>{product.todaySaleQty.toFixed(2)}</td>
+                              <td>{product.presentQty.toFixed(2)}</td>
+                              <td>{product.costPrice.toFixed(2)}</td>
+                              <td>{product.totalValue.toFixed(2)}</td>
+
+                              {idx === 0 && (
+                                <td rowSpan={products.length}>
+                                  <div>
+                                    <div>{warehouse}</div>
+                                    <div>Closing: {totalClosingQty.toFixed(2)}</div>
+                                    <div>Value: {totalValue.toFixed(2)}</div>
+                                  </div>
+                                </td>
+                              )}
+                            </tr>
+                          ))
+                      )
+                    ) : (
+                      categorySummary.map((item: any, index) => (
+                        <tr key={index}>
+                          <td>{index + 1}</td>
+                          <td>{item.category}</td>
+                          <td>{Number(item.opening.toFixed(2)).toLocaleString("en-IN")}</td>
+                          <td>{Number(item.entry.toFixed(2)).toLocaleString("en-IN")}</td>
+                          <td>{Number(item.sold.toFixed(2)).toLocaleString("en-IN")}</td>
+                          <td>{Number(item.closing.toFixed(2)).toLocaleString("en-IN")}</td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+
+                  <tfoot>
+                    {viewMode === "details" ? (
+                      <tr className="font-semibold text-lg">
+                        <td colSpan={4}>TOTAL</td>
+                        <td>{Number(totalPrevious.toFixed(2)).toLocaleString("en-IN")}</td>
+                        <td>{Number(totalTodayEntry.toFixed(2)).toLocaleString("en-IN")}</td>
+                        <td>{Number(totalTodaySale.toFixed(2)).toLocaleString("en-IN")}</td>
+                        <td>{Number(totalPrestntQty.toFixed(2)).toLocaleString("en-IN")}</td>
+                        <td>{Number(totalCost.toFixed(2)).toLocaleString("en-IN")}</td>
+                        <td>{Number(totalTotal.toFixed(2)).toLocaleString("en-IN")}</td>
+                        <td></td>
+                      </tr>
+                    ) : (
+                      <tr className="font-semibold text-lg">
+                        <td></td>
+                        <td>TOTAL</td>
+                        <td>{Number(totalPrevious.toFixed(2)).toLocaleString("en-IN")}</td>
+                        <td>{Number(totalTodayEntry.toFixed(2)).toLocaleString("en-IN")}</td>
+                        <td>{Number(totalTodaySale.toFixed(2)).toLocaleString("en-IN")}</td>
+                        <td>{Number(totalPrestntQty.toFixed(2)).toLocaleString("en-IN")}</td>
+                      </tr>
+                    )}
                   </tfoot>
                 </table>
               </div>

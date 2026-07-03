@@ -12,6 +12,7 @@ type Product = {
     date: string;
     supplier: string;
     warehouse: string;
+    category: string;
     productName: string;
     status: string;
     dpRate: number;
@@ -64,6 +65,7 @@ const Page = () => {
             searchWords.every(word =>
                 (product.date?.toLowerCase().includes(word) || '') ||
                 (product.warehouse?.toLowerCase().includes(word) || '') ||
+                (product.category?.toLowerCase().includes(word) || '') ||
                 (product.productName?.toLowerCase().includes(word) || '') ||
                 (product.supplier?.toLowerCase().includes(word) || '')
 
@@ -145,6 +147,7 @@ const Page = () => {
                                         <th>DATE</th>
                                         <th>SUPPLIER NAME</th>
                                         <th>WAREHOUSE</th>
+                                        <th>CATEGORY</th>
                                         <th>PRODUCT</th>
                                         <th>P.PRICE</th>
                                         <th>AVE.PRICE</th>
@@ -195,6 +198,7 @@ const Page = () => {
                                                     <td>{product?.supplier}</td>
 
                                                     <td>{product?.warehouse}</td>
+                                                    <td>{product?.category}</td>
 
                                                     <td>{product?.productName}</td>
 
@@ -323,7 +327,7 @@ const Page = () => {
                                 </tbody>
                                 <tfoot>
                                     <tr className="font-semibold text-lg">
-                                        <td colSpan={6}></td>
+                                        <td colSpan={7}></td>
                                         <td>TOTAL</td>
                                         <td>{Number(totalQty.toFixed(2)).toLocaleString('en-IN')}</td>
                                     </tr>
