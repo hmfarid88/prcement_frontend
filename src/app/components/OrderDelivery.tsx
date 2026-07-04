@@ -236,7 +236,7 @@ const OrderDelivery = () => {
                 .then(data => {
                     const transformedData = data.map((product: any) => ({
                         value: product.productName,
-                        label: `${product.warehouse}, ${product.productName} (${product.remainingQty}, ${product.costPrice.toFixed(2)})`
+                        label: `${product.warehouse}, ${product.category}, ${product.productName} (${product.remainingQty}, ${product.costPrice.toFixed(2)})`
                     }));
                     setItemOption(transformedData);
                 })
