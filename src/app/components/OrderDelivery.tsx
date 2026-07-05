@@ -32,6 +32,7 @@ const OrderDelivery = () => {
 
     const [orderDate, setOrderDate] = useState("");
     const [retailer, setRetailer] = useState("");
+    const [category, setCategory] = useState("");
     const [productName, setProductName] = useState("");
     const [saleRate, setSaleRate] = useState("");
     const [orderQty, setOrderQty] = useState("");
@@ -90,7 +91,7 @@ const OrderDelivery = () => {
             return;
         }
         try {
-            const response = await fetch(`${apiBaseUrl}/api/findLastQty?username=${encodeURIComponent(username)}&productName=${encodeURIComponent(productName)}`);
+            const response = await fetch(`${apiBaseUrl}/api/findLastQty?username=${encodeURIComponent(username)}&category=${encodeURIComponent(category)}&productName=${encodeURIComponent(productName)}`);
             if (!response.ok) {
                 toast.error("Failed to fetch remaining quantity!");
                 return;
@@ -106,11 +107,12 @@ const OrderDelivery = () => {
                 return;
             }
 
-            const product = { id: uid(), orderId: 0, date: orderDate, retailer, orderNote, productName, saleRate, orderQty, transport: transportName, truckNo: truckno, rent: rentAmount, username }
+            const product = { id: uid(), orderId: 0, date: orderDate, retailer, orderNote, productName, category, saleRate, orderQty, transport: transportName, truckNo: truckno, rent: rentAmount, username }
             dispatch(addProducts(product));
             setOrderNote("")
             setSaleRate("")
             setOrderQty("")
+            setCategory("")
             setTruckNo("")
             setRentAmount("")
         } catch (error) {
@@ -136,7 +138,7 @@ const OrderDelivery = () => {
                 toast.warning("Sorry, not enough qty!");
                 return;
             }
-            const qtyresponse = await fetch(`${apiBaseUrl}/api/findLastQty?username=${encodeURIComponent(username)}&productName=${encodeURIComponent(productData.productName)}`);
+            const qtyresponse = await fetch(`${apiBaseUrl}/api/findLastQty?username=${encodeURIComponent(username)}&productName=${encodeURIComponent(productData.productName)}&category=${encodeURIComponent(productData.category)}`);
             if (!qtyresponse.ok) {
                 toast.error("Failed to fetch remaining quantity!");
                 return;
@@ -236,7 +238,8 @@ const OrderDelivery = () => {
                 .then(data => {
                     const transformedData = data.map((product: any) => ({
                         value: product.productName,
-                        label: `${product.warehouse}, ${product.category}, ${product.productName} (${product.remainingQty}, ${product.costPrice.toFixed(2)})`
+                        label: `${product.warehouse}, ${product.category}, ${product.productName} (${product.remainingQty}, ${product.costPrice.toFixed(2)})`,
+                        category: product.category,
                     }));
                     setItemOption(transformedData);
                 })
@@ -372,7 +375,7 @@ const OrderDelivery = () => {
                         <div className="label">
                             <span className="label-text-alt">PRODUCT NAME</span>
                         </div>
-                        <Select className="text-black" name="pname" onChange={(selectedOption: any) => setProductName(selectedOption.value)} options={itemOption} />
+                        <Select className="text-black" name="pname" onChange={(selectedOption: any) => { setProductName(selectedOption.value); setCategory(selectedOption.category); }} options={itemOption} />
 
                     </label>
                     <label className="form-control w-full max-w-xs">

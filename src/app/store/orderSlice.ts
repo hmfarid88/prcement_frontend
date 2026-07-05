@@ -6,6 +6,7 @@ interface Product {
     date: string;
     retailer: string;
     orderNote: string;
+    category: string;
     productName: string;
     saleRate: string;
     orderQty: string;
@@ -32,6 +33,7 @@ export const orderSlice = createSlice({
                         (pro) =>
                             pro.username === action.payload.username &&
                             pro.retailer === action.payload.retailer &&
+                            pro.category === action.payload.category &&
                             pro.productName === action.payload.productName &&
                             pro.saleRate === action.payload.saleRate
                           
