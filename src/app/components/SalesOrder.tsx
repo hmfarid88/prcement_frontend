@@ -33,6 +33,7 @@ const SalesOrder = () => {
 
     const [orderDate, setOrderDate] = useState("");
     const [retailer, setRetailer] = useState("");
+    const [category, setCategory] = useState("");
     const [productName, setProductName] = useState("");
     const [saleRate, setSaleRate] = useState("");
     const [orderQty, setOrderQty] = useState("");
@@ -44,7 +45,7 @@ const SalesOrder = () => {
             toast.warning("Item is empty !");
             return;
         }
-        const product = { id: uid(), date: orderDate, retailer, orderNote, productName, saleRate, orderQty, deliveredQty: 0, username }
+        const product = { id: uid(), date: orderDate, retailer, orderNote, category, productName, saleRate, orderQty, deliveredQty: 0, username }
         dispatch(addProducts(product));
         setOrderNote("")
         setSaleRate("")
@@ -86,25 +87,46 @@ const SalesOrder = () => {
         }
     };
 
+    // const [itemOption, setItemOption] = useState([]);
+    // useEffect(() => {
+
+    //     const fetchMadeProducts = () => {
+    //         fetch(`${apiBaseUrl}/api/getProductName`)
+    //             .then(response => response.json())
+    //             .then(data => {
+    //                 const transformedData = data.map((product: any) => ({
+    //                     value: product.productName,
+    //                     label: product.productName
+    //                 }));
+    //                 setItemOption(transformedData);
+    //             })
+    //             .catch(error => console.error('Error fetching products:', error));
+    //     };
+
+    //     // Fetch data initially
+    //     fetchMadeProducts();
+    // }, [apiBaseUrl, username]);
+
     const [itemOption, setItemOption] = useState([]);
-    useEffect(() => {
-
-        const fetchMadeProducts = () => {
-            fetch(`${apiBaseUrl}/api/getProductName`)
-                .then(response => response.json())
-                .then(data => {
-                    const transformedData = data.map((product: any) => ({
-                        value: product.productName,
-                        label: product.productName
-                    }));
-                    setItemOption(transformedData);
-                })
-                .catch(error => console.error('Error fetching products:', error));
-        };
-
-        // Fetch data initially
-        fetchMadeProducts();
-    }, [apiBaseUrl, username]);
+        useEffect(() => {
+    
+            const fetchMadeProducts = () => {
+                fetch(`${apiBaseUrl}/api/getProductStock?username=pr cement`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const transformedData = data.map((product: any) => ({
+                            value: product.productName,
+                            label: `${product.category}, ${product.productName}, (${product.remainingQty}, ${product.costPrice.toFixed(2)})`,
+                            category: product.category
+                        }));
+                        setItemOption(transformedData);
+                    })
+                    .catch(error => console.error('Error fetching products:', error));
+            };
+    
+            // Fetch data initially
+            fetchMadeProducts();
+        }, [apiBaseUrl, username]);
 
     const [retailerOption, setRetailerOption] = useState([]);
     useEffect(() => {
@@ -170,7 +192,10 @@ const SalesOrder = () => {
                             <div className="label">
                                 <span className="label-text-alt">PRODUCT NAME</span>
                             </div>
-                            <Select className="text-black" name="pname" onChange={(selectedOption: any) => setProductName(selectedOption.value)} options={itemOption} />
+                            <Select className="text-black" name="pname" onChange={(selectedOption: any) => {
+                                setProductName(selectedOption.value);
+                                setCategory(selectedOption.category);
+                            }} options={itemOption} />
 
                         </label>
                         <label className="form-control w-full max-w-xs">
