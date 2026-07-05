@@ -286,7 +286,6 @@ const OrderDelivery = () => {
 
     const [orderOption, setOrderOption] = useState([]);
     useEffect(() => {
-
         fetch(`${apiBaseUrl}/api/getExistingAllOrder`)
             .then(response => response.json())
             .then(data => {
