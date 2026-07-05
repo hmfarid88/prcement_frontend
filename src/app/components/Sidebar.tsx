@@ -55,6 +55,7 @@ export const Sidebar = () => {
                                 <ul>
                                     <li><Link href="/stockreport">PRODUCT STOCK</Link></li>
                                     <li><Link href="/purchase-ledger">PURCHASE REPORT</Link></li>
+                                    <li><Link href="/stock-ledger">STOCK LEDGER</Link></li>
 
                                 </ul>
                             </details>

@@ -93,7 +93,6 @@ const Page = () => {
       (product.warehouse?.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
       (product.category?.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
       (product.productName.toLowerCase().includes(filterCriteria.toLowerCase()) || '')
-
     );
     setFilteredProducts(filtered);
   }, [filterCriteria, allProducts]);
