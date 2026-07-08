@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react'
 import { toast } from 'react-toastify';
 import Select from "react-select";
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAppSelector } from '@/app/store';
 
 
@@ -14,6 +14,7 @@ const Page = () => {
     const productId = searchParams.get('productId');
     const [pending, setPending] = useState(false);
     const [maxDate, setMaxDate] = useState('');
+    const router = useRouter();
     useEffect(() => {
         const today = new Date();
         const year = today.getFullYear();
@@ -74,7 +75,7 @@ const Page = () => {
                 toast.error(error.message);
             } else {
                 toast.success("Information updated successfully.");
-
+                router.push(`/dp-dist-report`);
             }
 
         } catch (error: any) {
@@ -100,7 +101,7 @@ const Page = () => {
                 toast.error("Sorry, item is not deleted!");
             } else {
                 toast.success("Item deleted successfully.");
-
+                router.push(`/dp-dist-report`);
             }
 
         } catch (error: any) {

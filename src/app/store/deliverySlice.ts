@@ -47,7 +47,22 @@ export const deliverySlice = createSlice({
                 state.products.push(action.payload);
             }
         },
+        updateProduct: (
+            state,
+            action: PayloadAction<{
+                id: string;
+                field: "orderNote" | "orderQty" | "saleRate" | "truckNo";
+                value: string;
+            }>
+        ) => {
+            const product = state.products.find(
+                (p) => p.id === action.payload.id
+            );
 
+            if (product) {
+                product[action.payload.field] = action.payload.value;
+            }
+        },
         deleteProduct: (state, action) => {
             const id = action.payload;
             state.products = state.products.filter((product) => product.id !== id);
@@ -66,7 +81,7 @@ export const selectTotalQuantity = createSelector(
         )
 );
 
-export const { addProducts, deleteProduct, deleteAllProducts } = deliverySlice.actions;
+export const { addProducts, updateProduct, deleteProduct, deleteAllProducts } = deliverySlice.actions;
 
 export default deliverySlice.reducer;
 

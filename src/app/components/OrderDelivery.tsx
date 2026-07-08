@@ -4,7 +4,7 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import Select from "react-select";
 import { uid } from "uid";
 import { useAppDispatch, useAppSelector } from "@/app/store";
-import { addProducts, deleteProduct, deleteAllProducts, selectTotalQuantity } from "@/app/store/deliverySlice";
+import { addProducts, updateProduct, deleteProduct, deleteAllProducts, selectTotalQuantity } from "@/app/store/deliverySlice";
 import { toast } from 'react-toastify';
 import { FcPlus } from 'react-icons/fc';
 
@@ -29,7 +29,20 @@ const OrderDelivery = () => {
         setMaxDate(formattedDate);
         setOrderDate(formattedDate)
     }, []);
-
+    type EditableField = "orderNote" | "saleRate" | "orderQty" | "truckNo";
+    const handleUpdate = (
+        id: string,
+        field: EditableField,
+        value: string
+    ) => {
+        dispatch(
+            updateProduct({
+                id,
+                field,
+                value
+            })
+        );
+    };
     const [orderDate, setOrderDate] = useState("");
     const [retailer, setRetailer] = useState("");
     const [category, setCategory] = useState("");
@@ -43,6 +56,8 @@ const OrderDelivery = () => {
     const [transportName, setTransportName] = useState("");
     const [truckno, setTruckNo] = useState("");
     const [rentAmount, setRentAmount] = useState("");
+    const [retailerBalance, setRetailerBalance] = useState(0);
+    const [lastProductRate, setLastProductRate] = useState(0);
 
     const invoiceNo = uid();
     const [temporary, setTemporary] = useState(false);
@@ -303,27 +318,47 @@ const OrderDelivery = () => {
     const handleTransportNameDelete = async (e: any) => {
         e.preventDefault();
         try {
-          const response = await fetch(`${apiBaseUrl}/api/deleteTransportName?transport=${encodeURIComponent(transportId)}`, {
-            method: 'DELETE',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-    
-          });
-    
-          if (!response.ok) {
-            // const error = await response.json();
-            toast.error("Sorry, name is not deleted!");
-          } else {
-            toast.success("Name deleted successfully.");
-    
-          }
-    
-        } catch (error: any) {
-          toast.error(error.message)
-        }
-      }
+            const response = await fetch(`${apiBaseUrl}/api/deleteTransportName?transport=${encodeURIComponent(transportId)}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
 
+            });
+
+            if (!response.ok) {
+                // const error = await response.json();
+                toast.error("Sorry, name is not deleted!");
+            } else {
+                toast.success("Name deleted successfully.");
+
+            }
+
+        } catch (error: any) {
+            toast.error(error.message)
+        }
+    }
+    const loadRetailerInfo = async (retailerName: string) => {
+        try {
+            const res = await fetch(
+                `${apiBaseUrl}/retailer/singleRetailerBalance?retailer=${encodeURIComponent(retailerName)}&username=${username}`
+            );
+
+            if (!res.ok) {
+                throw new Error("Failed to load retailer info");
+            }
+
+            const data = await res.json();
+
+            setRetailerBalance(data.balance ?? 0);
+            setLastProductRate(data.lastProductRate ?? 0);
+
+        } catch (err) {
+            console.error(err);
+            setRetailerBalance(0);
+            setLastProductRate(0);
+        }
+    };
     return (
         <div className="container w-full">
             <div className="flex items-center justify-center w-full p-3">
@@ -350,7 +385,12 @@ const OrderDelivery = () => {
                     <label className="form-control w-full max-w-xs">
 
                         {!temporary && (
-                            <Select className="text-black" name="retailer" onChange={(selectedOption: any) => setRetailer(selectedOption.value)} options={retailerOption} />
+                            <Select className="text-black" name="retailer" onChange={(selectedOption: any) => {
+                                const retailerName = selectedOption.value;
+                                setRetailer(retailerName);
+                                loadRetailerInfo(retailerName);
+                            }}
+                                options={retailerOption} />
                         )}
                         {temporary && (
                             <label className="form-control w-full max-w-xs">
@@ -363,6 +403,7 @@ const OrderDelivery = () => {
 
                             </label>
                         )}
+                        <p>Balance: {retailerBalance.toLocaleString("en-IN")} | Last Rate: {lastProductRate}</p>
                     </label>
                     <label className="form-control w-full max-w-xs">
                         <div className="label">
@@ -445,11 +486,48 @@ const OrderDelivery = () => {
                                         <td>{index + 1}</td>
                                         <td>{item.date}</td>
                                         <td>{item.retailer}</td>
-                                        <td>{item.orderNote}</td>
+                                        <td><input
+                                            value={item.orderNote}
+                                            onChange={(e) =>
+                                                handleUpdate(item.id, "orderNote", e.target.value)
+                                            }
+                                            className="input input-xs input-bordered w-full"
+                                        /></td>
                                         <td>{item.productName}</td>
-                                        <td>{item.orderQty}</td>
-                                        <td>{item.saleRate}</td>
-                                        <td>{item.truckNo}</td>
+                                        <td>
+                                            <input
+                                                type="number"
+                                                value={item.orderQty}
+                                                onChange={(e) =>
+                                                    handleUpdate(item.id, "orderQty", e.target.value)
+                                                }
+                                                className="input input-xs input-bordered w-20"
+                                            />
+                                        </td>
+
+
+                                        {/* Rate */}
+                                        <td>
+                                            <input
+                                                type="number"
+                                                value={item.saleRate}
+                                                onChange={(e) =>
+                                                    handleUpdate(item.id, "saleRate", e.target.value)
+                                                }
+                                                className="input input-xs input-bordered w-20"
+                                            />
+                                        </td>
+
+                                        {/* Truck No */}
+                                        <td>
+                                            <input
+                                                value={item.truckNo}
+                                                onChange={(e) =>
+                                                    handleUpdate(item.id, "truckNo", e.target.value)
+                                                }
+                                                className="input input-xs input-bordered w-24"
+                                            />
+                                        </td>
 
                                         <td>
                                             <button onClick={() => {

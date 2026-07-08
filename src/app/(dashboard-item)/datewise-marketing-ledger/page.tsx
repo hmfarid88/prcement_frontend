@@ -67,19 +67,19 @@ const Page = () => {
 
 
     const totalOpening = filteredProducts.reduce((total, product) => {
-        return total + product.openingBalance;
+        return total + product?.openingBalance;
     }, 0);
 
     const totalQty = filteredProducts.reduce((total, product) => {
-        return total + product.qty;
+        return total + product?.qty;
     }, 0);
 
     const totalDebit = filteredProducts.reduce((total, product) => {
-        return total + product.debit;
+        return total + product?.debit;
     }, 0);
 
     const totalCredit = filteredProducts.reduce((total, product) => {
-        return total + product.credit;
+        return total + product?.credit;
     }, 0);
 
 
@@ -103,7 +103,7 @@ const Page = () => {
                     <div className="overflow-x-auto">
 
                         <div ref={contentToPrint} className="flex-1 p-5">
-                             <div className="flex justify-center">
+                            <div className="flex justify-center">
                                 <img src="/img/crowncement-logo.png" alt="Logo" className="m-4" />
                             </div>
                             <div className="flex w-full justify-center items-center">
@@ -132,7 +132,7 @@ const Page = () => {
                                     </tr>
                                 </thead>
 
-                                <tbody>
+                                {/* <tbody>
                                     {filteredProducts?.map((product, index) => (
                                         <tr key={index}>
                                             <td>{index + 1}</td>
@@ -147,8 +147,37 @@ const Page = () => {
                                             </td>
                                         </tr>
                                     ))}
+                                </tbody> */}
+                                <tbody>
+                                    {filteredProducts
+                                        ?.slice()
+                                        .sort((a, b) =>
+                                            (a.category || "").localeCompare(b.category || "")
+                                        )
+                                        .map((product, index) => (
+                                            <tr key={index}>
+                                                <td>{index + 1}</td>
+                                                <td>{product?.category}</td>
+                                                <td>{product?.openingBalance}</td>
+                                                <td>{product?.qty}</td>
+                                                <td>{product?.debit}</td>
+                                                <td>{product?.credit}</td>
+                                                <td>
+                                                    {product?.openingBalance -
+                                                        product?.debit -
+                                                        product?.credit}
+                                                </td>
+                                                <td>
+                                                    <button
+                                                        onClick={() => handleDetails(product?.category)}
+                                                        className="btn btn-sm btn-info"
+                                                    >
+                                                        Details
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
                                 </tbody>
-
                                 <tfoot>
 
                                     <tr className="font-semibold text-lg">

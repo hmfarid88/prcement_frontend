@@ -8,7 +8,6 @@ import { toast } from "react-toastify";
 import ExcelExport from "@/app/components/ExcellGeneration";
 import CurrentMonthYear from "@/app/components/CurrentMonthYear";
 import { IoSearch } from "react-icons/io5";
-import Image from "next/image";
 
 type Product = {
     category: string;
@@ -126,6 +125,7 @@ const Page = () => {
 
         return closing > 0 ? sum + closing : sum;
     }, 0);
+    
     return (
         <div className="container-2xl">
             <div className="flex flex-col w-full min-h-[calc(100vh-228px)] p-4 items-center justify-center">
@@ -231,7 +231,7 @@ const Page = () => {
                                         </tr>
                                     ))}
                                 </tbody> */}
-                                <tbody>
+                                {/* <tbody>
                                     {filteredProducts?.map((product, index) => {
                                         const closing =
                                             product?.openingBalance +
@@ -247,14 +247,12 @@ const Page = () => {
                                                 <td>{product?.debit}</td>
                                                 <td>{product?.credit}</td>
 
-                                                {/* Debit Balance */}
                                                 <td>
                                                     {closing < 0
                                                         ? Math.abs(closing).toLocaleString('en-IN')
                                                         : ''}
                                                 </td>
 
-                                                {/* Credit Balance */}
                                                 <td>
                                                     {closing > 0
                                                         ? closing.toLocaleString('en-IN')
@@ -272,6 +270,50 @@ const Page = () => {
                                             </tr>
                                         );
                                     })}
+                                </tbody> */}
+
+                                <tbody>
+                                    {filteredProducts
+                                        ?.slice()
+                                        .sort((a, b) =>
+                                            (a.category || "").localeCompare(b.category || "")
+                                        )
+                                        .map((product, index) => {
+                                            const closing =
+                                                product?.openingBalance +
+                                                product?.debit -
+                                                product?.credit;
+
+                                            return (
+                                                <tr key={index}>
+                                                    <td>{index + 1}</td>
+                                                    <td>{product?.category}</td>
+                                                    <td>{product?.openingBalance}</td>
+                                                    <td>{product?.qty}</td>
+                                                    <td>{product?.debit}</td>
+                                                    <td>{product?.credit}</td>
+                                                    <td>
+                                                        {closing < 0
+                                                            ? Math.abs(closing).toLocaleString('en-IN')
+                                                            : ''}
+                                                    </td>
+                                                    <td>
+                                                        {closing > 0
+                                                            ? closing.toLocaleString('en-IN')
+                                                            : ''}
+                                                    </td>
+
+                                                    <td>
+                                                        <button
+                                                            onClick={() => handleDetails(product?.category)}
+                                                            className="btn btn-sm btn-info"
+                                                        >
+                                                            Details
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
                                 </tbody>
 
                                 {/* <tfoot>
@@ -296,11 +338,8 @@ const Page = () => {
                                         <td>{totalQty.toLocaleString('en-IN')}</td>
                                         <td>{totalDebit.toLocaleString('en-IN')}</td>
                                         <td>{totalCredit.toLocaleString('en-IN')}</td>
-                                        {/* Total Debit Balance */}
                                         <td>{totalDebitBalance.toLocaleString('en-IN')}</td>
-                                        {/* Total Credit Balance */}
                                         <td>{totalCreditBalance.toLocaleString('en-IN')}</td>
-
                                         <td></td>
                                     </tr>
                                 </tfoot>
