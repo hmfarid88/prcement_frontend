@@ -77,6 +77,21 @@ const Page = () => {
     const totalRemainingQty = filteredProducts.reduce((total, product) => {
         return total + product.remainingQty;
     }, 0);
+    const totalPurchaseQty = filteredProducts.reduce(
+        (sum, product) =>
+            product.status === "stored"
+                ? sum + Number(product.productQty)
+                : sum,
+        0
+    );
+
+    const totalSoldQty = filteredProducts.reduce(
+        (sum, product) =>
+            product.status === "sold"
+                ? sum + Number(product.productQty)
+                : sum,
+        0
+    );
     return (
         <div className="container-2xl">
             <div className="flex flex-col w-full min-h-[calc(100vh-228px)] p-4">
@@ -110,6 +125,7 @@ const Page = () => {
                             <div className="flex flex-col items-center pb-5"><h4 className="font-bold">STOCK LEDGER</h4>Date: {startDate} TO {endDate}</div>
                             <table className="table table-xs md:table-sm table-pin-rows table-zebra">
                                 <thead className="sticky top-16 bg-base-100">
+
                                     <tr>
                                         <th>SN</th>
                                         <th>DATE</th>
@@ -117,7 +133,8 @@ const Page = () => {
                                         <th>CATEGORY</th>
                                         <th>PRODUCT</th>
                                         <th>STATUS</th>
-                                        <th>QTY</th>
+                                        <th>PURCHASE</th>
+                                        <th>SOLD</th>
                                         <th>RATE</th>
                                         <th>REMAINING</th>
                                     </tr>
@@ -131,7 +148,17 @@ const Page = () => {
                                             <td>{product.category}</td>
                                             <td>{product.productName}</td>
                                             <td className="capitalize">{product.status}</td>
-                                            <td>{Number(product.productQty).toLocaleString('en-IN')}</td>
+                                            <td>
+                                                {product.status === "stored"
+                                                    ? Number(product.productQty).toLocaleString("en-IN")
+                                                    : 0}
+                                            </td>
+
+                                            <td>
+                                                {product.status === "sold"
+                                                    ? Number(product.productQty).toLocaleString("en-IN")
+                                                    : 0}
+                                            </td>
                                             <td>
                                                 {Number(
                                                     product.status === "sold"
@@ -147,7 +174,8 @@ const Page = () => {
                                     <tr className="font-semibold text-lg">
                                         <td colSpan={5}></td>
                                         <td>TOTAL</td>
-                                        <td>{Number(totalQty.toFixed(2)).toLocaleString('en-IN')}</td>
+                                        <td>{Number(totalPurchaseQty.toFixed(2)).toLocaleString('en-IN')}</td>
+                                        <td>{Number(totalSoldQty.toFixed(2)).toLocaleString('en-IN')}</td>
                                         <td></td>
                                         <td>{Number(totalRemainingQty.toFixed(2)).toLocaleString('en-IN')}</td>
                                     </tr>

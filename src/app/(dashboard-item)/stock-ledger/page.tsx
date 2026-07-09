@@ -27,7 +27,7 @@ const Page = () => {
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
     const uname = useAppSelector((state) => state.username.username);
     const username = uname ? uname.username : 'Guest';
-    
+
     const contentToPrint = useRef(null);
     const handlePrint = useReactToPrint({
         content: () => contentToPrint.current,
@@ -46,17 +46,17 @@ const Page = () => {
             .catch(error => console.error('Error fetching products:', error));
     }, [apiBaseUrl, username]);
 
-     useEffect(() => {
+    useEffect(() => {
         const filtered = allProducts.filter(product =>
-          (product.warehouse?.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
-          (product.category?.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
-          (product.productName?.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
-          (product.date?.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
-          (product.status?.toLowerCase().includes(filterCriteria.toLowerCase()) || '')
+            (product.warehouse?.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
+            (product.category?.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
+            (product.productName?.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
+            (product.date?.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
+            (product.status?.toLowerCase().includes(filterCriteria.toLowerCase()) || '')
         );
         setFilteredProducts(filtered);
-      }, [filterCriteria, allProducts]);
-   
+    }, [filterCriteria, allProducts]);
+
     const handleFilterChange = (e: any) => {
         setFilterCriteria(e.target.value);
     };
@@ -67,6 +67,22 @@ const Page = () => {
     const totalRemainingQty = filteredProducts.reduce((total, product) => {
         return total + product.remainingQty;
     }, 0);
+
+    const totalPurchaseQty = filteredProducts.reduce(
+        (sum, product) =>
+            product.status === "stored"
+                ? sum + Number(product.productQty)
+                : sum,
+        0
+    );
+
+    const totalSoldQty = filteredProducts.reduce(
+        (sum, product) =>
+            product.status === "sold"
+                ? sum + Number(product.productQty)
+                : sum,
+        0
+    );
 
     return (
         <div className="container-2xl">
@@ -108,10 +124,10 @@ const Page = () => {
                                         <th>CATEGORY</th>
                                         <th>PRODUCT</th>
                                         <th>STATUS</th>
-                                        <th>QTY</th>
+                                        <th>PURCHASE</th>
+                                        <th>SOLD</th>
                                         <th>RATE</th>
                                         <th>REMAINING</th>
-
                                     </tr>
                                 </thead>
 
@@ -124,7 +140,17 @@ const Page = () => {
                                             <td>{product.category}</td>
                                             <td>{product.productName}</td>
                                             <td className="capitalize">{product.status}</td>
-                                            <td>{Number(product.productQty).toLocaleString('en-IN')}</td>
+                                            <td>
+                                                {product.status === "stored"
+                                                    ? Number(product.productQty).toLocaleString("en-IN")
+                                                    : 0}
+                                            </td>
+
+                                            <td>
+                                                {product.status === "sold"
+                                                    ? Number(product.productQty).toLocaleString("en-IN")
+                                                    : 0}
+                                            </td>
                                             <td>
                                                 {Number(
                                                     product.status === "sold"
@@ -140,7 +166,8 @@ const Page = () => {
                                     <tr className="font-semibold text-lg">
                                         <td colSpan={5}></td>
                                         <td>TOTAL</td>
-                                        <td>{Number(totalQty.toFixed(2)).toLocaleString('en-IN')}</td>
+                                        <td>{Number(totalPurchaseQty.toFixed(2)).toLocaleString('en-IN')}</td>
+                                        <td>{Number(totalSoldQty.toFixed(2)).toLocaleString('en-IN')}</td>
                                         <td></td>
                                         <td>{Number(totalRemainingQty.toFixed(2)).toLocaleString('en-IN')}</td>
                                     </tr>

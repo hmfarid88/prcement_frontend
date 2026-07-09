@@ -246,7 +246,6 @@ const OrderDelivery = () => {
 
     const [itemOption, setItemOption] = useState([]);
     useEffect(() => {
-
         const fetchMadeProducts = () => {
             fetch(`${apiBaseUrl}/api/getProductStock?username=${username}`)
                 .then(response => response.json())
@@ -267,7 +266,6 @@ const OrderDelivery = () => {
 
     const [retailerOption, setRetailerOption] = useState([]);
     useEffect(() => {
-
         fetch(`${apiBaseUrl}/api/getRetailerInfo`)
             .then(response => response.json())
             .then(data => {
@@ -323,7 +321,6 @@ const OrderDelivery = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-
             });
 
             if (!response.ok) {
