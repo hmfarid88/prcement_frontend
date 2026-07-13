@@ -92,15 +92,45 @@ const Page = () => {
         }, {})
     );
 
-    useEffect(() => {
-        const filtered = allProducts.filter(product =>
-            (product.warehouse?.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
-            (product.category?.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
-            (product.productName.toLowerCase().includes(filterCriteria.toLowerCase()) || '')
+    // useEffect(() => {
+    //     const filtered = allProducts.filter(product =>
+    //         (product.warehouse?.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
+    //         (product.category?.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
+    //         (product.productName.toLowerCase().includes(filterCriteria.toLowerCase()) || '')
 
-        );
+    //     );
+    //     setFilteredProducts(filtered);
+    // }, [filterCriteria, allProducts]);
+
+    useEffect(() => {
+        const searchText = filterCriteria.toLowerCase().trim();
+        let filtered = allProducts;
+        if (searchText) {
+          // If exact customer match
+          const exactMatch = allProducts.filter(
+            product => product.category?.toLowerCase() === searchText
+          );
+          if (exactMatch.length > 0) {
+            filtered = exactMatch;
+          } else {
+            // Build one string containing outlet + product details
+            filtered = allProducts.filter(product => {
+              const combinedText = [
+                product.category,
+                product.productName,
+                product.warehouse,
+               
+              ]
+                .map(f => f?.toLowerCase() || "")
+                .join(" ");
+    
+              return combinedText.includes(searchText);
+            });
+          }
+        }
         setFilteredProducts(filtered);
-    }, [filterCriteria, allProducts]);
+      }, [filterCriteria, allProducts]);
+    
 
     const handleFilterChange = (e: any) => {
         setFilterCriteria(e.target.value);
