@@ -58,6 +58,7 @@ const OrderDelivery = () => {
     const [rentAmount, setRentAmount] = useState("");
     const [retailerBalance, setRetailerBalance] = useState(0);
     const [lastProductRate, setLastProductRate] = useState(0);
+    const [presentQty, setPresentQty] = useState(0);
 
     const invoiceNo = uid();
     const [temporary, setTemporary] = useState(false);
@@ -117,10 +118,10 @@ const OrderDelivery = () => {
             const totalSoldQty = products
                 .filter(p => p.productName === productName && p.username === username)
                 .reduce((total, p) => total + Number(p.orderQty || 0), 0);
-            if (remainingQty < Number(orderQty) + totalSoldQty) {
-                toast.warning("Insufficient stock quantity !");
-                return;
-            }
+            // if (remainingQty < Number(orderQty) + totalSoldQty) {
+            //     toast.warning("Insufficient stock quantity !");
+            //     return;
+            // }
 
             const product = { id: uid(), orderId: 0, date: orderDate, retailer, orderNote, productName, category, saleRate, orderQty, transport: transportName, truckNo: truckno, rent: rentAmount, username }
             dispatch(addProducts(product));
@@ -130,6 +131,7 @@ const OrderDelivery = () => {
             setCategory("")
             setTruckNo("")
             setRentAmount("")
+            setPresentQty(0)
         } catch (error) {
             console.error("Error submitting order:", error);
             toast.error("An error occurred while submitting the order.");
@@ -247,13 +249,16 @@ const OrderDelivery = () => {
     const [itemOption, setItemOption] = useState([]);
     useEffect(() => {
         const fetchMadeProducts = () => {
-            fetch(`${apiBaseUrl}/api/getProductStock?username=${username}`)
+            // const today = new Date().toLocaleDateString('en-CA');
+            // fetch(`${apiBaseUrl}/api/daily-stock-report?username=${encodeURIComponent(username)}&date=${today}`)
+                fetch(`${apiBaseUrl}/api/getProductStock?username=${username}`)
                 .then(response => response.json())
                 .then(data => {
                     const transformedData = data.map((product: any) => ({
                         value: product.productName,
                         label: `${product.warehouse}, ${product.category}, ${product.productName} (${product.remainingQty}, ${product.costPrice.toFixed(2)})`,
                         category: product.category,
+                        presentQty: product.presentQty,
                     }));
                     setItemOption(transformedData);
                 })
