@@ -245,7 +245,6 @@ const OrderDelivery = () => {
             setPending(false);
         }
     };
-
     const [itemOption, setItemOption] = useState([]);
     useEffect(() => {
         const fetchMadeProducts = () => {
