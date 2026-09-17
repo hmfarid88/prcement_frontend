@@ -92,12 +92,14 @@ const OrderCreate = () => {
     useEffect(() => {
 
         const fetchMadeProducts = () => {
-            fetch(`${apiBaseUrl}/api/getProductStock?username=${username}`)
+            // fetch(`${apiBaseUrl}/api/getProductStock?username=${username}`)
+            const today = new Date().toLocaleDateString('en-CA');
+            fetch(`${apiBaseUrl}/api/daily-stock-report?username=${encodeURIComponent(username)}&date=${today}`)
                 .then(response => response.json())
                 .then(data => {
                     const transformedData = data.map((product: any) => ({
                         value: product.productName,
-                        label: `${product.category}, ${product.productName}, (${product.remainingQty}, ${product.costPrice.toFixed(2)})`,
+                        label: `${product.category}, ${product.productName}, (${product.presentQty}, ${product.costPrice.toFixed(2)})`,
                         category: product.category
                     }));
                     setItemOption(transformedData);
@@ -228,7 +230,7 @@ const OrderCreate = () => {
                                             <td>{item.date}</td>
                                             <td>{item.retailer}</td>
                                             <td>{item.orderNote}</td>
-                                            <td>{item.productName}</td>
+                                            <td>{item.category}|{item.productName}</td>
                                             <td>{item.orderQty}</td>
                                             <td>{item.saleRate}</td>
 

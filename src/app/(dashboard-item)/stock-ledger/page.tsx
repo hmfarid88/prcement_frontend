@@ -12,14 +12,14 @@ import ExcelExport from "@/app/components/ExcellGeneration";
 
 type Product = {
     date: string;
-    category: string;
     warehouse: string;
+    category: string;
     productName: string;
-    status: string;
-    dpRate: number;
-    purchasePrice: number;
-    productQty: number;
-    remainingQty: number;
+    openingQty: number;
+    storedQty: number;
+    soldQty: number;
+    closingQty: number;
+    costPrice: number;
 };
 
 
@@ -57,93 +57,87 @@ const Page = () => {
     //     setFilteredProducts(filtered);
     // }, [filterCriteria, allProducts]);
 
+    useEffect(() => {
+        const searchText = filterCriteria.toLowerCase().trim();
+        let filtered = allProducts;
+        if (searchText) {
+          // If exact customer match
+          const exactMatch = allProducts.filter(
+            product => product.category?.toLowerCase() === searchText
+          );
+          if (exactMatch.length > 0) {
+            filtered = exactMatch;
+          } else {
+            // Build one string containing outlet + product details
+            filtered = allProducts.filter(product => {
+              const combinedText = [
+                product.category,
+                product.productName,
+                product.warehouse,
+                product.date,
+             
+              ]
+                .map(f => f?.toLowerCase() || "")
+                .join(" ");
+
+              return combinedText.includes(searchText);
+            });
+          }
+        }
+        setFilteredProducts(filtered);
+      }, [filterCriteria, allProducts]);
+
     // useEffect(() => {
     //     const searchText = filterCriteria.toLowerCase().trim();
-    //     let filtered = allProducts;
-    //     if (searchText) {
-    //       // If exact customer match
-    //       const exactMatch = allProducts.filter(
-    //         product => product.category?.toLowerCase() === searchText
-    //       );
-    //       if (exactMatch.length > 0) {
-    //         filtered = exactMatch;
-    //       } else {
-    //         // Build one string containing outlet + product details
-    //         filtered = allProducts.filter(product => {
-    //           const combinedText = [
+
+    //     if (!searchText) {
+    //         setFilteredProducts(allProducts);
+    //         return;
+    //     }
+
+    //     const searchWords = searchText.split(/\s+/);
+
+    //     const filtered = allProducts.filter(product => {
+    //         const combinedText = [
+    //             product.warehouse,
     //             product.category,
     //             product.productName,
-    //             product.warehouse,
     //             product.date,
-    //             product.status,
-               
-    //           ]
-    //             .map(f => f?.toLowerCase() || "")
+
+    //         ]
+    //             .map(value => String(value ?? "").toLowerCase())
     //             .join(" ");
-    
-    //           return combinedText.includes(searchText);
-    //         });
-    //       }
-    //     }
+
+    //         // Every search word must exist somewhere
+    //         return searchWords.every(word =>
+    //             combinedText.includes(word)
+    //         );
+    //     });
+
     //     setFilteredProducts(filtered);
-    //   }, [filterCriteria, allProducts]);
-    useEffect(() => {
-    const searchText = filterCriteria.toLowerCase().trim();
 
-    if (!searchText) {
-        setFilteredProducts(allProducts);
-        return;
-    }
-
-    const searchWords = searchText.split(/\s+/);
-
-    const filtered = allProducts.filter(product => {
-        const combinedText = [
-            product.category,
-            product.productName,
-            product.warehouse,
-            product.date,
-            product.status,
-        ]
-        .map(value => String(value ?? "").toLowerCase())
-        .join(" ");
-
-        // Every search word must exist somewhere
-        return searchWords.every(word =>
-            combinedText.includes(word)
-        );
-    });
-
-    setFilteredProducts(filtered);
-
-}, [filterCriteria, allProducts]);
+    // }, [filterCriteria, allProducts]);
 
     const handleFilterChange = (e: any) => {
         setFilterCriteria(e.target.value);
     };
 
-    const totalQty = filteredProducts.reduce((total, product) => {
-        return total + product.productQty;
-    }, 0);
-    const totalRemainingQty = filteredProducts.reduce((total, product) => {
-        return total + product.remainingQty;
+    const openingQty = filteredProducts.reduce((total, product) => {
+        return total + product.openingQty;
     }, 0);
 
-    const totalPurchaseQty = filteredProducts.reduce(
-        (sum, product) =>
-            product.status === "stored"
-                ? sum + Number(product.productQty)
-                : sum,
-        0
-    );
+    const storedQty = filteredProducts.reduce((total, product) => {
+        return total + product.storedQty;
+    }, 0);
 
-    const totalSoldQty = filteredProducts.reduce(
-        (sum, product) =>
-            product.status === "sold"
-                ? sum + Number(product.productQty)
-                : sum,
-        0
-    );
+    const soldQty = filteredProducts.reduce((total, product) => {
+        return total + product.soldQty;
+    }, 0);
+
+    const closingQty = filteredProducts.reduce((total, product) => {
+        return total + product.closingQty;
+    }, 0);
+
 
     return (
         <div className="container-2xl">
@@ -184,11 +178,12 @@ const Page = () => {
                                         <th>WAREHOUSE</th>
                                         <th>CATEGORY</th>
                                         <th>PRODUCT</th>
-                                        <th>STATUS</th>
-                                        <th>PURCHASE</th>
+                                        <th>OPENING</th>
+                                        <th>STORED</th>
                                         <th>SOLD</th>
+                                        <th>CLOSING</th>
                                         <th>RATE</th>
-                                        <th>REMAINING</th>
+                                        <th>EDIT</th>
                                     </tr>
                                 </thead>
 
@@ -200,37 +195,21 @@ const Page = () => {
                                             <td>{product.warehouse}</td>
                                             <td>{product.category}</td>
                                             <td>{product.productName}</td>
-                                            <td className="capitalize">{product.status}</td>
-                                            <td>
-                                                {product.status === "stored"
-                                                    ? Number(product.productQty).toLocaleString("en-IN")
-                                                    : 0}
-                                            </td>
-
-                                            <td>
-                                                {product.status === "sold"
-                                                    ? Number(product.productQty).toLocaleString("en-IN")
-                                                    : 0}
-                                            </td>
-                                            <td>
-                                                {Number(
-                                                    product.status === "sold"
-                                                        ? product.dpRate
-                                                        : product.purchasePrice
-                                                ).toLocaleString("en-IN")}
-                                            </td>
-                                            <td>{Number(product.remainingQty).toLocaleString('en-IN')}</td>
+                                            <td>{Number(product.openingQty).toLocaleString('en-IN')}</td>
+                                            <td>{Number(product.storedQty).toLocaleString('en-IN')}</td>
+                                            <td>{Number(product.soldQty).toLocaleString('en-IN')}</td>
+                                            <td>{Number(product.closingQty).toLocaleString('en-IN')}</td>
                                         </tr>
                                     ))}
                                 </tbody>
                                 <tfoot>
                                     <tr className="font-semibold text-lg">
-                                        <td colSpan={5}></td>
+                                        <td colSpan={4}></td>
                                         <td>TOTAL</td>
-                                        <td>{Number(totalPurchaseQty.toFixed(2)).toLocaleString('en-IN')}</td>
-                                        <td>{Number(totalSoldQty.toFixed(2)).toLocaleString('en-IN')}</td>
-                                        <td></td>
-                                        <td>{Number(totalRemainingQty.toFixed(2)).toLocaleString('en-IN')}</td>
+                                        <td>{Number(openingQty.toFixed(2)).toLocaleString('en-IN')}</td>
+                                        <td>{Number(storedQty.toFixed(2)).toLocaleString('en-IN')}</td>
+                                        <td>{Number(soldQty.toFixed(2)).toLocaleString('en-IN')}</td>
+                                        <td>{Number(closingQty.toFixed(2)).toLocaleString('en-IN')}</td>
                                     </tr>
                                 </tfoot>
                             </table>

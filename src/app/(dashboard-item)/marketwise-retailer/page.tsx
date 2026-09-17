@@ -288,10 +288,10 @@ const Page = () => {
                                                 <tr key={index}>
                                                     <td>{index + 1}</td>
                                                     <td>{product?.category}</td>
-                                                    <td>{product?.openingBalance}</td>
-                                                    <td>{product?.qty}</td>
-                                                    <td>{product?.debit}</td>
-                                                    <td>{product?.credit}</td>
+                                                    <td>{Number((product?.openingBalance).toFixed(2)).toLocaleString('en-IN')}</td>
+                                                    <td>{Number((product?.qty).toFixed(2)).toLocaleString('en-IN')}</td>
+                                                    <td>{Number((product?.debit).toFixed(2)).toLocaleString('en-IN')}</td>
+                                                    <td>{Number((product?.credit).toFixed(2)).toLocaleString('en-IN')}</td>
                                                     <td>
                                                         {closing < 0
                                                             ? Math.abs(closing).toLocaleString('en-IN')

@@ -58,7 +58,7 @@ const OrderDelivery = () => {
     const [rentAmount, setRentAmount] = useState("");
     const [retailerBalance, setRetailerBalance] = useState(0);
     const [lastProductRate, setLastProductRate] = useState(0);
-    const [presentQty, setPresentQty] = useState(0);
+    const [presentQty, setPresentQty] = useState("");
 
     const invoiceNo = uid();
     const [temporary, setTemporary] = useState(false);
@@ -107,21 +107,14 @@ const OrderDelivery = () => {
             return;
         }
         try {
-            const response = await fetch(`${apiBaseUrl}/api/findLastQty?username=${encodeURIComponent(username)}&category=${encodeURIComponent(category)}&productName=${encodeURIComponent(productName)}`);
-            if (!response.ok) {
-                toast.error("Failed to fetch remaining quantity!");
+
+            const totalSoldQty = products
+                .filter(p => p.category === category && p.productName === productName && p.username === username)
+                .reduce((total, p) => total + Number(p.orderQty || 0), 0);
+            if (Number(presentQty) < Number(orderQty) + totalSoldQty) {
+                toast.warning("Insufficient stock quantity !");
                 return;
             }
-
-            const data = await response.json();
-            const remainingQty = data;
-            const totalSoldQty = products
-                .filter(p => p.productName === productName && p.username === username)
-                .reduce((total, p) => total + Number(p.orderQty || 0), 0);
-            // if (remainingQty < Number(orderQty) + totalSoldQty) {
-            //     toast.warning("Insufficient stock quantity !");
-            //     return;
-            // }
 
             const product = { id: uid(), orderId: 0, date: orderDate, retailer, orderNote, productName, category, saleRate, orderQty, transport: transportName, truckNo: truckno, rent: rentAmount, username }
             dispatch(addProducts(product));
@@ -131,7 +124,7 @@ const OrderDelivery = () => {
             setCategory("")
             setTruckNo("")
             setRentAmount("")
-            setPresentQty(0)
+            setPresentQty("")
         } catch (error) {
             console.error("Error submitting order:", error);
             toast.error("An error occurred while submitting the order.");
@@ -155,19 +148,30 @@ const OrderDelivery = () => {
                 toast.warning("Sorry, not enough qty!");
                 return;
             }
-            const qtyresponse = await fetch(`${apiBaseUrl}/api/findLastQty?username=${encodeURIComponent(username)}&productName=${encodeURIComponent(productData.productName)}&category=${encodeURIComponent(productData.category)}`);
+
+            const today = new Date().toLocaleDateString('en-CA');
+            const qtyresponse = await fetch(`${apiBaseUrl}/api/daily-stock-report?username=${encodeURIComponent(username)}&date=${today}`)
+            // const qtyresponse = await fetch(`${apiBaseUrl}/api/findLastQty?username=${encodeURIComponent(username)}&productName=${encodeURIComponent(productData.productName)}&category=${encodeURIComponent(productData.category)}`);
             if (!qtyresponse.ok) {
                 toast.error("Failed to fetch remaining quantity!");
                 return;
             }
 
             const qtydata = await qtyresponse.json();
-            const remainingQty = qtydata;
+            const remainingQty = qtydata.find(
+                (item: any) =>
+                    item.category === productData.category &&
+                    item.productName === productData.productName
+            );
+            if (!remainingQty) {
+                toast.warning("Product stock not found!");
+                return;
+            }
 
             const totalSoldQty = products
-                .filter(p => p.productName === productData.productName && p.username === username)
+                .filter(p => p.category === productData.category && p.productName === productData.productName && p.username === username)
                 .reduce((total, p) => total + Number(p.orderQty || 0), 0);
-            if (remainingQty < Number(orderedQty) + totalSoldQty) {
+            if (Number(remainingQty.presentQty) < Number(orderedQty) + totalSoldQty) {
                 toast.warning("Insufficient stock quantity !");
                 return;
             }
@@ -177,6 +181,7 @@ const OrderDelivery = () => {
                 date: orderDate,
                 retailer: productData.retailer,
                 orderNote: productData.orderNote,
+                category: productData.category,
                 productName: productData.productName,
                 saleRate: productData.saleRate,
                 orderQty: orderedQty,
@@ -248,14 +253,14 @@ const OrderDelivery = () => {
     const [itemOption, setItemOption] = useState([]);
     useEffect(() => {
         const fetchMadeProducts = () => {
-            // const today = new Date().toLocaleDateString('en-CA');
-            // fetch(`${apiBaseUrl}/api/daily-stock-report?username=${encodeURIComponent(username)}&date=${today}`)
-                fetch(`${apiBaseUrl}/api/getProductStock?username=${username}`)
+            const today = new Date().toLocaleDateString('en-CA');
+            fetch(`${apiBaseUrl}/api/daily-stock-report?username=${encodeURIComponent(username)}&date=${today}`)
+                // fetch(`${apiBaseUrl}/api/getProductStock?username=${username}`)
                 .then(response => response.json())
                 .then(data => {
                     const transformedData = data.map((product: any) => ({
                         value: product.productName,
-                        label: `${product.warehouse}, ${product.category}, ${product.productName} (${product.remainingQty}, ${product.costPrice.toFixed(2)})`,
+                        label: `${product.warehouse}, ${product.category}, ${product.productName} (${product.presentQty}, ${product.costPrice.toFixed(2)})`,
                         category: product.category,
                         presentQty: product.presentQty,
                     }));
@@ -416,7 +421,7 @@ const OrderDelivery = () => {
                         <div className="label">
                             <span className="label-text-alt">PRODUCT NAME</span>
                         </div>
-                        <Select className="text-black" name="pname" onChange={(selectedOption: any) => { setProductName(selectedOption.value); setCategory(selectedOption.category); }} options={itemOption} />
+                        <Select className="text-black" name="pname" onChange={(selectedOption: any) => { setProductName(selectedOption.value); setCategory(selectedOption.category); setPresentQty(selectedOption.presentQty); }} options={itemOption} />
 
                     </label>
                     <label className="form-control w-full max-w-xs">
