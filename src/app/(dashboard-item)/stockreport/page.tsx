@@ -69,6 +69,7 @@ const Page = () => {
   const [transferPending, setTransferPending] = useState(false);
   const [transferModalOpen, setTransferModalOpen] = useState(false);
   const [itemOption, setItemOption] = useState([]);
+  const [stockRefreshKey, setStockRefreshKey] = useState(0);
 
   useEffect(() => {
     const fetchMadeProducts = () => {
@@ -91,7 +92,7 @@ const Page = () => {
 
     // Fetch data initially
     fetchMadeProducts();
-  }, [apiBaseUrl, username]);
+  }, [apiBaseUrl, username, stockRefreshKey]);
 
   useEffect(() => {
     const today = new Date().toLocaleDateString('en-CA');
@@ -102,7 +103,7 @@ const Page = () => {
         setFilteredProducts(data);
       })
       .catch(error => console.error('Error fetching products:', error));
-  }, [apiBaseUrl, username]);
+  }, [apiBaseUrl, username, stockRefreshKey]);
 
   const handleTransfer = async (e: any) => {
     e.preventDefault();
@@ -116,6 +117,7 @@ const Page = () => {
     }
 
     try {
+      setTransferPending(true);
       const response = await fetch(`${apiBaseUrl}/api/transfer-stock`, {
         method: 'POST',
         headers: {
@@ -137,12 +139,13 @@ const Page = () => {
         setDestinationWarehouse("");
         setDestinationCategory("");
         setTransferModalOpen(false);
+        setStockRefreshKey((currentKey) => currentKey + 1);
       }
 
     } catch (error) {
       toast.error("Invalid product item !")
     } finally {
-
+      setTransferPending(false);
     }
   };
 
