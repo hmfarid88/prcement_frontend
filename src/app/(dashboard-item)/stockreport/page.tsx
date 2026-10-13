@@ -8,6 +8,7 @@ import ExcelExport from "@/app/components/ExcellGeneration";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { IoSearch } from "react-icons/io5";
+import Select from "react-select";
 
 type Product = {
   category: string;
@@ -29,6 +30,14 @@ const Page = () => {
   const router = useRouter();
   const [maxDate, setMaxDate] = useState('');
   const [viewMode, setViewMode] = useState<"group" | "details">("group");
+
+  const [productName, setProductName] = useState("");
+  const [presentQty, setPresentQty] = useState("");
+  const [transferQty, setTransferQty] = useState("");
+  const [sourceWarehouse, setSourceWarehouse] = useState("");
+  const [sourceCategory, setSourceCategory] = useState("");
+  const [destinationWarehouse, setDestinationWarehouse] = useState("");
+  const [destinationCategory, setDestinationCategory] = useState("");
 
   useEffect(() => {
     const today = new Date();
@@ -57,6 +66,32 @@ const Page = () => {
   const [filterCriteria, setFilterCriteria] = useState('');
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [transferPending, setTransferPending] = useState(false);
+  const [transferModalOpen, setTransferModalOpen] = useState(false);
+  const [itemOption, setItemOption] = useState([]);
+
+  useEffect(() => {
+    const fetchMadeProducts = () => {
+      const today = new Date().toLocaleDateString('en-CA');
+      fetch(`${apiBaseUrl}/api/daily-stock-report?username=${encodeURIComponent(username)}&date=${today}`)
+        // fetch(`${apiBaseUrl}/api/getProductStock?username=${username}`)
+        .then(response => response.json())
+        .then(data => {
+          const transformedData = data.map((product: any) => ({
+            value: product.productName,
+            label: `${product.warehouse}, ${product.category}, ${product.productName} (${product.presentQty}, ${product.costPrice.toFixed(2)})`,
+            warehouse: product.warehouse,
+            category: product.category,
+            presentQty: product.presentQty,
+          }));
+          setItemOption(transformedData);
+        })
+        .catch(error => console.error('Error fetching products:', error));
+    };
+
+    // Fetch data initially
+    fetchMadeProducts();
+  }, [apiBaseUrl, username]);
 
   useEffect(() => {
     const today = new Date().toLocaleDateString('en-CA');
@@ -68,6 +103,49 @@ const Page = () => {
       })
       .catch(error => console.error('Error fetching products:', error));
   }, [apiBaseUrl, username]);
+
+  const handleTransfer = async (e: any) => {
+    e.preventDefault();
+    if (!sourceWarehouse || !sourceCategory || !productName || !transferQty || !destinationWarehouse || !destinationCategory) {
+      toast.warning("Sorry, must fill all the field!");
+      return;
+    }
+    if (sourceCategory === destinationCategory) {
+      toast.warning("Sorry, source category cannot be the same as destination category!");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${apiBaseUrl}/api/transfer-stock`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ sourceWarehouse, sourceCategory, productName, transferQty, destinationWarehouse, destinationCategory, username: username }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        toast.error(error.message);
+      } else {
+
+        toast.success("Product transfer successfull !");
+        setSourceWarehouse("");
+        setSourceCategory("");
+        setProductName("");
+        setTransferQty("");
+        setDestinationWarehouse("");
+        setDestinationCategory("");
+        setTransferModalOpen(false);
+      }
+
+    } catch (error) {
+      toast.error("Invalid product item !")
+    } finally {
+
+    }
+  };
+
   const categorySummary = Object.values(
     filteredProducts.reduce((acc: any, item) => {
       if (!acc[item.category]) {
@@ -88,14 +166,6 @@ const Page = () => {
       return acc;
     }, {})
   );
-  // useEffect(() => {
-  //   const filtered = allProducts.filter(product =>
-  //     (product.warehouse?.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
-  //     (product.category?.toLowerCase().includes(filterCriteria.toLowerCase()) || '') ||
-  //     (product.productName.toLowerCase().includes(filterCriteria.toLowerCase()) || '')
-  //   );
-  //   setFilteredProducts(filtered);
-  // }, [filterCriteria, allProducts]);
 
   useEffect(() => {
     const searchText = filterCriteria.toLowerCase().trim();
@@ -114,7 +184,7 @@ const Page = () => {
             product.warehouse,
             product.category,
             product.productName,
-                      
+
           ]
             .map(f => f?.toLowerCase() || "")
             .join(" ");
@@ -204,6 +274,93 @@ const Page = () => {
             </label>
 
           </div>
+          <div className="flex justify-end">
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() => setTransferModalOpen(true)}
+            >
+              Transfer Stock
+            </button>
+          </div>
+          {transferModalOpen && (
+            <div className="modal modal-open" role="dialog" aria-modal="true" aria-labelledby="transfer-stock-title">
+              <div className="modal-box max-w-3xl">
+                <div className="mb-4 flex items-center justify-between">
+                  <h2 id="transfer-stock-title" className="text-lg font-bold">TRANSFER STOCK</h2>
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-circle btn-ghost"
+                    aria-label="Close transfer dialog"
+                    disabled={transferPending}
+                    onClick={() => setTransferModalOpen(false)}
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+
+                  <label className="form-control w-full max-w-xs">
+                    <div className="label">
+                      <span className="label-text-alt">SOURCE PRODUCT</span>
+                    </div>
+                    <Select className="text-black" name="pname" onChange={(selectedOption: any) => { setSourceWarehouse(selectedOption.warehouse); setProductName(selectedOption.value); setSourceCategory(selectedOption.category); setPresentQty(selectedOption.presentQty); }} options={itemOption} />
+
+                  </label>
+                  <label className="form-control">
+                    <span className="label-text-alt mb-1">TRANSFER QUANTITY</span>
+                    <input
+                      type="number"
+                      min="0.01"
+                      max={presentQty}
+                      step="any"
+                      className="input input-bordered"
+                      value={transferQty}
+                      onChange={(e) => setTransferQty(e.target.value)}
+                      placeholder="Enter quantity"
+                    />
+                  </label>
+                  <label className="form-control">
+                    <span className="label-text-alt mb-1">DESTINATION WAREHOUSE</span>
+                    <select className='select select-sm select-bordered bg-white text-black' onChange={(e: any) => { setDestinationWarehouse(e.target.value) }}>
+                      <option selected disabled>Select . . .</option>
+                      <option value="Vabnatola Ghat">Vabnatola Ghat</option>
+                      <option value="Takerhat Ghat">Takerhat Ghat</option>
+                      <option value="Nariya Godawn">Nariya Godawn</option>
+                      <option value="Factory House">Factory House</option>
+                      <option value="Iron House">Iron House</option>
+                    </select>
+                  </label>
+                  <label className="form-control">
+                    <span className="label-text-alt mb-1">DESTINATION CATEGORY</span>
+                    <select className='select select-sm select-bordered bg-white text-black' onChange={(e: any) => { setDestinationCategory(e.target.value) }}>
+                      <option selected disabled>Select . . .</option>
+                      <option value="Pr Cement 1">Pr Cement 1</option>
+                      <option value="Pr Cement 2">Pr Cement 2</option>
+                      <option value="Pr Cement 3">Pr Cement 3</option>
+                      <option value="Rod">Rod</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </label>
+                </div>
+                <div className="modal-action">
+                  <button
+                    type="button"
+                    className="btn"
+                    disabled={transferPending}
+                    onClick={() => setTransferModalOpen(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button type="button" onClick={handleTransfer} className="btn btn-primary" disabled={transferPending}>
+                    {transferPending ? "TRANSFERRING..." : "TRANSFER STOCK"}
+                  </button>
+                </div>
+
+              </div>
+            </div>
+          )}
           <div className="flex justify-between pl-5 pr-5 pt-1">
             <label className="input input-bordered flex max-w-xs  items-center gap-2">
               <input type="text" value={filterCriteria} onChange={handleFilterChange} className="grow" placeholder="Search" />
