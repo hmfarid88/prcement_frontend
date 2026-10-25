@@ -48,6 +48,7 @@ const Page = () => {
     setMaxDate(formattedDate);
   }, []);
 
+  const [stockDate, setStockDate] = useState("");
   const [date, setStartDate] = useState("");
   const handleSubmit = (e: any) => {
     e.preventDefault();
@@ -107,7 +108,7 @@ const Page = () => {
 
   const handleTransfer = async (e: any) => {
     e.preventDefault();
-    if (!sourceWarehouse || !sourceCategory || !productName || !transferQty || !destinationWarehouse || !destinationCategory) {
+    if (!stockDate || !sourceWarehouse || !sourceCategory || !productName || !transferQty || !destinationWarehouse || !destinationCategory) {
       toast.warning("Sorry, must fill all the field!");
       return;
     }
@@ -123,7 +124,7 @@ const Page = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ sourceWarehouse, sourceCategory, productName, transferQty, destinationWarehouse, destinationCategory, username: username }),
+        body: JSON.stringify({date:stockDate, sourceWarehouse, sourceCategory, productName, transferQty, destinationWarehouse, destinationCategory, username: username }),
       });
 
       if (!response.ok) {
@@ -132,6 +133,7 @@ const Page = () => {
       } else {
 
         toast.success("Product transfer successfull !");
+        setStockDate("");
         setSourceWarehouse("");
         setSourceCategory("");
         setProductName("");
@@ -303,7 +305,12 @@ const Page = () => {
                 </div>
 
                 <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-
+                  <label className="form-control w-full max-w-xs">
+                    <div className="label">
+                      <span className="label-text-alt">DATE</span>
+                    </div>
+                    <input type="date" name="date" onChange={(e: any) => setStockDate(e.target.value)} max={maxDate} value={stockDate} className="border rounded-md p-2 mt-1.5 bg-white text-black  w-full max-w-xs h-[40px]" />
+                  </label>
                   <label className="form-control w-full max-w-xs">
                     <div className="label">
                       <span className="label-text-alt">SOURCE PRODUCT</span>
@@ -311,20 +318,20 @@ const Page = () => {
                     <Select className="text-black" name="pname" onChange={(selectedOption: any) => { setSourceWarehouse(selectedOption.warehouse); setProductName(selectedOption.value); setSourceCategory(selectedOption.category); setPresentQty(selectedOption.presentQty); }} options={itemOption} />
 
                   </label>
-                  <label className="form-control">
+                  <label className="form-control w-full max-w-xs">
                     <span className="label-text-alt mb-1">TRANSFER QUANTITY</span>
                     <input
                       type="number"
                       min="0.01"
                       max={presentQty}
                       step="any"
-                      className="input input-bordered"
+                      className="input input-sm input-bordered bg-white text-black"
                       value={transferQty}
                       onChange={(e) => setTransferQty(e.target.value)}
                       placeholder="Enter quantity"
                     />
                   </label>
-                  <label className="form-control">
+                  <label className="form-control w-full max-w-xs">
                     <span className="label-text-alt mb-1">DESTINATION WAREHOUSE</span>
                     <select className='select select-sm select-bordered bg-white text-black' onChange={(e: any) => { setDestinationWarehouse(e.target.value) }}>
                       <option selected disabled>Select . . .</option>
@@ -335,7 +342,7 @@ const Page = () => {
                       <option value="Iron House">Iron House</option>
                     </select>
                   </label>
-                  <label className="form-control">
+                  <label className="form-control w-full max-w-xs">
                     <span className="label-text-alt mb-1">DESTINATION CATEGORY</span>
                     <select className='select select-sm select-bordered bg-white text-black' onChange={(e: any) => { setDestinationCategory(e.target.value) }}>
                       <option selected disabled>Select . . .</option>
