@@ -442,6 +442,7 @@ import { MdOutlineEditNote } from "react-icons/md";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import ExcelExport from "@/app/components/ExcellGeneration";
+import Link from "next/link";
 
 type Product = {
   date: string;
@@ -556,6 +557,7 @@ const Page = () => {
           </label>
 
           <div className="flex gap-2">
+           <Link href="/details-dist-report"> <a className="btn btn-ghost text-lg">All Details</a> </Link>
             <a href="#sr_summary" className="btn btn-ghost text-lg">Marketing Officer Summary</a>
             <a href="#sale_summary" className="btn btn-ghost text-lg">Sale Summary</a>
             <ExcelExport tableRef={contentToPrint} fileName="sale_report" />
