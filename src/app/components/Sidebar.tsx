@@ -130,7 +130,7 @@ export const Sidebar = () => {
                                 </ul>
                             </details>
                         </li> */}
-                        <li><Link href="/monthly-profit"><MdOutlineInterests size={20} /> PROFIT / LOSS</Link></li>
+                        <li><Link href="/profit-report"><MdOutlineInterests size={20} /> PROFIT / LOSS</Link></li>
                         <li><Link href="/balance-sheet"><FaScaleBalanced size={20} /> BALANCE SHEET</Link></li>
                         <li><Link href="/adminstration"><GrUserAdmin size={20} /> ADMINSTRATION</Link></li>
 

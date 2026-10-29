@@ -154,8 +154,8 @@ const Page = () => {
                                     <tr className="font-semibold text-lg">
                                         <td colSpan={5}></td>
                                         <td>TOTAL</td>
-                                        <td>{Number(totalQty.toFixed(2)).toLocaleString('en-IN')}</td>
-                                        <td>{Number(totalPurchasePrice.toFixed(2)).toLocaleString('en-IN')}</td>
+                                        <td>{Number((totalQty/2).toFixed(2)).toLocaleString('en-IN')}</td>
+                                        {/* <td>{Number(totalPurchasePrice.toFixed(2)).toLocaleString('en-IN')}</td> */}
                                     </tr>
                                 </tfoot>
                             </table>
