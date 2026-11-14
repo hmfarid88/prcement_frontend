@@ -2,6 +2,7 @@
 
 import { useRef, useState, type FormEvent } from "react";
 import { useReactToPrint } from "react-to-print";
+import ExcelExport from "./ExcellGeneration";
 
 interface ProfitLossAccountLine {
   description: string;
@@ -191,8 +192,8 @@ export default function ProfitLossAccount({
       <div className="overflow-hidden rounded-xl border border-base-300 bg-base-100">
         <div
           className={`border-b px-4 py-3 ${side === "debit"
-              ? "bg-rose-50 text-rose-800 dark:bg-rose-950 dark:text-rose-200"
-              : "bg-emerald-50 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200"
+            ? "bg-rose-50 text-rose-800 dark:bg-rose-950 dark:text-rose-200"
+            : "bg-emerald-50 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200"
             }`}
         >
           <h3 className="font-bold">{title}</h3>
@@ -279,8 +280,8 @@ export default function ProfitLossAccount({
                 setError("");
               }}
               className={`rounded-lg border px-4 py-2 font-medium transition ${mode === "monthly"
-                  ? "border-primary bg-primary text-primary-content"
-                  : "border-base-300 hover:bg-base-200"
+                ? "border-primary bg-primary text-primary-content"
+                : "border-base-300 hover:bg-base-200"
                 }`}
             >
               Monthly Report
@@ -295,8 +296,8 @@ export default function ProfitLossAccount({
                 setError("");
               }}
               className={`rounded-lg border px-4 py-2 font-medium transition ${mode === "datewise"
-                  ? "border-primary bg-primary text-primary-content"
-                  : "border-base-300 hover:bg-base-200"
+                ? "border-primary bg-primary text-primary-content"
+                : "border-base-300 hover:bg-base-200"
                 }`}
             >
               Date-wise Report
@@ -422,14 +423,16 @@ export default function ProfitLossAccount({
                   {username}
                 </p>
               </div>
-
-              <button
-                type="button"
-                onClick={handlePrint}
-                className="btn btn-outline btn-sm print:hidden"
-              >
-                Print Report
-              </button>
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handlePrint}
+                  className="btn btn-outline btn-sm print:hidden"
+                >
+                  Print Report
+                </button>
+                <ExcelExport tableRef={contentToPrint} fileName="profit_loss_report" />
+              </div>
             </div>
           </div>
 
@@ -500,8 +503,8 @@ export default function ProfitLossAccount({
             <div className="mt-4 border-t border-base-300 pt-4">
               <p
                 className={`font-semibold ${isBalanced
-                    ? "text-emerald-700 dark:text-emerald-400"
-                    : "text-rose-700 dark:text-rose-400"
+                  ? "text-emerald-700 dark:text-emerald-400"
+                  : "text-rose-700 dark:text-rose-400"
                   }`}
               >
                 {isBalanced
